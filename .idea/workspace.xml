@@ -6,7 +6,12 @@
     </artifacts-to-build>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="265c39e3-1c89-472a-bfe0-0fceb4e8c36b" name="Changes" comment="repair gitignore" />
+    <list default="true" id="265c39e3-1c89-472a-bfe0-0fceb4e8c36b" name="Changes" comment="">
+      <changelist_data name="runoverPy" email="74095195+runoverpy@users.noreply.github.com" date="1647297740000" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -52,11 +57,16 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="Downloaded.Files.Path.Enabled" value="false" />
+    <property name="Repository.Attach.Annotations" value="false" />
+    <property name="Repository.Attach.JavaDocs" value="false" />
+    <property name="Repository.Attach.Sources" value="false" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/lib/lwjgl-3.3.1/lwjgl-javadoc.jar" />
-    <property name="project.structure.last.edited" value="Project" />
-    <property name="project.structure.proportion" value="0.15" />
+    <property name="jdk.selected.JAVA_MODULE" value="OpenJDK-17" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/lib/javatuples-1.2/lib" />
+    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.proportion" value="0.15289575" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="settings.editor.selected.configurable" value="vcs.Git" />
   </component>
@@ -95,8 +105,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="JAR Application.Minecraft.jar" />
         <item itemvalue="Application.Main" />
+        <item itemvalue="JAR Application.Minecraft.jar" />
         <item itemvalue="JAR Application.Minecraft.jar" />
         <item itemvalue="Application.Main" />
         <item itemvalue="JAR Application.Minecraft.jar" />
@@ -161,7 +171,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="master" />
+                        <option value="HEAD" />
                       </list>
                     </value>
                   </entry>
