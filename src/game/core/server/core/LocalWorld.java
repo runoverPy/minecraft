@@ -1,0 +1,68 @@
+package game.core.server.core;
+
+import game.mechanics.blocks.Block;
+import game.mechanics.entities.Entity;
+import org.joml.Vector3i;
+
+import java.io.IOException;
+
+public class LocalWorld extends World implements Server {
+    public LocalWorld() {
+        super();
+    }
+
+    public LocalWorld(String worldName) {
+        super();
+    }
+
+    @Override
+    public Block getBlock(int x, int y, int z) {
+        return null;
+    }
+
+    @Override
+    public void setBlock(int x, int y, int z, Block block) {
+
+    }
+
+    @Override
+    public void updateBlock(Vector3i block) {
+
+    }
+
+    @Override
+    public void updateBlock(int x, int y, int z) {
+
+    }
+
+    @Override
+    public void registerEntity(Entity entity) {
+
+    }
+
+    @Override
+    public void removeEntity(Entity entity) {
+
+    }
+
+    @Override
+    public Vector3i getSpawnPoint() {
+        return null;
+    }
+
+    @Override
+    public void update() {
+
+    }
+
+    @Override
+    public void registerClient(Client client) {
+
+    }
+
+    @Override
+    public void disconnectClient(Client client) throws IOException {
+
+    }
+
+}

@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="javatuples-1.2">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/lib/javatuples-1.2/dist" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="file://$PROJECT_DIR$/lib/javatuples-1.2/apidocs" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/lib/javatuples-1.2/dist" />
+    </SOURCES>
+    <jarDirectory url="file://$PROJECT_DIR$/lib/javatuples-1.2/dist" recursive="false" />
+    <jarDirectory url="file://$PROJECT_DIR$/lib/javatuples-1.2/dist" recursive="false" type="SOURCES" />
+  </library>
+</component>
