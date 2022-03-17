@@ -2,11 +2,13 @@
 <project version="4">
   <component name="ArtifactsWorkspaceSettings">
     <artifacts-to-build>
-      <artifact name="Minecraft:jar" />
+      <artifact name="Minecraft" />
     </artifacts-to-build>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="265c39e3-1c89-472a-bfe0-0fceb4e8c36b" name="Changes" comment="repair gitignore" />
+    <list default="true" id="77b7f586-8455-4e78-904e-d25b66187f98" name="Changes" comment="protokoll für Schule erstellen">
+      <change beforePath="$PROJECT_DIR$/Minecraft.iml" beforeDir="false" afterPath="$PROJECT_DIR$/Minecraft.iml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -29,7 +31,7 @@
     </option>
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="9597cb877bbb1b37a53084339139c0e1ea484dc6" />
+        <entry key="$PROJECT_DIR$" value="90dad73009036af8812ccfb7301a205aa9d702ec" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -64,8 +66,8 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="jdk.selected.JAVA_MODULE" value="OpenJDK-17" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/lib/javatuples-1.2/lib" />
-    <property name="project.structure.last.edited" value="Modules" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/lib/javatuples-1.2/lib/javatuples-1.2.jar" />
+    <property name="project.structure.last.edited" value="Artifacts" />
     <property name="project.structure.proportion" value="0.15289575" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="settings.editor.selected.configurable" value="vcs.Git" />
@@ -81,7 +83,7 @@
       <recent name="game.assets.widgets" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Main">
+  <component name="RunManager" selected="JAR Application.minecraft.jar">
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="game.main.Main" />
       <module name="Minecraft" />
@@ -99,17 +101,22 @@
       <option name="JAR_PATH" value="$PROJECT_DIR$/out/artifacts/Minecraft_jar/Minecraft.jar" />
       <method v="2" />
     </configuration>
+    <configuration name="minecraft.jar" type="JarApplication" temporary="true">
+      <option name="JAR_PATH" value="$PROJECT_DIR$/out/artifacts/Minecraft/minecraft.jar" />
+      <method v="2" />
+    </configuration>
     <list>
       <item itemvalue="Application.Main" />
       <item itemvalue="JAR Application.Minecraft.jar" />
+      <item itemvalue="JAR Application.minecraft.jar" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="JAR Application.minecraft.jar" />
         <item itemvalue="Application.Main" />
         <item itemvalue="JAR Application.Minecraft.jar" />
         <item itemvalue="JAR Application.Minecraft.jar" />
         <item itemvalue="Application.Main" />
-        <item itemvalue="JAR Application.Minecraft.jar" />
       </list>
     </recent_temporary>
   </component>
@@ -164,7 +171,77 @@
       <option name="project" value="LOCAL" />
       <updated>1647456732681</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="repair gitignore">
+      <created>1647458002414</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1647458002414</updated>
+    </task>
+    <task id="LOCAL-00008" summary="repair gitignore">
+      <created>1647458020060</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1647458020060</updated>
+    </task>
+    <task id="LOCAL-00009" summary="repair gitignore">
+      <created>1647458028891</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1647458028891</updated>
+    </task>
+    <task id="LOCAL-00010" summary="repair gitignore">
+      <created>1647458472805</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1647458472805</updated>
+    </task>
+    <task id="LOCAL-00011" summary="repair gitignore">
+      <created>1647461057308</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1647461057309</updated>
+    </task>
+    <task id="LOCAL-00012" summary="repair gitignore">
+      <created>1647461406133</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1647461406133</updated>
+    </task>
+    <task id="LOCAL-00013" summary="repair gitignore">
+      <created>1647461443179</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1647461443179</updated>
+    </task>
+    <task id="LOCAL-00014" summary="repair gitignore">
+      <created>1647462890131</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1647462890131</updated>
+    </task>
+    <task id="LOCAL-00015" summary="repair gitignore">
+      <created>1647463489536</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1647463489536</updated>
+    </task>
+    <task id="LOCAL-00016" summary="protokoll für Schule erstellen">
+      <created>1647463553969</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1647463553969</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -178,7 +255,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="master" />
+                        <option value="working" />
                       </list>
                     </value>
                   </entry>
@@ -208,6 +285,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="fill git repo" />
     <MESSAGE value="repair gitignore" />
-    <option name="LAST_COMMIT_MESSAGE" value="repair gitignore" />
+    <MESSAGE value="protokoll für Schule erstellen" />
+    <option name="LAST_COMMIT_MESSAGE" value="protokoll für Schule erstellen" />
   </component>
 </project>
