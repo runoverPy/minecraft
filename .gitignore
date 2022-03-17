@@ -1,1 +1,6 @@
+/shelf/
+/workspace.xml
+
 /out/
+
+!/out/artifacts/*
