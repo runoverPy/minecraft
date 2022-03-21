@@ -47,7 +47,6 @@ public class Main {
 //        glfwSwapInterval(1);
 
         GL.createCapabilities();
-        System.out.println(GL.getCapabilities().GL_ARB_shader_draw_parameters);
         vao = glGenVertexArrays();
         glBindVertexArray(vao);
 
@@ -62,6 +61,8 @@ public class Main {
         glEnable(GL_CULL_FACE);
         glEnable(GL_SCISSOR_TEST);
         glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
+
+
 
         GameRuntime.setInstance(new Vanilla());
         scene = MenuHandler.mainMenu();
@@ -106,4 +107,6 @@ public class Main {
     public static void setScene(Scene scene) {
         Main.scene = scene;
     }
+
+
 }

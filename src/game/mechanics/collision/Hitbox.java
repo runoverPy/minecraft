@@ -6,7 +6,7 @@ import org.joml.Vector3i;
 import java.util.EnumMap;
 import java.util.Map;
 
-public class Hitbox implements Collidable {
+public class Hitbox {
     private final float width, depth, height; // x, y, z respectively
 
     public Hitbox(float width, float depth, float height) {

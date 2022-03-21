@@ -9,7 +9,7 @@ import static org.lwjgl.glfw.GLFW.*;
 
 class Settings extends Menu {
     public Settings(MenuHandler handler) {
-        super(Background.BRICKS, 256, 256);
+        super(Background.BRICKS, 224, 224);
 
         callbacks.add(new Callback(GLFW_KEY_ESCAPE, handler::prev));
 

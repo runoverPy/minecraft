@@ -15,7 +15,7 @@ import java.util.EnumMap;
 
 import static org.lwjgl.glfw.GLFW.*;
 
-public class Player extends Puppet implements Camera {
+public class Player extends Puppet {
     /**
      * the current movement mode
      */
@@ -108,19 +108,16 @@ public class Player extends Puppet implements Camera {
         }
     }
 
-    @Override
     public void reset() {
         int[] nX = new int[1], nY = new int[1];
         glfwGetWindowSize(Main.getWindowPtr(), nX, nY);
         glfwSetCursorPos(Main.getWindowPtr(), nX[0] / 2.0, nY[0] / 2.0);
     }
 
-    @Override
     public Vector3f getCamPos() {
         return getPos().add(0, 0, 1.5f);
     }
 
-    @Override
     public Vector3f getCamDir() {
         return getDir();
     }
@@ -129,7 +126,6 @@ public class Player extends Puppet implements Camera {
         return getVel();
     }
 
-    @Override
     public Vector3i getCurrentChunk() {
         return new Vector3i(
                 Math.floorDiv((int) Math.floor(getCamPos().x()), 16),
@@ -138,15 +134,33 @@ public class Player extends Puppet implements Camera {
         );
     }
 
-    public static Vector3i getBlockChunk(Vector3i blockPos) {
-        return new Vector3i(
-                Math.floorDiv((int) Math.floor(blockPos.x()), 16),
-                Math.floorDiv((int) Math.floor(blockPos.y()), 16),
-                Math.floorDiv((int) Math.floor(blockPos.z()), 16)
+    public Matrix4f getViewMatrix() {
+        return null;
+    }
+
+    public Matrix4f getProjViewMatrix(Matrix4f projMatrix) {
+        int[] winW = new int[1], winH = new int[1];
+        glfwGetWindowSize(Main.getWindowPtr(), winW, winH);
+
+        Vector3f dir = new Vector3f(
+                (float) (Math.cos(getVertical()) * Math.cos(getHorizontal())),
+                (float) (Math.cos(getVertical()) * Math.sin(getHorizontal())),
+                (float) Math.sin(getVertical())
+        );
+
+        Vector3f up = new Vector3f(
+                (float) Math.cos(getHorizontal() - Math.PI / 2),
+                (float) Math.sin(getHorizontal() - Math.PI / 2),
+                (float) 0
+        ).cross(dir);
+
+        return projMatrix.lookAt(
+                getCamPos(),
+                getCamPos().add(dir),
+                up
         );
     }
 
-    @Override
     public Matrix4f getProjectionView() {
         int[] winW = new int[1], winH = new int[1];
         glfwGetWindowSize(Main.getWindowPtr(), winW, winH);

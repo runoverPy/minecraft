@@ -20,7 +20,7 @@ public abstract class Entity implements Drawable {
     protected final float width, depth, height;
 
     protected long lT;
-    public static final int DEATH_DEPTH = -128;
+    public static final int KILL_DEPTH = -128;
 
     public Entity(Server server, Vector3f pos, float horizontal, float vertical, float width, float height, float depth) {
         this.server = server;
@@ -53,6 +53,18 @@ public abstract class Entity implements Drawable {
      * checks if this entity is colliding with the world
      */
     protected EnumMap<Direction, Boolean> getWorldCollisions() {
+        Vector3f[] corners = new Vector3f[] {
+                new Vector3f(pos.x - width/2, pos.y - depth/2, pos.z),
+                new Vector3f(pos.x + width/2, pos.y - depth/2, pos.z),
+                new Vector3f(pos.x - width/2, pos.y + depth/2, pos.z),
+                new Vector3f(pos.x + width/2, pos.y + depth/2, pos.z),
+                new Vector3f(pos.x - width/2, pos.y - depth/2, pos.z + height),
+                new Vector3f(pos.x + width/2, pos.y - depth/2, pos.z + height),
+                new Vector3f(pos.x - width/2, pos.y + depth/2, pos.z + height),
+                new Vector3f(pos.x + width/2, pos.y + depth/2, pos.z + height),
+        };
+
+
         EnumMap<Direction, Boolean> out = new EnumMap<>(Direction.class);
         for (Vector3f block : new Vector3f[] {
                 new Vector3f(pos.x - width / 2, pos.y - depth / 2, pos.z + height),
@@ -123,7 +135,7 @@ public abstract class Entity implements Drawable {
         addPos(posChange);
 
 
-        if (pos.z < DEATH_DEPTH) onDeath();
+        if (pos.z < KILL_DEPTH) onDeath();
     }
 
     protected abstract void move(Vector3f posChange, Vector3f velChange, EnumMap<Direction, Boolean> collisions, long dT);
