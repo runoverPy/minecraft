@@ -1,5 +1,7 @@
 package game.core.server.connect;
 
+import org.json.simple.JSONObject;
+
 public class JSONPacket {
     private final String jsonString;
     public JSONPacket() {
@@ -7,5 +9,11 @@ public class JSONPacket {
     }
     public JSONPacket(String jsonString) {
         this.jsonString = jsonString;
+    }
+
+    public static String awake() {
+        JSONObject object = new JSONObject();
+        object.put("msg", "AWAKE");
+        return object.toJSONString();
     }
 }

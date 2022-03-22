@@ -1,10 +1,16 @@
 package game.core.vanilla;
 
 import game.core.BlockRegister;
+import game.core.ModLoader;
 import game.core.WorldGeneratorRegister;
 import game.core.Mod;
 
 public class Vanilla extends Mod {
+    @Override
+    public void loadMod(ModLoader loader) {
+
+    }
+
     public String getModName() {
         return "vanilla";
     }

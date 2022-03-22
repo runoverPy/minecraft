@@ -1,5 +1,6 @@
 package game.main;
 
+import game.assets.menus.ErrorScreen;
 import game.core.Game;
 import game.assets.Scene;
 
@@ -108,5 +109,7 @@ public class Main {
         Main.scene = scene;
     }
 
-
+    public static void setError(Throwable error) {
+        setScene(new ErrorScreen(error));
+    }
 }

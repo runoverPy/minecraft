@@ -1,5 +1,8 @@
 package game.core.server.connect;
 
+import game.main.Main;
+import org.json.simple.parser.ParseException;
+
 import java.io.Closeable;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -22,11 +25,15 @@ public abstract class Connection extends Thread implements Closeable {
         this(new Socket(addr, port));
     }
 
-    public void write(String s) throws IOException {
-        dataOut.writeUTF(s);
+    public void write(String s) {
+        try {
+            dataOut.writeUTF(s);
+        } catch (IOException ioe) {
+            Main.setError(ioe);
+        }
     }
 
-    public String read() throws IOException {
+    private String read() throws IOException {
         return dataIn.readUTF();
     }
 
@@ -42,9 +49,11 @@ public abstract class Connection extends Thread implements Closeable {
         while (!terminate) {
             try {
                 receivePacket(read());
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (IOException ioe) {
+                Main.setError(ioe);
                 break;
+            } catch (ParseException pe) {
+                pe.printStackTrace(System.err);
             }
         }
     }
@@ -53,5 +62,9 @@ public abstract class Connection extends Thread implements Closeable {
         this.terminate = true;
     }
 
-    protected abstract void receivePacket(String packet);
+    /**
+     * called once for every incoming packet, in order
+     * @param packet incoming JSON packet as a string
+     */
+    protected abstract void receivePacket(String packet) throws ParseException;
 }

@@ -42,30 +42,10 @@ public class BlockRegister {
         return block.equals(decodeBlock(encodeBlock(block)));
     }
 
-    public ModBlockRegister getModBlockRegister(String modName) {
-        return new ModBlockRegister(modName);
+    public int getAlias(String name) {
+        return 0;
     }
-
-    public Supplier<? extends BlockBase> getBlockGenerator(String blockName) {
-        return registeredBlocks.get(blockName);
-    }
-
-    public class ModBlockRegister implements AutoCloseable {
-        private final String modName;
-
-        private ModBlockRegister(String modName) {
-            this.modName = modName;
-        }
-
-        public void register(String blockName, Supplier<? extends BlockBase> toRegister) {
-            String fullBlockName = modName + "::" + blockName;
-            if (registeredBlocks.containsKey(fullBlockName)) throw new RegistrationException("Block already registered");
-            else registeredBlocks.put(fullBlockName, toRegister);
-        }
-
-        @Override
-        public void close() throws Exception {
-
-        }
+    public String getAlias(int id) {
+        return null;
     }
 }
