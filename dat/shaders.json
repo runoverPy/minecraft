@@ -1,0 +1,12 @@
+[
+  {
+    "name": "background",
+    "sources": {
+      "vs": "/shaders/background-vs.glsl",
+      "fs": "/shaders/background-fs.glsl"
+    },
+    "uniform": [
+      "transform"
+    ]
+  }
+]

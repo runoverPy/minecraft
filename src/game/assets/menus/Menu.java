@@ -16,7 +16,7 @@ import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
 
 abstract class Menu extends Overlay {
     protected final List<Callback> callbacks;
-    private final List<ChildBox> childBoxes;
+    protected final List<ChildBox> childBoxes;
     protected final Background background;
     protected final FlexBox box;
 
@@ -55,12 +55,12 @@ abstract class Menu extends Overlay {
 
         @Override
         public void close() {
-            int runningY = (getBox().getHeight(1) - (this.height + this.vertSep) * widgets.size() + this.vertSep) / 2;
+            int runningY = (getBox().getHeight() - (this.height + this.vertSep) * widgets.size() + this.vertSep) / 2;
             for (List<Widget> row : widgets) {
                 if (row.size() != 0) {
                     // Reassign width variable, because width of widgets is dynamic
                     int width = (this.width + this.horSep) / row.size() - this.horSep;
-                    int runningX = (getBox().getWidth(1) - this.width) / 2;
+                    int runningX = (getBox().getWidth() - this.width) / 2;
 
                     for (Widget widget : row) {
                         childBoxes.add(widget.create(width, height, runningX, runningY, getBox()));
@@ -71,6 +71,35 @@ abstract class Menu extends Overlay {
             }
         }
     }
+
+    public TableOrganizer tableOrganizer(int nCols, int nRows, int rowSize, int colSize) {
+        return this.new TableOrganizer(nCols, nRows, rowSize, colSize, 2);
+    }
+
+    public class TableOrganizer {
+        private final int nCols, nRows, colSize, rowSize, padding;
+
+        private TableOrganizer(int nCols, int nRows, int rowSize, int colSize, int padding) {
+            this.nCols = nCols;
+            this.nRows = nRows;
+            this.colSize = colSize;
+            this.rowSize = rowSize;
+            this.padding = padding;
+        }
+
+        public void insert(Widget widget, int startCol, int numCols, int startRow, int numRows) {
+            int width = numCols * this.colSize - 2 * padding;
+            int height = numRows * this.rowSize - 2 * padding;
+            int xOffset = (getBox().getWidth() - colSize * nCols) / 2 + startCol * colSize + padding;
+            int yOffset = (getBox().getHeight() - rowSize * nRows) / 2 + startRow * rowSize + padding;
+
+            System.out.println(width + " " + height + " " + xOffset + " " + yOffset);
+
+            Menu.this.insert(widget.create(width, height, xOffset, yOffset, getBox()));
+        }
+    }
+
+
 
     @Override
     public final void render() {
@@ -100,5 +129,9 @@ abstract class Menu extends Overlay {
 
     protected FlexBox getBox() {
         return box;
+    }
+
+    private void insert(ChildBox childBox) {
+        childBoxes.add(childBox);
     }
 }

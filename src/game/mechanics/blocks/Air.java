@@ -1,7 +1,7 @@
 package game.mechanics.blocks;
 
 import game.mechanics.blocks.base.BlockBase;
-import game.mechanics.rendering.RenderingMode;
+import game.core.rendering.RenderingMode;
 
 public final class Air extends BlockBase {
     @Override

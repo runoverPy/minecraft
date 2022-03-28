@@ -2,13 +2,13 @@ package game.mechanics.blocks.base;
 
 import game.mechanics.blocks.Material;
 import game.mechanics.blocks.Phase;
-import game.mechanics.rendering.RenderingMode;
+import game.core.rendering.RenderingMode;
 
 public abstract class SolidBlock extends BlockBase {
-    private final Material material;
+    private final String imgFileName;
 
     public SolidBlock(String imgFileName) {
-        this.material = Material.getInstance(imgFileName);
+        this.imgFileName = imgFileName;
     }
 
     @Override
@@ -23,6 +23,6 @@ public abstract class SolidBlock extends BlockBase {
 
     @Override
     public final Material getMaterial() {
-        return material;
+        return Material.getInstance(imgFileName);
     }
 }

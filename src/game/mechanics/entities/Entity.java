@@ -4,7 +4,7 @@ import game.mechanics.blocks.Phase;
 import game.mechanics.collision.Direction;
 import game.mechanics.collision.Hitbox;
 import game.core.server.core.Server;
-import game.core.Game;
+import game.core.GameManager;
 import org.joml.RoundingMode;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
@@ -111,7 +111,7 @@ public abstract class Entity implements Drawable {
         move(posChange, velChange, collisions, dT);
 
         addVel(velChange);
-        addVel(new Vector3f(0, 0, (float) -Game.GRAV_ACCEL * (float) dT / 1000));
+        addVel(new Vector3f(0, 0, (float) -GameManager.GRAV_ACCEL * (float) dT / 1000));
 
         posChange.add(getVel().mul((float) dT / 1000, new Vector3f()));
 
@@ -209,5 +209,34 @@ public abstract class Entity implements Drawable {
                 (float) (Math.cos(getVertical()) * Math.sin(getHorizontal())),
                 (float) Math.sin(getVertical())
         );
+    }
+
+    public void update(EntityUpdate update) {
+        this.pos.set(update.getPos());
+        this.horizontal = update.getHorizontal();
+        this.vertical = update.getVertical();
+    }
+
+    public static class EntityUpdate {
+        private final Vector3f pos;
+        private final double horizontal, vertical;
+
+        public EntityUpdate(Vector3f pos, double horizontal, double vertical) {
+            this.pos = pos;
+            this.horizontal = horizontal;
+            this.vertical = vertical;
+        }
+
+        public Vector3f getPos() {
+            return pos;
+        }
+
+        public double getHorizontal() {
+            return horizontal;
+        }
+
+        public double getVertical() {
+            return vertical;
+        }
     }
 }

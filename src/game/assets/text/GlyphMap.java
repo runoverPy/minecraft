@@ -14,4 +14,12 @@ public class GlyphMap {
                 1 - (corner / 2) * 1f / countY
         };
     }
+
+    protected static int getIndex(char c) {
+        if (c < ' ') {
+            c = (char) 127;
+        }
+        if (c > (char) 127) c = (char) 127;
+        return (int) c - 32;
+    }
 }

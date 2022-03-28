@@ -30,7 +30,7 @@ public class Button extends AbstractButton {
         buttonFrame.draw(pxScale, matrixPV);
         ImageBox buttonImage = new ImageBox(width - 2, height - 2, 1, 1, this, filler);
         buttonImage.draw(pxScale, matrixPV);
-        TextBox description = new TextBox(width - 2, height - 2, 1, 1, this, name, true, true);
+        PropTextBox description = new PropTextBox(width - 2, height - 2, 1, 1, this, name, true, true);
         description.draw(pxScale, matrixPV);
 
         if (clicked(pxScale)) {

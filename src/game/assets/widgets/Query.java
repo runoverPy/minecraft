@@ -77,7 +77,7 @@ public class Query extends ClickFrame {
             contents.setLength(contents.length() - 1);
         }
 
-        TextBox queryText = new TextBox(width - 4, height - 4, 2, 2, this, getContents() + (selected ? "_" : ""), false);
+        PropTextBox queryText = new PropTextBox(width - 4, height - 4, 2, 2, this, getContents() + (selected ? "_" : ""), false, false);
         queryText.draw(pxScale, matrixPV);
     }
 }

@@ -22,4 +22,8 @@ public interface Widget {
     static Widget switchButton(String name, BoolBuffer buffer) {
         return (width, height, xOffset, yOffset, parent) -> new SwitchButton(width, height, xOffset, yOffset, parent, name, buffer);
     }
+
+    static Widget propTextBox(String text, boolean centered, boolean shaded) {
+        return (width, height, xOffset, yOffset, parent) -> new PropTextBox(width, height, xOffset, yOffset, parent, text, centered, shaded);
+    }
 }

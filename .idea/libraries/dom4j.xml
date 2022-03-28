@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="dom4j">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/lib/dom4j" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/lib/dom4j/dom4j-2.1.3-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/lib/dom4j" />
+    </SOURCES>
+    <jarDirectory url="file://$PROJECT_DIR$/lib/dom4j" recursive="false" />
+    <jarDirectory url="file://$PROJECT_DIR$/lib/dom4j" recursive="false" type="SOURCES" />
+  </library>
+</component>

@@ -2,8 +2,12 @@ package game.assets.menus;
 
 import game.assets.Background;
 import game.assets.widgets.Widget;
-import game.core.server.connect.ConnectionConfig;
+import game.core.GameManager;
+import game.core.server.core.ConnectionConfig;
+import game.main.Main;
 import game.util.Fn;
+
+import java.io.IOException;
 
 class Multiplayer extends Menu {
     public Multiplayer(MenuHandler handler) {
@@ -20,8 +24,11 @@ class Multiplayer extends Menu {
             }
             System.out.println("Address:" + " " + serverAddr);
             System.out.println("Port:" + " " + serverPort);
-            System.out.println("Keinem Server wurde beigetreten, da diese Funktion noch nicht eingeführt wurde.");
-            // Main.setScene(Game.joinGame(serverAddr, serverPort));
+            try {
+                Main.setScene(GameManager.joinGame(serverAddr, serverPort));
+            } catch (IOException e) {
+                Main.setError(e);
+            }
         };
 
         try (WidgetManager manager = organiser(192, 22, 4, 4)) {

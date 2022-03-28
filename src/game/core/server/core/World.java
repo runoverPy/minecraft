@@ -2,6 +2,7 @@ package game.core.server.core;
 
 import game.mechanics.blocks.Block;
 import game.mechanics.entities.Entity;
+import game.mechanics.entities.User;
 import org.joml.Vector3i;
 
 import java.io.IOException;
@@ -15,8 +16,9 @@ import java.util.Set;
  * It is intended to run continuously, until stopped, no matter if any users are connected.
  * It maintains its own clock based on System.currentTimeMillis(), with t=0 being the starting time of the world.
  */
-public class World extends Thread implements Server {
+public abstract class World extends Thread implements Server {
     protected final Map<Vector3i, Chunk> chunks;
+    protected final Map<Vector3i, Integer> refCounter;
     protected final Set<Entity> entities;
     private final Set<Client> clients;
 
@@ -40,14 +42,11 @@ public class World extends Thread implements Server {
         this.entities = new HashSet<>();
         this.chunks = new HashMap<>();
         this.clients = new HashSet<>();
+        this.refCounter = new HashMap<>();
         start();
     }
 
     public static void createNew(String name, Long seed, String... settings) {}
-
-    public long getServerTime() {
-        return serverTime;
-    }
 
     @Override
     public void run() {
@@ -55,6 +54,7 @@ public class World extends Thread implements Server {
             long currentTime = System.currentTimeMillis();
             serverTime += currentTime - lastUpdateTime;
             lastUpdateTime = currentTime;
+
         }
     }
 
@@ -64,6 +64,23 @@ public class World extends Thread implements Server {
     }
 
     @Override
+    public long getServerTime() {
+        return serverTime;
+    }
+
+    @Override
+    public synchronized Block getBlock(int x, int y, int z) {
+        return getChunk(Math.floorDiv(x, 16), Math.floorDiv(y, 16), Math.floorDiv(z, 16))
+                .getBlock(Math.floorMod(x, 16), Math.floorMod(y, 16), Math.floorMod(z, 16));
+    }
+
+    @Override
+    public synchronized void setBlock(int x, int y, int z, Block block) {
+        getChunk(Math.floorDiv(x, 16), Math.floorDiv(y, 16), Math.floorDiv(z, 16))
+                .setBlock(Math.floorMod(x, 16), Math.floorMod(y, 16), Math.floorMod(z, 16), block);
+        updateBlock(x, y, z);
+    }
+
     public void updateBlock(int x, int y, int z) {
         clients.forEach(client -> client.updateBlock(x, y, z));
     }
@@ -84,8 +101,8 @@ public class World extends Thread implements Server {
     }
 
     @Override
-    public void update() {
-        entities.forEach(Entity::update);
+    public void userUpdate(User.UserStatus status) {
+
     }
 
     @Override
@@ -99,26 +116,41 @@ public class World extends Thread implements Server {
     }
 
     @Override
-    public synchronized Block getBlock(int x, int y, int z) {
-        return getChunk(Math.floorDiv(x, 16), Math.floorDiv(y, 16), Math.floorDiv(z, 16))
-                .getBlock(Math.floorMod(x, 16), Math.floorMod(y, 16), Math.floorMod(z, 16));
-    }
-
-    @Override
-    public synchronized void setBlock(int x, int y, int z, Block block) {
-        getChunk(Math.floorDiv(x, 16), Math.floorDiv(y, 16), Math.floorDiv(z, 16))
-                .setBlock(Math.floorMod(x, 16), Math.floorMod(y, 16), Math.floorMod(z, 16), block);
-        updateBlock(x, y, z);
-    }
-
-    @Override
     public synchronized Chunk getChunk(int cX, int cY, int cZ) {
         Chunk c = chunks.get(new Vector3i(cX, cY, cZ));
         if (c == null) {
             c = new Chunk();
-            System.out.println(this + String.format("Creating new chunk for %d, %d, %d", cX, cY, cZ));
             chunks.put(new Vector3i(cX, cY, cZ), c);
         }
         return c;
+
     }
+
+    public final void addChunkRef(int cX, int cY, int cZ) {
+        Vector3i chunk = new Vector3i(cX, cY, cZ);
+        refCounter.putIfAbsent(chunk, 0);
+        if (refCounter.get(chunk) <= 0) {
+            System.out.println(this + String.format(" loading chunk %d, %d, %d", cX, cY, cZ));
+            chunks.put(chunk, loadChunk(cX, cY, cZ));
+        }
+        refCounter.put(chunk, refCounter.get(chunk) + 1);
+    }
+
+    public final void subChunkRef(int cX, int cY, int cZ) {
+        Vector3i chunk = new Vector3i(cX, cY, cZ);
+        if (refCounter.get(chunk) == null) {
+            refCounter.put(chunk, 0);
+            return;
+        }
+        refCounter.put(chunk, refCounter.get(chunk) - 1);
+        if (refCounter.get(chunk) <= 0) {
+            // unload chunk
+            System.out.println(this + String.format(" unloading chunk %d, %d, %d", cX, cY, cZ));
+            unloadChunk(cX, cY, cZ, chunks.get(chunk));
+            chunks.put(chunk, null);
+        }
+    }
+
+    protected abstract Chunk loadChunk(int cX, int cY, int cZ);
+    protected abstract void unloadChunk(int cX, int cY, int cZ, Chunk chunk);
 }

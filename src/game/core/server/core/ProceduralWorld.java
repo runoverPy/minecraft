@@ -15,4 +15,13 @@ public class ProceduralWorld extends World {
 
     }
 
+    @Override
+    protected Chunk loadChunk(int cX, int cY, int cZ) {
+        return null;
+    }
+
+    @Override
+    protected void unloadChunk(int cX, int cY, int cZ, Chunk chunk) {
+
+    }
 }

@@ -26,11 +26,6 @@ public class LocalWorld extends World implements Server {
     }
 
     @Override
-    public void updateBlock(Vector3i block) {
-
-    }
-
-    @Override
     public void updateBlock(int x, int y, int z) {
 
     }
@@ -51,17 +46,22 @@ public class LocalWorld extends World implements Server {
     }
 
     @Override
-    public void update() {
-
-    }
-
-    @Override
     public void registerClient(Client client) {
 
     }
 
     @Override
     public void disconnectClient(Client client) throws IOException {
+
+    }
+
+    @Override
+    protected Chunk loadChunk(int cX, int cY, int cZ) {
+        return null;
+    }
+
+    @Override
+    protected void unloadChunk(int cX, int cY, int cZ, Chunk chunk) {
 
     }
 

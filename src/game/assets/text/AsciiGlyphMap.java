@@ -1,6 +1,5 @@
 package game.assets.text;
 
-import game.assets.PixelWidget;
 import game.util.Util;
 import org.javatuples.Pair;
 import org.joml.Matrix4f;
@@ -26,18 +25,15 @@ public class AsciiGlyphMap extends GlyphMap {
     static {
         int width = 16, height = 6;
         float[] glyphTexture = new float[width * height * 8];
-        float u, v;
         for (int i = 0; i < width * height; i++) {
             for (int j = 0; j < 4; j++) {
-                u = (i % width + j % 2) / (float) width;
-                v = (i / width + 1 - j / 2) / (float) height;
-                glyphTexture[i * 8 + j * 2] = u;
-                glyphTexture[i * 8 + j * 2 + 1] = v;
+                glyphTexture[i * 8 + j * 2] = (i % width + j % 2) / (float) width;
+                glyphTexture[i * 8 + j * 2 + 1] = (i / width + 1 - j / 2) / (float) height;
             }
         }
         vertexBuffer = Util.genArrayBuffer(glyphVertices);
         texturePosBuffer = Util.genArrayBuffer(glyphTexture);
-        texture = Util.genTexture("/font/ascii/ascii.png");
+        texture = Util.genTexture("/font/mono/ascii.png");
         program = Util.genProgram(
                 new Pair<>("/shaders/char-vs.glsl", GL_VERTEX_SHADER),
                 new Pair<>("/shaders/char-fs.glsl", GL_FRAGMENT_SHADER)
@@ -71,11 +67,4 @@ public class AsciiGlyphMap extends GlyphMap {
         drawGlyph(matrixPV, c, new Vector4f(1f, 1f, 1f, 1f));
     }
 
-    private static int getIndex(char c) {
-        if (c < ' ') {
-            c = (char) 127;
-        }
-        if (c > (char) 127) c = (char) 127;
-        return (int) c - 32;
-    }
 }

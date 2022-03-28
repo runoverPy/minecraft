@@ -1,22 +1,15 @@
 package game.assets.text;
 
 import game.assets.PixelWidget;
-import game.main.Main;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-
-import static org.lwjgl.glfw.GLFW.*;
 
 public class TextField extends PixelWidget {
     private final Matrix4f matrixPV;
     private final float scale;
     private final Advance advance;
     private final Vector4f color;
-
-    public TextField(Matrix4f matrixPV, float scale, Vector3f anchor, Align align, Advance advance) {
-        this(matrixPV, scale, anchor, align, advance, new Vector4f(1f, 1f, 1f, 1f));
-    }
 
     public TextField(Matrix4f matrixPV, float scale, Vector3f anchor, Align align, Advance advance, Vector4f color) {
         super(11);

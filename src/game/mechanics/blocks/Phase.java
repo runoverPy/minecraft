@@ -1,6 +1,6 @@
 package game.mechanics.blocks;
 
-import game.mechanics.rendering.RenderingMode;
+import game.core.rendering.RenderingMode;
 
 public enum Phase {
     GAS(RenderingMode.NONE),

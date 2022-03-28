@@ -1,0 +1,23 @@
+{
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string"
+      },
+      "shaders": {
+        "type": "object",
+        "properties": {
+
+        }
+      },
+      "uniform": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

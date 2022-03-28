@@ -5,7 +5,7 @@ import game.mechanics.blocks.*;
 import game.mechanics.collision.Direction;
 import game.mechanics.input.CooldownMouseInput;
 import game.core.server.core.Server;
-import game.core.Game;
+import game.core.GameManager;
 import game.util.Ray;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -102,7 +102,7 @@ public class Player extends Puppet {
                     posChange.add(right.mul((float) (dT * movSpeed), new Vector3f()));
                 }
                 if (glfwGetKey(Main.getWindowPtr(), GLFW_KEY_SPACE) == GLFW_PRESS && collisions.get(Direction.DOWN)) {
-                    velChange.add(new Vector3f(0, 0, Game.JUMP_VELOCITY));
+                    velChange.add(new Vector3f(0, 0, GameManager.JUMP_VELOCITY));
                 }
             }
         }

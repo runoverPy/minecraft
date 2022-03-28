@@ -25,4 +25,8 @@ public class Callback {
         keyPressed = newPressed;
         return out;
     }
+
+    public void invoke() {
+        callback.call();
+    }
 }

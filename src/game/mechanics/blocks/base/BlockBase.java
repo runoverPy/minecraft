@@ -2,7 +2,7 @@ package game.mechanics.blocks.base;
 
 import game.mechanics.blocks.Material;
 import game.mechanics.blocks.Phase;
-import game.mechanics.rendering.RenderingMode;
+import game.core.rendering.RenderingMode;
 
 public abstract class BlockBase {
     public abstract Material getMaterial();

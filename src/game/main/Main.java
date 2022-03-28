@@ -1,13 +1,14 @@
 package game.main;
 
 import game.assets.menus.ErrorScreen;
-import game.core.Game;
+import game.assets.text.ProportionalFont;
+import game.core.GameManager;
 import game.assets.Scene;
 
 import game.assets.menus.MenuHandler;
 import game.core.GameRuntime;
 import game.core.vanilla.Vanilla;
-import game.mechanics.blocks.Block;
+import org.dom4j.DocumentException;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 
@@ -17,9 +18,15 @@ import static org.lwjgl.opengl.GL46.*;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class Main {
-    private static GLFWWindow window;
+    private static GLFWWindow _window;
     private static int vao;
     private static Scene scene;
+    private static ProportionalFont propFont;
+
+
+    private GLFWWindow window;
+    private GameRuntime runtime;
+    private ProportionalFont font;
 
     public static void main(String[] args) {
         setup();
@@ -41,9 +48,9 @@ public class Main {
 
         boolean fullscreen = false;
 
-        window = new GLFWWindow(title, monitor, fullscreen);
-        window.setContext();
-        window.setIcon("/img/MeinCraft.png");
+        _window = new GLFWWindow(title, monitor, fullscreen);
+        _window.setContext();
+        _window.setIcon("/img/MeinCraft.png");
 
 //        glfwSwapInterval(1);
 
@@ -63,26 +70,28 @@ public class Main {
         glEnable(GL_SCISSOR_TEST);
         glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
 
-
-
+        try {
+            propFont = new ProportionalFont();
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
         GameRuntime.setInstance(new Vanilla());
-        scene = MenuHandler.mainMenu();
-        GameRuntime.getInstance().getBlockRegister().testJSONConversion(new Block("vanilla::steinle"));
+        mainMenu();
     }
 
     private static void loop() {
-        while (!window.shouldClose()) {
+        while (!_window.shouldClose()) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             scene.render();
-            window.update();
+            _window.update();
         }
     }
 
     private static void exit() {
-        if (!window.fullscreen()) {
+        if (!_window.fullscreen()) {
             System.out.println("Fading...");
             for (int i = 0; i <= 100; i++) {
-                window.setOpacity((100 - i) / 100f);
+                _window.setOpacity((100 - i) / 100f);
                 try {
                     Thread.sleep(5);
                 } catch (InterruptedException e) {
@@ -90,26 +99,40 @@ public class Main {
                 }
             }
         }
-        window.destroy();
+        _window.destroy();
+        glfwTerminate();
     }
 
     public static void closeGame() throws IOException {
-        if (scene instanceof Game) ((Game) scene).closeGame();
+        if (scene instanceof GameManager) ((GameManager) scene).closeGame();
     }
 
     public static GLFWWindow getActiveWindow() {
-        return window;
+        return _window;
     }
 
     public static long getWindowPtr() {
-        return window.getWindow();
+        return _window.getWindow();
     }
 
     public static void setScene(Scene scene) {
         Main.scene = scene;
     }
 
+    public static void crash(Throwable exception) {
+        exception.printStackTrace(System.err);
+        System.exit(0xf);
+    }
+
     public static void setError(Throwable error) {
         setScene(new ErrorScreen(error));
+    }
+
+    public static void mainMenu() {
+        setScene(MenuHandler.mainMenu());
+    }
+
+    public static ProportionalFont getPropFont() {
+        return propFont;
     }
 }

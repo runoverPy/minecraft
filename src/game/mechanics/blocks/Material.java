@@ -10,7 +10,9 @@ import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.glBindTexture;
 
 public class Material {
+    private final String imgPath;
     private final int texture;
+    private boolean compiled;
 
     private static final Map<String, Material> loadedMaterials;
 
@@ -24,10 +26,13 @@ public class Material {
     }
 
     private Material(String imgPath) {
-        this.texture = Util.genTexture(imgPath);
+        this.imgPath = imgPath;
+        this.texture = 0;
+        this.compiled = false;
     }
 
     public void bindTexture() {
+        if (!compiled) Util.genTexture(imgPath);
         glBindTexture(GL_TEXTURE_2D, texture);
     }
 

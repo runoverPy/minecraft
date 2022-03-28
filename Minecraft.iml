@@ -12,5 +12,7 @@
     <orderEntry type="library" name="apache-log4j-2.14" level="project" />
     <orderEntry type="library" name="json" level="project" />
     <orderEntry type="library" name="lwjgl-3.3" level="project" />
+    <orderEntry type="library" name="dom4j" level="project" />
+    <orderEntry type="library" name="jaxen" level="project" />
   </component>
 </module>

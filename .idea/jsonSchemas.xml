@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="JsonSchemaMappingsProjectConfiguration">
+    <state>
+      <map>
+        <entry key="JSON Schema version 4">
+          <value>
+            <SchemaInfo>
+              <option name="name" value="JSON Schema version 4" />
+              <option name="relativePathToSchema" value="http://json-schema.org/draft-04/schema" />
+              <option name="applicationDefined" value="true" />
+              <option name="patterns">
+                <list>
+                  <Item>
+                    <option name="path" value=".idea/schemas/shaders.json" />
+                  </Item>
+                </list>
+              </option>
+            </SchemaInfo>
+          </value>
+        </entry>
+        <entry key="shaders">
+          <value>
+            <SchemaInfo>
+              <option name="generatedName" value="New Schema" />
+              <option name="name" value="shaders" />
+              <option name="relativePathToSchema" value=".idea/schemas/shaders.json" />
+              <option name="patterns">
+                <list>
+                  <Item>
+                    <option name="path" value="dat/shaders.json" />
+                  </Item>
+                </list>
+              </option>
+            </SchemaInfo>
+          </value>
+        </entry>
+      </map>
+    </state>
+  </component>
+</project>

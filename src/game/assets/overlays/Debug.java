@@ -8,7 +8,6 @@ import game.main.Main;
 import game.mechanics.entities.Player;
 import game.util.Ray;
 import game.core.server.core.Server;
-import game.core.Game;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
@@ -33,10 +32,6 @@ public class Debug extends Overlay {
         toggle = new Callback(toggleKey, () -> {
             isShown = !isShown;
         });
-    }
-
-    public Debug() {
-        this(Game.getServer(), Game.getPlayer());
     }
 
     @Override
