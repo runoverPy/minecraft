@@ -1,6 +1,6 @@
 package game.core.vanilla;
 
-import game.mechanics.blocks.base.SolidBlock;
+import game.core.modding.SolidBlock;
 
 public class BoundedBricks extends SolidBlock {
     public BoundedBricks() {

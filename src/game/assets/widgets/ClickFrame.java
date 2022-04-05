@@ -6,11 +6,16 @@ import static game.main.GLFWWindow.Position;
 
 import static org.lwjgl.glfw.GLFW.*;
 
-public abstract class ClickFrame extends ChildBox {
+abstract class ClickFrame extends ChildBox {
     private boolean mousePressed;
+    private boolean pressed;
+    private boolean released;
 
     public ClickFrame(int width, int height, int xOffset, int yOffset, Box parent) {
         super(width, height, xOffset, yOffset, parent);
+        mousePressed = isClicking();
+        pressed = false;
+        released = false;
     }
 
     protected final boolean isHovering(int pxScale) {
@@ -25,21 +30,26 @@ public abstract class ClickFrame extends ChildBox {
         return left < cursorPos.getX() && cursorPos.getX() < right && top < cursorPos.getY() && cursorPos.getY() < bottom;
     }
 
-    protected final boolean isPressing() {
+    protected final boolean isClicking() {
         return Main.getActiveWindow().getMouseButton(GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
     }
 
     protected boolean released() {
-        boolean oldMousePressed = mousePressed;
-        mousePressed = isPressing();
-        return oldMousePressed && !mousePressed;
+        return released;
     }
 
-    protected void onPress() {}
+    protected boolean pressed() {
+        return pressed;
+    }
 
-    protected void onRelease() {}
-
-    protected boolean clicked(int pxScale) {
-        return released() && isHovering(pxScale);
+    /**
+     * fetches current mouse activity and caches results. Must be called before <li></li>
+     * @param pxScale
+     */
+    public void update(int pxScale) {
+        boolean oldMousePressed = mousePressed;
+        mousePressed = isClicking();
+        released = oldMousePressed && !mousePressed && isHovering(pxScale);
+        pressed = !oldMousePressed && mousePressed && isHovering(pxScale);
     }
 }

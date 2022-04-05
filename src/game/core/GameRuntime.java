@@ -1,5 +1,7 @@
 package game.core;
 
+import game.core.modding.Mod;
+
 public class GameRuntime {
     private final ModHandler modHandler;
 

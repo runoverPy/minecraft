@@ -1,6 +1,6 @@
 package game.core;
 
-import game.mechanics.blocks.base.BlockBase;
+import game.core.modding.BlockBase;
 
 import java.util.function.Supplier;
 

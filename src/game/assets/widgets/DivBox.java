@@ -2,7 +2,7 @@ package game.assets.widgets;
 
 import org.joml.Matrix4f;
 
-public class DivBox extends ChildBox {
+class DivBox extends ChildBox {
     public DivBox(int width, int height, int xOffset, int yOffset, Box parent) {
         super(width, height, xOffset, yOffset, parent);
     }

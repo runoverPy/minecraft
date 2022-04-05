@@ -1,12 +1,11 @@
 package game.assets.widgets;
 
-import game.util.Fn;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 
-public class Button extends AbstractButton {
+class Button extends AbstractButton {
     private final String name;
-    private final Fn callback;
+    private final Runnable callback;
 
     /**
      * creates a button centered on a given point
@@ -16,7 +15,7 @@ public class Button extends AbstractButton {
      * @param callback the function to be executed on click
      */
 
-    public Button(int width, int height, int xOffset, int yOffset, Box parent, String name, Fn callback) {
+    public Button(int width, int height, int xOffset, int yOffset, Box parent, String name, Runnable callback) {
         super(width, height, xOffset, yOffset, parent);
         this.name = name;
         this.callback = callback;
@@ -30,12 +29,12 @@ public class Button extends AbstractButton {
         buttonFrame.draw(pxScale, matrixPV);
         ImageBox buttonImage = new ImageBox(width - 2, height - 2, 1, 1, this, filler);
         buttonImage.draw(pxScale, matrixPV);
-        PropTextBox description = new PropTextBox(width - 2, height - 2, 1, 1, this, name, true, true);
+        TextBox description = new TextBox(width - 2, height - 2, 1, 1, this, name, true, true);
         description.draw(pxScale, matrixPV);
 
-        if (clicked(pxScale)) {
-            System.out.println(name);
-            callback.call();
+        update(pxScale);
+        if (pressed()) {
+            callback.run();
         }
     }
 }

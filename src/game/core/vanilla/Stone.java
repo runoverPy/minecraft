@@ -1,10 +1,10 @@
 package game.core.vanilla;
 
-import game.mechanics.blocks.base.SolidBlock;
+import game.core.modding.SolidBlock;
 
 public class Stone extends SolidBlock {
     public Stone() {
-        super("/img/directions.png");
+        super("/img/stone_block.png");
     }
 
     @Override

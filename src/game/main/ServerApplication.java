@@ -1,7 +1,10 @@
 package game.main;
 
 import game.core.GameRuntime;
-import game.core.server.core.*;
+import game.core.server.DemoWorld;
+import game.core.server.World;
+import game.core.server.connect.ConnectionConfig;
+import game.core.server.connect.ConnectionListener;
 import game.core.vanilla.Vanilla;
 
 import java.awt.Color;

@@ -1,10 +1,11 @@
 package game.mechanics.entities;
 
+import game.core.GameRuntime;
 import game.main.Main;
 import game.mechanics.blocks.*;
 import game.mechanics.collision.Direction;
 import game.mechanics.input.CooldownMouseInput;
-import game.core.server.core.Server;
+import game.core.server.Server;
 import game.core.GameManager;
 import game.util.Ray;
 import org.joml.Matrix4f;
@@ -20,7 +21,7 @@ public class Player extends Puppet {
      * the current movement mode
      */
     private MovementMode movementMode;
-    private static final double rotSpeed = 2 * Math.PI / 10000f, movSpeed = 5 / 1000f;
+    private static final double rotSpeed = 2 * Math.PI / 20_000f, movSpeed = 5 / 1000f;
     private final CooldownMouseInput blockBreak, blockPlace;
 
 
@@ -187,7 +188,7 @@ public class Player extends Puppet {
     }
 
     @Override
-    public void update() {
+    public void update(GameManager game) {
         super.update();
         if (blockBreak.check()) {
             Vector3i block = Ray.findFirstBlock(this, server, 4);
@@ -198,7 +199,10 @@ public class Player extends Puppet {
         if (blockPlace.check()) {
             Vector3i block = Ray.beforeFirstBlock(this, server, 4);
             if (block != null) {
-                server.setBlock(block, new Block("vanilla::bricks"));
+                String item = game.getHotbar().getItem();
+                if (item != null && GameRuntime.getInstance().getBlockRegister().registered(item)) {
+                    server.setBlock(block, new Block(item));
+                } else System.out.println("cannot place block");
             }
         }
     }

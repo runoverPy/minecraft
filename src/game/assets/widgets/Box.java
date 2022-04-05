@@ -1,6 +1,6 @@
 package game.assets.widgets;
 
-public abstract class Box {
+abstract class Box {
     protected final int width, height, xOffset, yOffset;
 
     public Box(int width, int height, int xOffset, int yOffset) {

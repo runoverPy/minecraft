@@ -1,5 +1,7 @@
 package game.core;
 
+import game.core.modding.Mod;
+
 import java.util.LinkedList;
 import java.util.List;
 

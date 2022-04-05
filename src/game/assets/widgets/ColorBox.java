@@ -8,7 +8,7 @@ import org.joml.Vector4f;
 
 import static org.lwjgl.opengl.GL46.*;
 
-public class ColorBox extends ChildBox {
+class ColorBox extends ChildBox {
     private static final float[] buttonVertices = new float[] {
             -1, -1, -1,
             1, -1, -1,

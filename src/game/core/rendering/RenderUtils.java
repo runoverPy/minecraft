@@ -1,7 +1,6 @@
 package game.core.rendering;
 
 import game.util.Util;
-import game.util.Fn;
 
 import org.javatuples.Pair;
 import org.joml.Matrix4f;
@@ -72,7 +71,7 @@ class RenderUtils implements AutoCloseable {
         return null;
     }
 
-    public static void open(Matrix4f matrixPV, Fn contents) {
+    public static void open(Matrix4f matrixPV, Runnable contents) {
         glBindVertexBuffer(0, vertexBuffer, 0, 20);
         glEnableVertexAttribArray(0);
         glVertexAttribFormat(0, 3, GL_FLOAT, false, 0);
@@ -83,7 +82,7 @@ class RenderUtils implements AutoCloseable {
         glUseProgram(programID);
         glUniformMatrix4fv(fullTransform, false, matrixPV.get(new float[16]));
 
-        contents.call();
+        contents.run();
     }
 
     @Override

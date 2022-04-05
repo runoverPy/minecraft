@@ -7,11 +7,15 @@ import game.assets.Scene;
 
 import game.assets.menus.MenuHandler;
 import game.core.GameRuntime;
+import game.core.settings.DefaultGeneralSettings;
+import game.core.settings.GeneralSettings;
 import game.core.vanilla.Vanilla;
 import org.dom4j.DocumentException;
+import org.json.simple.parser.ParseException;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 
+import java.io.File;
 import java.io.IOException;
 
 import static org.lwjgl.opengl.GL46.*;
@@ -22,19 +26,21 @@ public class Main {
     private static int vao;
     private static Scene scene;
     private static ProportionalFont propFont;
-
+    private static GeneralSettings settings;
 
     private GLFWWindow window;
     private GameRuntime runtime;
     private ProportionalFont font;
 
-    public static void main(String[] args) {
+    public static void getResource(String resourceName) {}
+
+    public static void main(String[] args) throws IOException, ParseException {
         setup();
         loop();
         exit();
     }
 
-    private static void setup() {
+    private static void setup() throws IOException, ParseException {
         if (!glfwInit()) {
             throw new RuntimeException("GLFW konnte nicht initialisiert werden");
         }
@@ -51,8 +57,6 @@ public class Main {
         _window = new GLFWWindow(title, monitor, fullscreen);
         _window.setContext();
         _window.setIcon("/img/MeinCraft.png");
-
-//        glfwSwapInterval(1);
 
         GL.createCapabilities();
         vao = glGenVertexArrays();
@@ -76,6 +80,7 @@ public class Main {
             e.printStackTrace();
         }
         GameRuntime.setInstance(new Vanilla());
+        settings = new DefaultGeneralSettings();
         mainMenu();
     }
 
@@ -89,7 +94,6 @@ public class Main {
 
     private static void exit() {
         if (!_window.fullscreen()) {
-            System.out.println("Fading...");
             for (int i = 0; i <= 100; i++) {
                 _window.setOpacity((100 - i) / 100f);
                 try {
@@ -134,5 +138,9 @@ public class Main {
 
     public static ProportionalFont getPropFont() {
         return propFont;
+    }
+
+    public static GeneralSettings getSettings() {
+        return settings;
     }
 }

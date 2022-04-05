@@ -1,6 +1,6 @@
 package game.core;
 
-import game.mechanics.WorldGenerator;
+import game.core.modding.WorldGenerator;
 
 import java.util.HashMap;
 import java.util.Map;

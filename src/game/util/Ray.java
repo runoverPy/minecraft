@@ -2,7 +2,7 @@ package game.util;
 
 import game.mechanics.blocks.Phase;
 import game.mechanics.entities.Player;
-import game.core.server.core.Server;
+import game.core.server.Server;
 import org.joml.RoundingMode;
 import org.joml.Vector3f;
 import org.joml.Vector3i;

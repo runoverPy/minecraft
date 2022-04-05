@@ -5,7 +5,7 @@ import game.util.buffer.EnumBuffer;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 
-public class ToggleButton<E extends Enum<E> & Cyclic<E>> extends AbstractButton {
+class ToggleButton<E extends Enum<E> & Cyclic<E>> extends AbstractButton {
     private final String name;
     private final EnumBuffer<E> buffer;
 
@@ -26,7 +26,8 @@ public class ToggleButton<E extends Enum<E> & Cyclic<E>> extends AbstractButton 
         TextBox description = new TextBox(width - 2, height - 2, 1, 1, this, name + ": " + buffer.getValue(), true, true);
         description.draw(pxScale, matrixPV);
 
-        if (clicked(pxScale)) {
+        update(pxScale);
+        if (released()) {
             System.out.println(name);
             buffer.setValue(buffer.getValue().next());
         }

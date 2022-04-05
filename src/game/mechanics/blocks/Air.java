@@ -1,6 +1,6 @@
 package game.mechanics.blocks;
 
-import game.mechanics.blocks.base.BlockBase;
+import game.core.modding.BlockBase;
 import game.core.rendering.RenderingMode;
 
 public final class Air extends BlockBase {

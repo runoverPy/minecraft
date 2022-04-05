@@ -3,9 +3,8 @@ package game.assets.menus;
 import game.assets.Background;
 import game.assets.widgets.Widget;
 import game.core.GameManager;
-import game.core.server.core.ConnectionConfig;
+import game.core.server.connect.ConnectionConfig;
 import game.main.Main;
-import game.util.Fn;
 
 import java.io.IOException;
 
@@ -14,7 +13,7 @@ class Multiplayer extends Menu {
         super(Background.BRICKS, 256, 256);
         StringBuffer addr = new StringBuffer(), port = new StringBuffer();
 
-        Fn onJoinWorld = () -> {
+        Runnable onJoinWorld = () -> {
             String serverAddr = addr.toString();
             int serverPort;
             try {
@@ -31,7 +30,7 @@ class Multiplayer extends Menu {
             }
         };
 
-        try (WidgetManager manager = organiser(192, 22, 4, 4)) {
+        try (WidgetManager manager = organiser(192, 18, 4, 4)) {
             manager.insert(Widget.query(addr));
             manager.insert(Widget.query(port));
             manager.insert(Widget.button("Join World", onJoinWorld));

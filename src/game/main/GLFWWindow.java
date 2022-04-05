@@ -2,7 +2,11 @@ package game.main;
 
 import game.util.Image;
 import org.lwjgl.glfw.GLFWKeyCallbackI;
+import org.lwjgl.glfw.GLFWScrollCallbackI;
 import org.lwjgl.glfw.GLFWVidMode;
+
+import java.util.LinkedList;
+import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL46.*;
@@ -12,6 +16,7 @@ public class GLFWWindow {
     private final long window;
     public volatile int width, height;
     private boolean fullscreen;
+    private final KeyCallbackHandler keyCallbackHandler;
 
     public GLFWWindow(String title, long monitor, boolean fullscreen) {
         GLFWVidMode mode = glfwGetVideoMode(monitor);
@@ -33,7 +38,8 @@ public class GLFWWindow {
             throw new RuntimeException("Fenster konnte nicht initialisiert werden");
         }
 
-        glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
+        keyCallbackHandler = new KeyCallbackHandler();
+        keyCallbackHandler.add((window, key, scancode, action, mods) -> {
             if (key == GLFW_KEY_F11 && action == GLFW_RELEASE) {
                 System.out.println("swapping fullscreen");
                 this.fullscreen = !this.fullscreen;
@@ -91,7 +97,15 @@ public class GLFWWindow {
     }
 
     public void setKeyCallback(GLFWKeyCallbackI cbfun) {
-        glfwSetKeyCallback(window, cbfun);
+        keyCallbackHandler.add(cbfun);
+    }
+
+    public void delKeyCallback(GLFWKeyCallbackI cbfun) {
+        keyCallbackHandler.remove(cbfun);
+    }
+
+    public void setScrollCallback(GLFWScrollCallbackI callback) {
+        glfwSetScrollCallback(window, callback);
     }
 
     public void update() {
@@ -149,8 +163,9 @@ public class GLFWWindow {
         return glfwGetMouseButton(window, button);
     }
 
-    public static class Dimension {
-        private int width, height;
+     public static class Dimension {
+        private final int width;
+        private final int height;
 
         public Dimension(int width, int height) {
             this.width = width;
@@ -171,7 +186,8 @@ public class GLFWWindow {
     }
 
     public static class Position<T extends Number> {
-        private T x, y;
+        private final T x;
+        private final T y;
 
         public Position(T x, T y) {
             this.x = x;
@@ -186,4 +202,60 @@ public class GLFWWindow {
             return y;
         }
     }
+
+    private class KeyCallbackHandler implements GLFWKeyCallbackI {
+        private final List<GLFWKeyCallbackI> registeredCallbacks;
+
+        public KeyCallbackHandler() {
+            registeredCallbacks = new LinkedList<>();
+            glfwSetKeyCallback(window, this);
+        }
+
+        @Override
+        public void invoke(long window, int key, int scancode, int action, int mods) {
+            synchronized (registeredCallbacks) {
+                registeredCallbacks.forEach(callback -> callback.invoke(window, key, scancode, action, mods));
+            }
+        }
+
+        public void add(GLFWKeyCallbackI callback) {
+            synchronized (registeredCallbacks) {
+                registeredCallbacks.add(callback);
+            }
+        }
+
+        public void remove(GLFWKeyCallbackI callbackI) {
+            synchronized (registeredCallbacks) {
+                registeredCallbacks.remove(callbackI);
+            }
+        }
+    }
+
+//    private class ScrollCallbackHandler implements GLFWScrollCallbackI {
+//        private final List<GLFWScrollCallbackI> registeredCallbacks;
+//
+//        public ScrollCallbackHandler() {
+//            registeredCallbacks = new LinkedList<>();
+//            glfwSetScrollCallback(window, this);
+//        }
+//
+//        @Override
+//        public void invoke(long window, double xoffset, double yoffset) {
+//            synchronized (registeredCallbacks) {
+//                registeredCallbacks.forEach(glfwScrollCallbackI -> glfwScrollCallbackI.invoke(window, xoffset, yoffset));
+//            }
+//        }
+//
+//        void add(GLFWScrollCallbackI cbFun) {
+//            synchronized (registeredCallbacks) {
+//                registeredCallbacks.add(cbFun);
+//            }
+//        }
+//
+//        void remove(GLFWScrollCallbackI cbFun) {
+//            synchronized (registeredCallbacks) {
+//                registeredCallbacks.remove(cbFun);
+//            }
+//        }
+//    }
 }

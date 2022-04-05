@@ -9,7 +9,7 @@ import org.joml.Matrix4f;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL43.*;
 
-public class ImageBox extends ChildBox {
+class ImageBox extends ChildBox {
     private static final float[] tileVertices = new float[] {
             0, 0, -1, 0, 0,
             0, -1, -1, 0, 1,

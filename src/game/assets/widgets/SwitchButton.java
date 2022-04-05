@@ -4,7 +4,7 @@ import game.util.buffer.BoolBuffer;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 
-public class SwitchButton extends AbstractButton {
+class SwitchButton extends AbstractButton {
     private final String name;
     private final BoolBuffer buffer;
 
@@ -25,7 +25,8 @@ public class SwitchButton extends AbstractButton {
         TextBox description = new TextBox(width - 2, height - 2, 1, 1, this, name + ": " + buffer.getValue(), true, true);
         description.draw(pxScale, matrixPV);
 
-        if (clicked(pxScale)) {
+        update(pxScale);
+        if (released()) {
             System.out.println(name);
             buffer.setValue(!buffer.getValue());
         }

@@ -1,7 +1,7 @@
 package game.mechanics.blocks;
 
 import game.core.GameRuntime;
-import game.mechanics.blocks.base.BlockBase;
+import game.core.modding.BlockBase;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 

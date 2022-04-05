@@ -1,11 +1,10 @@
 package game.core.rendering;
 
-import game.assets.Face;
 import game.mechanics.blocks.Block;
 import game.mechanics.blocks.Material;
 import game.mechanics.blocks.Phase;
-import game.core.server.core.Chunk;
-import game.core.server.core.Server;
+import game.core.server.Chunk;
+import game.core.server.Server;
 import game.util.Side;
 import org.javatuples.Pair;
 import org.javatuples.Triplet;
@@ -19,8 +18,7 @@ import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import static org.lwjgl.opengl.GL46.GL_TRIANGLE_FAN;
-import static org.lwjgl.opengl.GL46.glDrawArrays;
+import static org.lwjgl.opengl.GL46.*;
 
 public class UnifiedRenderer implements Renderer {
     private final Server server;
@@ -210,11 +208,14 @@ public class UnifiedRenderer implements Renderer {
             this.visited = new HashSet<>();
         }
 
+        public void submit() {}
+
         public void draw(Matrix4f matrixPV) {
             RenderUtils.open(matrixPV, () -> {
                 synchronized (sortedFaces) {
                     sortedFaces.forEach((type, faces) -> {
                         type.withTexture(() -> {
+                            glDrawArraysIndirect(GL_TRIANGLES, new int[0]);
                             for (Face face : faces) {
                                 RenderUtils.setBlockOffset(new Vector3f(face.getPos()));
                                 glDrawArrays(GL_TRIANGLE_FAN, face.getSide().ordinal() * 4, 4);

@@ -1,8 +1,8 @@
 package game.core.vanilla;
 
-import game.mechanics.WorldGenerator;
+import game.core.modding.WorldGenerator;
 import game.mechanics.blocks.Block;
-import game.core.server.core.Chunk;
+import game.core.server.Chunk;
 
 public class TestWorldGenerator extends WorldGenerator {
     @Override

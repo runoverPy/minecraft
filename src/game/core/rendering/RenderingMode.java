@@ -11,8 +11,4 @@ public enum RenderingMode {
     RenderingMode(boolean surfaceRendering) {
         this.surfaceRendering = surfaceRendering;
     }
-
-    public boolean isSurfaceRendering() {
-        return surfaceRendering;
-    }
 }

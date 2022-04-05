@@ -34,7 +34,6 @@ public class Util {
         try {
             char[] buffer = new char[1024];
             StringBuilder stringBuilder = new StringBuilder();
-            System.out.println("Loading shader file: " + shaderPath);
             InputStream stream = Util.class.getResourceAsStream(shaderPath);
             assert stream != null;
             Reader in = new InputStreamReader(stream, StandardCharsets.UTF_8);

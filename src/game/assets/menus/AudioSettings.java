@@ -10,8 +10,8 @@ class AudioSettings extends Menu {
 
         FloatBuffer slider1 = new FloatBuffer();
 
-        try (WidgetManager manager = organiser(192, 22, 4, 4)) {
-            manager.insert(Widget.slider(slider1));
+        try (WidgetManager manager = organiser(192, 18, 4, 4)) {
+            manager.insert(Widget.slider("Volume", slider1));
             manager.insert(Widget.button("Back", handler::prev));
         }
     }

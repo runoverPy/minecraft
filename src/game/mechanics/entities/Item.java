@@ -2,7 +2,7 @@ package game.mechanics.entities;
 
 import game.mechanics.collision.Direction;
 import game.mechanics.collision.Hitbox;
-import game.core.server.core.Server;
+import game.core.server.Server;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 

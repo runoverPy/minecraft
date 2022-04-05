@@ -1,7 +1,6 @@
 package game.assets.menus;
 
 import game.assets.Background;
-import game.assets.widgets.Button;
 import game.assets.widgets.Widget;
 import game.util.buffer.BoolBuffer;
 import game.util.buffer.FloatBuffer;
@@ -13,9 +12,9 @@ class VideoSettings extends Menu {
         BoolBuffer vsync = new BoolBuffer();
         FloatBuffer fov = new FloatBuffer();
 
-        try (WidgetManager manager = organiser(192, 22, 4, 4)) {
+        try (WidgetManager manager = organiser(192, 18, 4, 4)) {
             manager.insert(
-                    Widget.switchButton("VSync", vsync), Widget.slider(fov));
+                    Widget.switchButton("VSync", vsync), Widget.slider("Field of View", fov));
             manager.insert(Widget.button("Back", handler::prev));
         }
     }

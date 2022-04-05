@@ -1,6 +1,5 @@
 package game.mechanics.blocks;
 
-import game.util.Fn;
 import game.util.Util;
 
 import java.util.HashMap;
@@ -11,7 +10,7 @@ import static org.lwjgl.opengl.GL11.glBindTexture;
 
 public class Material {
     private final String imgPath;
-    private final int texture;
+    private int texture;
     private boolean compiled;
 
     private static final Map<String, Material> loadedMaterials;
@@ -32,7 +31,11 @@ public class Material {
     }
 
     public void bindTexture() {
-        if (!compiled) Util.genTexture(imgPath);
+        if (!compiled) {
+            texture = Util.genTexture(imgPath);
+            compiled = true;
+        }
+
         glBindTexture(GL_TEXTURE_2D, texture);
     }
 
@@ -40,9 +43,9 @@ public class Material {
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    public void withTexture(Fn action) {
+    public void withTexture(Runnable action) {
         bindTexture();
-        action.call();
+        action.run();
         loseTexture();
     }
 }

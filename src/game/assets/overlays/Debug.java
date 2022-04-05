@@ -4,10 +4,12 @@ import game.assets.Callback;
 import game.assets.text.Advance;
 import game.assets.text.Align;
 import game.assets.text.TextField;
+import game.core.rendering.Renderer;
 import game.main.Main;
+import game.mechanics.blocks.Block;
 import game.mechanics.entities.Player;
 import game.util.Ray;
-import game.core.server.core.Server;
+import game.core.server.Server;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
@@ -50,7 +52,7 @@ public class Debug extends Overlay {
         lastTime = newTime;
         
         TextField leftTextField = new TextField(matrixPV, 0.1f, new Vector3f(-aspectRatio, 1, 0), Align.TOP, Advance.DOWN_RIGHT, new Vector4f(0f, 0f, 0f, 1f));
-        TextField rightTextField = new TextField(matrixPV, 0.1f, new Vector3f(aspectRatio, 1, 0), Align.TOP, Advance.DOWN_LEFT, new Vector4f(1f, 0f, 1f, 1f));
+        TextField rightTextField = new TextField(matrixPV, 0.1f, new Vector3f(aspectRatio, 1, 0), Align.TOP, Advance.DOWN_LEFT, new Vector4f(0f, 0f, 0f, 1f));
 
         Vector3f camPos = player.getCamPos();
         Vector3f camVel = player.getVeloctiy();
@@ -71,5 +73,9 @@ public class Debug extends Overlay {
         }
 
         glEnable(GL_DEPTH_TEST);
+    }
+
+    public boolean isVisible() {
+        return isShown;
     }
 }

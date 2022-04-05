@@ -1,5 +1,10 @@
 package game.core;
 
+import game.core.BlockRegister;
+import game.core.GameRuntime;
+import game.core.WorldGeneratorRegister;
+import game.core.modding.Mod;
+
 import java.util.HashMap;
 import java.util.Map;
 

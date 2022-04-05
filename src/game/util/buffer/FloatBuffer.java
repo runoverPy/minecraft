@@ -1,13 +1,17 @@
 package game.util.buffer;
 
-public class FloatBuffer {
+public class FloatBuffer extends NumericBuffer<Float> {
     private float value;
 
-    public void setValue(float value) {
-        this.value = value;
+    public FloatBuffer(Float startValue, Runnable onUpdate) {
+        super(startValue, onUpdate);
     }
 
-    public float getValue() {
-        return value;
+    public FloatBuffer() {
+        this(0f);
+    }
+
+    public FloatBuffer(Float startValue) {
+        super(startValue);
     }
 }

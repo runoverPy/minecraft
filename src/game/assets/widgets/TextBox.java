@@ -1,17 +1,15 @@
 package game.assets.widgets;
 
-import game.assets.text.AsciiGlyphMap;
+import game.assets.text.ProportionalFont;
+import game.assets.text.ProportionalFont.Glyph;
 import game.main.Main;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 
-public class TextBox extends ChildBox {
-    private final String text;
-    private final boolean centered, shaded;
-
-    public TextBox(int width, int height, int xOffset, int yOffset, Box parent, String text, boolean centered) {
-        this(width, height, xOffset, yOffset, parent, text, centered, false);
-    }
+class TextBox extends ChildBox {
+    private String text;
+    private boolean centered;
+    private boolean shaded;
 
     public TextBox(int width, int height, int xOffset, int yOffset, Box parent, String text, boolean centered, boolean shaded) {
         super(width, height, xOffset, yOffset, parent);
@@ -26,45 +24,52 @@ public class TextBox extends ChildBox {
         int winHeight = Main.getActiveWindow().getHeight();
         float aspectRatio = Main.getActiveWindow().getAspectRatio();
 
-        int visibleLength = (int) Math.ceil((float) width / AsciiGlyphMap.charWidth);
-        String visibleString = text.substring(Math.max(0, text.length() - visibleLength));
+        int fullLength = text.length() - 1;
+        for (char chr : text.toCharArray()) {
+            fullLength += Main.getPropFont().getCharWidth(chr);
+        }
 
-        float startXOffset = centered ? (float) Math.ceil((width - text.length() * AsciiGlyphMap.charWidth) / 2f) * pxScale : 0;
-        float startYOffset = (float) Math.ceil((height - AsciiGlyphMap.charHeight) / 2f) * pxScale;
+
+
+        int startXOffset = centered ? (int) Math.ceil((getWidth() - fullLength) / 2f) * pxScale : 0;
+        int startYOffset = (int) Math.ceil((getHeight() - ProportionalFont.chrHeight) / 2f) * pxScale;
 
         // set advancing matrix
         Matrix4f lineMatrix = new Matrix4f(matrix4f);
         lineMatrix.translate(
-                ((getCornerX(pxScale) + startXOffset) / winWidth - 0.5f) * aspectRatio,
-                0.5f - (getCornerY(pxScale) + startYOffset + AsciiGlyphMap.charHeight * pxScale) / winHeight,
+                ((float) (getCornerX(pxScale) + startXOffset) / winWidth - 0.5f) * aspectRatio,
+                0.5f - (float) (getCornerY(pxScale) + startYOffset) / winHeight,
                 0
         ).scale(
-                (float) AsciiGlyphMap.charWidth * pxScale / winHeight,
-                (float) AsciiGlyphMap.charHeight * pxScale / winHeight,
+                (float) pxScale / winHeight,
+                (float) pxScale / winHeight,
                 0.5f
         );
 
         if (shaded) {
             Matrix4f shadowLineMatrix = new Matrix4f(matrix4f);
             shadowLineMatrix.translate(
-                    ((getCornerX(pxScale) + startXOffset + pxScale) / winWidth - 0.5f) * aspectRatio,
-                    0.5f - (getCornerY(pxScale) + startYOffset + pxScale + AsciiGlyphMap.charHeight * pxScale) / winHeight,
+                    ((float) (getCornerX(pxScale) + startXOffset + pxScale) / winWidth - 0.5f) * aspectRatio,
+                    0.5f - (float) (getCornerY(pxScale) + startYOffset + pxScale) / winHeight,
                     0
             ).scale(
-                    (float) AsciiGlyphMap.charWidth * pxScale / winHeight,
-                    (float) AsciiGlyphMap.charHeight * pxScale / winHeight,
+                    (float) pxScale / winHeight,
+                    (float) pxScale / winHeight,
                     0.5f
             );
 
-            for (char c : visibleString.toCharArray()) {
-                AsciiGlyphMap.drawGlyph(shadowLineMatrix, c, new Vector4f(0.5f, 0.5f, 0.5f, 1f));
-                shadowLineMatrix.translate(1, 0, 0);
+            for (char c : text.toCharArray()) {
+                Glyph g = Main.getPropFont().getGlyph(c);
+                Matrix4f charMatrix = shadowLineMatrix.scale(g.getW(), g.getH(), 1, new Matrix4f());
+                Main.getPropFont().drawGlyph(charMatrix, c, new Vector4f(0.5f, 0.5f, 0.5f, 1f));
+                shadowLineMatrix.translate(g.getW() + 1, 0, 0);
             }
         }
 
-        for (char c : visibleString.toCharArray()) {
-            AsciiGlyphMap.drawGlyph(lineMatrix, c);
-            lineMatrix.translate(1, 0, 0);
+        for (char c : text.toCharArray()) {
+            Glyph g = Main.getPropFont().getGlyph(c);
+            Main.getPropFont().drawGlyph(lineMatrix.scale(g.getW(), g.getH(), 1, new Matrix4f()), c);
+            lineMatrix.translate(g.getW() + 1, 0, 0);
         }
     }
 }

@@ -8,18 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FlexBox extends Box {
-    private final List<?> contents;
-//    private final ColorBox colorBox;
-
     public FlexBox(int width, int height) {
         super(width, height, 0, 0);
-        this.contents = new ArrayList<>();
-//        this.colorBox = new ColorBox(width, height, 0, 0, this, new Vector4f(0.5f, 0.5f, 0.5f, 1));
     }
 
     public void draw(Matrix4f matrix4f) {
-        int pxScale = getPixelScale();
-//        colorBox.draw(pxScale, matrix4f);
     }
 
     @Override
@@ -40,6 +33,6 @@ public class FlexBox extends Box {
         int pxWidth, pxHeight;
         pxWidth = winWidth / width;
         pxHeight = winHeight / height;
-        return Math.min(pxWidth, pxHeight); // the monitor size of an image pixel
+        return Math.min(pxWidth, pxHeight);
     }
 }

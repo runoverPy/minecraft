@@ -1,12 +1,10 @@
 package game.assets.menus;
 
-import game.util.Fn;
-
 public class PauseHandler extends MenuHandler {
     private boolean active;
-    private final Fn onFreeze, onUnFreeze;
+    private final Runnable onFreeze, onUnFreeze;
 
-    public PauseHandler(Fn onFreeze, Fn onUnFreeze) {
+    public PauseHandler(Runnable onFreeze, Runnable onUnFreeze) {
         super();
         next(new PauseMenu(this));
         this.onFreeze = onFreeze;
@@ -24,11 +22,11 @@ public class PauseHandler extends MenuHandler {
 
     public void activate() {
         active = true;
-        onFreeze.call();
+        onFreeze.run();
     }
 
     public void deactivate() {
         active = false;
-        onUnFreeze.call();
+        onUnFreeze.run();
     }
 }

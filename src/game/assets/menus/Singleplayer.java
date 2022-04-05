@@ -9,7 +9,7 @@ class Singleplayer extends Menu {
     public Singleplayer(MenuHandler handler) {
         super(Background.BRICKS, 256, 256);
 
-        try (WidgetManager manager = organiser(192, 22, 4, 4)) {
+        try (WidgetManager manager = organiser(192, 18, 4, 4)) {
             manager.insert(Widget.button("Enter test game", () -> Main.setScene(GameManager.testGame())));
             manager.insert(Widget.button("Back", handler::prev));
         }

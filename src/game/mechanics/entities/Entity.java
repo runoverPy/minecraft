@@ -3,7 +3,7 @@ package game.mechanics.entities;
 import game.mechanics.blocks.Phase;
 import game.mechanics.collision.Direction;
 import game.mechanics.collision.Hitbox;
-import game.core.server.core.Server;
+import game.core.server.Server;
 import game.core.GameManager;
 import org.joml.RoundingMode;
 import org.joml.Vector3f;

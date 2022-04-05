@@ -21,7 +21,7 @@ public abstract class ChildBox extends Box {
     }
 
     @Override
-    public int getPixelScale() {
+    public final int getPixelScale() {
         return parent.getPixelScale();
     }
 

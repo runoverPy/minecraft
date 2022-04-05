@@ -1,7 +1,7 @@
 package game.core;
 
 import game.mechanics.blocks.Block;
-import game.mechanics.blocks.base.BlockBase;
+import game.core.modding.BlockBase;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -34,8 +34,14 @@ public class BlockRegister {
     }
 
     public BlockBase createBlockByName(String blockName) {
-        if (registeredBlocks.containsKey(blockName)) return registeredBlocks.get(blockName).get();
+        if (registeredBlocks.containsKey(blockName)) {
+            return registeredBlocks.get(blockName).get();
+        }
         else throw new RegistrationException("Block not registered");
+    }
+
+    public boolean registered(String blockName) {
+        return registeredBlocks.containsKey(blockName);
     }
 
     public final boolean testJSONConversion(Block block) {

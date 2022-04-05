@@ -4,7 +4,6 @@ import game.assets.Background;
 import game.assets.widgets.*;
 import game.assets.Callback;
 import game.assets.overlays.Overlay;
-import game.util.Fn;
 import org.joml.Matrix4f;
 
 import java.util.Arrays;

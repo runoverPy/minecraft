@@ -34,7 +34,6 @@ public class Image {
     }
 
     private Image(String filePath) {
-        System.out.println("Loading image file: " + filePath);
         try {
             InputStream resource = getClass().getResourceAsStream(filePath);
             if (resource == null) throw new FileNotFoundException("Resource not found: " + getClass().getResource(filePath));
