@@ -4,11 +4,6 @@ import game.main.Main;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 
-import org.lwjgl.stb.*;
-
-import java.io.PrintWriter;
-import java.util.Arrays;
-
 public class TextField {
     private final Advance advance;
     private final Vector4f color;
