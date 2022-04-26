@@ -6,6 +6,7 @@ import game.core.server.Server;
 import game.mechanics.blocks.Block;
 import game.mechanics.entities.Entity;
 import game.mechanics.entities.User;
+import org.joml.Vector3f;
 import org.joml.Vector3i;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -20,7 +21,7 @@ import java.util.Map;
 public class ServerConnection extends Connection implements Server {
     private final Map<Vector3i, Chunk> chunks;
     private Client client = null;
-    private Vector3i spawnPoint = new Vector3i(0, 0, 1);
+    private Vector3f spawnPoint = new Vector3f(0, 0, 1);
     private long serverTime;
 
     public ServerConnection(String addr, int port) throws IOException {
@@ -114,7 +115,7 @@ public class ServerConnection extends Connection implements Server {
     }
 
     @Override
-    public Vector3i getSpawnPoint() {
+    public Vector3f getSpawnPoint() {
         return this.spawnPoint;
     }
 

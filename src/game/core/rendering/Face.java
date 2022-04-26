@@ -27,7 +27,7 @@ public class Face {
         return Objects.hash(pos, side);
     }
 
-    public Vector3i getPos() {
+    public Vector3i getPosition() {
         return pos;
     }
 

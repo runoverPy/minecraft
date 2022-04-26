@@ -1,11 +1,8 @@
 package game.assets.widgets;
 
+import game.assets.boxes.Box;
 import game.main.Main;
 import org.joml.Matrix4f;
-import org.joml.Vector4f;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class FlexBox extends Box {
     public FlexBox(int width, int height) {
@@ -17,12 +14,12 @@ public class FlexBox extends Box {
 
     @Override
     public int getCornerX(int pxScale) {
-        return (Main.getActiveWindow().getWidth() - width * pxScale) / 2;
+        return (Main.getActiveWindow().getWidth() - getWidth() * pxScale) / 2;
     }
 
     @Override
     public int getCornerY(int pxScale) {
-        return (Main.getActiveWindow().getHeight() - height * pxScale) / 2;
+        return (Main.getActiveWindow().getHeight() - getHeight() * pxScale) / 2;
     }
 
     @Override
@@ -31,8 +28,8 @@ public class FlexBox extends Box {
         int winHeight = Main.getActiveWindow().getHeight();
 
         int pxWidth, pxHeight;
-        pxWidth = winWidth / width;
-        pxHeight = winHeight / height;
+        pxWidth = winWidth / getWidth();
+        pxHeight = winHeight / getHeight();
         return Math.min(pxWidth, pxHeight);
     }
 }

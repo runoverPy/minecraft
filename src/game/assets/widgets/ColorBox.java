@@ -1,5 +1,6 @@
 package game.assets.widgets;
 
+import game.assets.boxes.Box;
 import game.main.Main;
 import game.util.Util;
 import org.javatuples.Pair;

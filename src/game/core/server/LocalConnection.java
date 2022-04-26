@@ -3,6 +3,7 @@ package game.core.server;
 import game.mechanics.blocks.Block;
 import game.mechanics.entities.Entity;
 import game.mechanics.entities.User;
+import org.joml.Vector3f;
 import org.joml.Vector3i;
 
 import java.io.IOException;
@@ -63,7 +64,7 @@ public class LocalConnection implements Server, Client {
     }
 
     @Override
-    public Vector3i getSpawnPoint() {
+    public Vector3f getSpawnPoint() {
         return world.getSpawnPoint();
     }
 

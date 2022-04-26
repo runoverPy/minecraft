@@ -111,7 +111,7 @@ public abstract class Entity implements Drawable {
         move(posChange, velChange, collisions, dT);
 
         addVel(velChange);
-        addVel(new Vector3f(0, 0, (float) -GameManager.GRAV_ACCEL * (float) dT / 1000));
+        addVel(new Vector3f(GameManager.GRAV_ACCEL).mul((float) dT / 1000));
 
         posChange.add(getVel().mul((float) dT / 1000, new Vector3f()));
 
@@ -132,6 +132,7 @@ public abstract class Entity implements Drawable {
 //                if (posChange.x > 0) posChange.x = 0;
 //            }
         }
+        System.out.println(pos);
         addPos(posChange);
 
 
@@ -155,14 +156,6 @@ public abstract class Entity implements Drawable {
         this.pos.add(pos);
     }
 
-    protected void subPos(Vector3f pos) {
-        this.pos.sub(pos);
-    }
-
-    protected void setPos(Vector3f pos) {
-        this.pos.set(pos);
-    }
-
     protected Vector3f getVel() {
         return new Vector3f(vel);
     }
@@ -171,32 +164,16 @@ public abstract class Entity implements Drawable {
         this.vel.add(vel);
     }
 
-    protected void subVel(Vector3f vel) {
-        this.vel.sub(vel);
-    }
-
-    protected void setVel(Vector3f vel) {
-        this.vel.set(vel);
-    }
-
     protected void setHorizontal(double horizontal) {
         this.horizontal = horizontal;
     }
 
-    protected void addHorizontal(double horizontal) {
-        this.horizontal += horizontal;
-    }
-
-    public double getHorizontal() {
+    public double getAngleH() {
         return horizontal;
     }
 
     protected void setVertical(double vertical) {
         this.vertical = vertical;
-    }
-
-    protected void addVertical(double vertical) {
-        this.vertical += vertical;
     }
 
     public double getVertical() {
@@ -205,8 +182,8 @@ public abstract class Entity implements Drawable {
 
     public Vector3f getDir() {
         return new Vector3f(
-                (float) (Math.cos(getVertical()) * Math.cos(getHorizontal())),
-                (float) (Math.cos(getVertical()) * Math.sin(getHorizontal())),
+                (float) (Math.cos(getVertical()) * Math.cos(getAngleH())),
+                (float) (Math.cos(getVertical()) * Math.sin(getAngleH())),
                 (float) Math.sin(getVertical())
         );
     }

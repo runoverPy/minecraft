@@ -2,7 +2,7 @@ package game.core.server;
 
 import game.mechanics.blocks.Block;
 import game.mechanics.entities.Entity;
-import org.joml.Vector3i;
+import org.joml.Vector3f;
 
 import java.io.IOException;
 
@@ -41,7 +41,7 @@ public class LocalWorld extends World implements Server {
     }
 
     @Override
-    public Vector3i getSpawnPoint() {
+    public Vector3f getSpawnPoint() {
         return null;
     }
 

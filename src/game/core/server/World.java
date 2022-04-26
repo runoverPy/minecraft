@@ -3,6 +3,7 @@ package game.core.server;
 import game.mechanics.blocks.Block;
 import game.mechanics.entities.Entity;
 import game.mechanics.entities.User;
+import org.joml.Vector3f;
 import org.joml.Vector3i;
 
 import java.io.IOException;
@@ -69,7 +70,7 @@ public abstract class World extends Thread implements Server {
     }
 
     @Override
-    public synchronized Block getBlock(int x, int y, int z) {
+    public Block getBlock(int x, int y, int z) {
         return getChunk(Math.floorDiv(x, 16), Math.floorDiv(y, 16), Math.floorDiv(z, 16))
                 .getBlock(Math.floorMod(x, 16), Math.floorMod(y, 16), Math.floorMod(z, 16));
     }
@@ -96,8 +97,8 @@ public abstract class World extends Thread implements Server {
     }
 
     @Override
-    public Vector3i getSpawnPoint() {
-        return new Vector3i(0, 0, 1);
+    public Vector3f getSpawnPoint() {
+        return new Vector3f(0, 0, 1);
     }
 
     @Override
@@ -116,7 +117,7 @@ public abstract class World extends Thread implements Server {
     }
 
     @Override
-    public synchronized Chunk getChunk(int cX, int cY, int cZ) {
+    public Chunk getChunk(int cX, int cY, int cZ) {
         Chunk c = chunks.get(new Vector3i(cX, cY, cZ));
         if (c == null) {
 //            System.out.println(this + String.format(" loading chunk %d, %d, %d", cX, cY, cZ));

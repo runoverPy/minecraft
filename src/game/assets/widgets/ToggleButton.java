@@ -1,5 +1,6 @@
 package game.assets.widgets;
 
+import game.assets.boxes.Box;
 import game.util.Cyclic;
 import game.util.buffer.EnumBuffer;
 import org.joml.Matrix4f;
@@ -19,11 +20,11 @@ class ToggleButton<E extends Enum<E> & Cyclic<E>> extends AbstractButton {
     public void draw(int pxScale, Matrix4f matrixPV) {
         Vector4f frameColor = isHovering(pxScale) ? new Vector4f(1, 1, 1, 1) : new Vector4f(0, 0, 0, 1);
 
-        ColorBox buttonFrame = new ColorBox(width, height, xOffset, yOffset, getParent(), frameColor);
+        ColorBox buttonFrame = new ColorBox(getWidth(), getHeight(), getXOffset(), getYOffset(), getParent(), frameColor);
         buttonFrame.draw(pxScale, matrixPV);
-        ImageBox buttonImage = new ImageBox(width - 2, height - 2, 1, 1, this, filler);
+        ImageBox buttonImage = new ImageBox(getWidth() - 2, getHeight() - 2, 1, 1, this, filler);
         buttonImage.draw(pxScale, matrixPV);
-        TextBox description = new TextBox(width - 2, height - 2, 1, 1, this, name + ": " + buffer.getValue(), true, true);
+        TextBox description = new TextBox(getWidth() - 2, getHeight() - 2, 1, 1, this, name + ": " + buffer.getValue(), true, true);
         description.draw(pxScale, matrixPV);
 
         update(pxScale);

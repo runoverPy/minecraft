@@ -2,11 +2,8 @@ package game.assets.overlays;
 
 import game.assets.Callback;
 import game.assets.text.Advance;
-import game.assets.text.Align;
 import game.assets.text.TextField;
-import game.core.rendering.Renderer;
 import game.main.Main;
-import game.mechanics.blocks.Block;
 import game.mechanics.entities.Player;
 import game.util.Ray;
 import game.core.server.Server;
@@ -38,6 +35,9 @@ public class Debug extends Overlay {
 
     @Override
     public void render() {
+        int winWidth = Main.getActiveWindow().getWidth();
+        int winHeight = Main.getActiveWindow().getHeight();
+
         toggle.check();
 
         if (!isShown) return;
@@ -45,32 +45,33 @@ public class Debug extends Overlay {
         glDisable(GL_DEPTH_TEST);
         Matrix4f matrixPV = make2DMatrix();
 
-        float aspectRatio = Main.getActiveWindow().getAspectRatio();
-
         long newTime = System.currentTimeMillis();
         long deltaTime = newTime - lastTime;
         lastTime = newTime;
         
-        TextField leftTextField = new TextField(matrixPV, 0.1f, new Vector3f(-aspectRatio, 1, 0), Align.TOP, Advance.DOWN_RIGHT, new Vector4f(0f, 0f, 0f, 1f));
-        TextField rightTextField = new TextField(matrixPV, 0.1f, new Vector3f(aspectRatio, 1, 0), Align.TOP, Advance.DOWN_LEFT, new Vector4f(0f, 0f, 0f, 1f));
+        TextField leftTextField = new TextField(true, 16, 16, Advance.DOWN_RIGHT, new Vector4f(0f, 0f, 0f, 1f));
+        TextField rightTextField = new TextField(false, winWidth - 16, 16, Advance.DOWN_LEFT, new Vector4f(0f, 0f, 0f, 1f));
 
         Vector3f camPos = player.getCamPos();
-        Vector3f camVel = player.getVeloctiy();
+        Vector3f camVel = player.getVel();
         Vector3i chunk = player.getCurrentChunk();
         Vector3i firstBlock = Ray.findFirstBlock(player, server, 10);
         double vertical = player.getVertical(), horizontal = player.getHorizontal();
 
-        leftTextField.print("");
-        leftTextField.print(String.format(" XYZ: %.3f; %.3f; %.3f", camPos.x(), camPos.y(), camPos.z()));
-        leftTextField.print(String.format(" Vel: %.3f; %.3f; %.3f", camVel.x(), camVel.y(), camVel.z()));
-        leftTextField.print(String.format(" Angle: %.3f; %.3f", vertical * 360 / (Math.PI * 2) % 360, horizontal * 360 / (Math.PI * 2) % 360));
-        leftTextField.print(String.format(" Chunk: %d, %d, %d", chunk.x(), chunk.y(), chunk.z()));
+//        leftTextField.println("");
+        leftTextField.printlnf("XYZ: %.3f; %.3f; %.3f", camPos.x(), camPos.y(), camPos.z());
+        leftTextField.printlnf("Vel: %.3f; %.3f; %.3f", camVel.x(), camVel.y(), camVel.z());
+        leftTextField.printlnf("Angle: %.3f; %.3f", vertical * 360 / (Math.PI * 2) % 360, horizontal * 360 / (Math.PI * 2) % 360);
+        leftTextField.printlnf("Chunk: %d, %d, %d", chunk.x(), chunk.y(), chunk.z());
 
-        rightTextField.print("FPS: " + (long) (1 / (deltaTime / 1000f)));
+        rightTextField.println("FPS: " + (long) (1 / (deltaTime / 1000f)));
+
         if (firstBlock != null) {
-            rightTextField.flush();
-            rightTextField.print(String.format("Looking at block: %d, %d, %d", firstBlock.x(), firstBlock.y(), firstBlock.z()));
+            rightTextField.printlnf("Looking at block: %d, %d, %d", firstBlock.x(), firstBlock.y(), firstBlock.z());
         }
+
+        leftTextField.draw(4, matrixPV);
+        rightTextField.draw(4, matrixPV);
 
         glEnable(GL_DEPTH_TEST);
     }

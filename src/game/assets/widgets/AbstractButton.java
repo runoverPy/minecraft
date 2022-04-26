@@ -1,5 +1,6 @@
 package game.assets.widgets;
 
+import game.assets.boxes.Box;
 import game.util.Image;
 
 public abstract class AbstractButton extends ClickFrame {

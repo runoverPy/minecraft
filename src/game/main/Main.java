@@ -1,5 +1,6 @@
 package game.main;
 
+import game.assets.GLFWWindow;
 import game.assets.menus.ErrorScreen;
 import game.assets.text.ProportionalFont;
 import game.core.GameManager;
@@ -15,7 +16,6 @@ import org.json.simple.parser.ParseException;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 
-import java.io.File;
 import java.io.IOException;
 
 import static org.lwjgl.opengl.GL46.*;
@@ -27,9 +27,10 @@ public class Main {
     private static Scene scene;
     private static ProportionalFont propFont;
     private static GeneralSettings settings;
+    private static GameRuntime runtime;
 
     private GLFWWindow window;
-    private GameRuntime runtime;
+//    private GameRuntime runtime;
     private ProportionalFont font;
 
     public static void getResource(String resourceName) {}

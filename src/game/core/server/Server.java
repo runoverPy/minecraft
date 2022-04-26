@@ -3,6 +3,7 @@ package game.core.server;
 import game.mechanics.blocks.Block;
 import game.mechanics.entities.Entity;
 import game.mechanics.entities.User;
+import org.joml.Vector3f;
 import org.joml.Vector3i;
 
 import java.io.Closeable;
@@ -27,7 +28,7 @@ public interface Server extends Closeable {
     }
 
     long getServerTime();
-    Vector3i getSpawnPoint();
+    Vector3f getSpawnPoint();
 
     void userUpdate(User.UserStatus status);
 

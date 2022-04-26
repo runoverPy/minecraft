@@ -1,7 +1,10 @@
-package game.assets.widgets;
+package game.assets.boxes;
 
-abstract class Box {
-    protected final int width, height, xOffset, yOffset;
+public abstract class Box {
+    private int width;
+    private int height;
+    private int xOffset;
+    private int yOffset;
 
     public Box(int width, int height, int xOffset, int yOffset) {
         this.width = width;
@@ -36,6 +39,32 @@ abstract class Box {
 
     public int getHeight() {
         return getHeight(1);
+    }
+
+    public int getXOffset(int pxScale) {
+        return xOffset * pxScale;
+    }
+
+    public int getYOffset(int pxScale) {
+        return yOffset * pxScale;
+    }
+
+    public int getXOffset() {
+        return xOffset;
+    }
+
+    public int getYOffset() {
+        return yOffset;
+    }
+
+    public void setSize(int width, int height) {
+        this.width = width;
+        this.height = height;
+    }
+
+    public void setOffset(int xOffset, int yOffset) {
+        this.xOffset = xOffset;
+        this.yOffset = yOffset;
     }
 
     public abstract int getPixelScale();

@@ -1,5 +1,7 @@
-package game.assets.widgets;
+package game.assets.boxes;
 
+import game.assets.boxes.Box;
+import game.assets.widgets.ChildBox;
 import org.joml.Matrix4f;
 
 class DivBox extends ChildBox {

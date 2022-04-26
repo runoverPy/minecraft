@@ -1,9 +1,12 @@
-package game.main;
+package game.assets;
 
+import game.main.Main;
 import game.util.Image;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWKeyCallbackI;
 import org.lwjgl.glfw.GLFWScrollCallbackI;
 import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.system.CallbackI;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -143,7 +146,7 @@ public class GLFWWindow {
 
     public Position<Double> getCursorPos() {
         double[] mouseX = new double[1], mouseY = new double[1];
-        glfwGetCursorPos(Main.getWindowPtr(), mouseX, mouseY);
+        GLFW.glfwGetCursorPos(Main.getWindowPtr(), mouseX, mouseY);
         return new Position<>(mouseX[0], mouseY[0]);
     }
 
@@ -203,35 +206,42 @@ public class GLFWWindow {
         }
     }
 
-    private class KeyCallbackHandler implements GLFWKeyCallbackI {
-        private final List<GLFWKeyCallbackI> registeredCallbacks;
+    private abstract class CallbackHandler<I> {
+        protected final List<I> callbacks;
 
+        public CallbackHandler() {
+            this.callbacks = new LinkedList<>();
+        }
+
+        public void add(I callback) {
+            synchronized (callbacks) {
+                callbacks.add(callback);
+            }
+        }
+
+        public void remove(I callback) {
+            synchronized (callbacks) {
+                callbacks.remove(callback);
+            }
+        }
+    }
+
+    private class KeyCallbackHandler extends CallbackHandler<GLFWKeyCallbackI> implements GLFWKeyCallbackI {
         public KeyCallbackHandler() {
-            registeredCallbacks = new LinkedList<>();
+            super();
             glfwSetKeyCallback(window, this);
         }
 
         @Override
         public void invoke(long window, int key, int scancode, int action, int mods) {
-            synchronized (registeredCallbacks) {
-                registeredCallbacks.forEach(callback -> callback.invoke(window, key, scancode, action, mods));
+            synchronized (callbacks) {
+                callbacks.forEach(callback -> callback.invoke(window, key, scancode, action, mods));
             }
         }
 
-        public void add(GLFWKeyCallbackI callback) {
-            synchronized (registeredCallbacks) {
-                registeredCallbacks.add(callback);
-            }
-        }
-
-        public void remove(GLFWKeyCallbackI callbackI) {
-            synchronized (registeredCallbacks) {
-                registeredCallbacks.remove(callbackI);
-            }
-        }
     }
 
-//    private class ScrollCallbackHandler implements GLFWScrollCallbackI {
+    //    private class ScrollCallbackHandler implements GLFWScrollCallbackI {
 //        private final List<GLFWScrollCallbackI> registeredCallbacks;
 //
 //        public ScrollCallbackHandler() {

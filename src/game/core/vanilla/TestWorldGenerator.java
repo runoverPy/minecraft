@@ -4,18 +4,14 @@ import game.core.modding.WorldGenerator;
 import game.mechanics.blocks.Block;
 import game.core.server.Chunk;
 
-public class TestWorldGenerator extends WorldGenerator {
+public class TestWorldGenerator implements WorldGenerator {
     @Override
-    public Chunk generateChunk(int x, int y, int z) {
+    public Chunk generateChunk(int cX, int cY, int cZ) {
         Chunk chunk = new Chunk();
-        if (z == 0) {
-            for (int bX = 0; bX < 16; bX++) {
-                for (int bY = 0; bY < 16; bY++) {
-                    chunk.setBlock(
-                            16 * x + bX,
-                            16 * y + bY,
-                            0,
-                            new Block("vanilla::bricks"));
+        if (cZ == 0) {
+            for (int i = 0; i < 16; i++) {
+                for (int j = 0; j < 16; j++) {
+                    chunk.setBlock(i, j, 0, new Block("vanilla::stone"));
                 }
             }
         }

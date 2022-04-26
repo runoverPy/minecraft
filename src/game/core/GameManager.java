@@ -4,6 +4,7 @@ import game.assets.BlockFrame;
 import game.assets.Callback;
 import game.assets.Scene;
 import game.assets.widgets.Hotbar;
+import game.core.rendering.RenderUtils;
 import game.core.server.Client;
 import game.core.server.DemoWorld;
 import game.core.server.LocalWorld;
@@ -13,7 +14,7 @@ import game.mechanics.entities.Entity;
 import game.mechanics.entities.Player;
 import game.core.rendering.Renderer;
 import game.main.Main;
-import game.core.rendering.UnifiedRenderer;
+import game.core.rendering.IndirectRenderer;
 import game.core.server.connect.ServerConnection;
 import game.assets.menus.PauseHandler;
 import game.assets.overlays.Debug;
@@ -35,10 +36,8 @@ public class GameManager extends Scene implements Client {
     /**
      * calculated, so the maximum height of the jump is 1.25f blocks
      */
-    public static final float JUMP_VELOCITY = 4.95f;
-    public static final double GRAV_ACCEL = 9.81;
-
-    private static GameManager game = null;
+    public static final Vector3f JUMP_VELOCITY = new Vector3f(0, 0, 4.95f);
+    public static final Vector3f GRAV_ACCEL = new Vector3f(0, 0, -9.81f);
 
     private final Player player;
     private final User user;
@@ -55,6 +54,7 @@ public class GameManager extends Scene implements Client {
     private final GLFWKeyCallbackI hotbarCallback;
     private final GLFWScrollCallbackI scrollCallback;
 
+
     private GameManager(Server server) {
         super();
         Main.getActiveWindow().setInputMode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -65,7 +65,7 @@ public class GameManager extends Scene implements Client {
 
         this.user = new User();
         this.server = server;
-        this.renderer = new UnifiedRenderer(this.server);
+        this.renderer = new IndirectRenderer(this.server);
         this.player = new Player(this.server);
         this.hotbar = Hotbar.demoHotbar();
         this.gameUI = new GameUI(hotbar);
@@ -109,7 +109,7 @@ public class GameManager extends Scene implements Client {
     public void render() {
         if (currentChunk == null || !currentChunk.equals(player.getCurrentChunk())) {
             currentChunk = player.getCurrentChunk();
-            renderer.updateChunks(currentChunk, 3, false);
+            renderer.updateChunks(currentChunk, 5, false);
         }
         escCallback.check();
 
@@ -117,14 +117,15 @@ public class GameManager extends Scene implements Client {
             player.update(this);
         }
 
-        Matrix4f matrixPV = player.getProjViewMatrix(getProjMatrix());
+        Matrix4f matrixPV = player.getViewMatrix(getProjMatrix());
         renderer.draw(matrixPV);
+        player.draw(matrixPV);
         Vector3i firstBlock = Ray.findFirstBlock(player, server, 4);
         if (firstBlock != null) BlockFrame.draw(matrixPV, new Vector3f(firstBlock));
         Vector3i beforeBlock = Ray.beforeFirstBlock(player, server, 4);
         if (beforeBlock != null) BlockFrame.draw(matrixPV, new Vector3f(beforeBlock));
 
-        if (debug.isVisible()) Renderer.drawChunk(matrixPV, player.getCurrentChunk());
+        if (debug.isVisible()) RenderUtils.drawChunk(matrixPV, player.getCurrentChunk());
 
         gameUI.render();
         debug.render();
@@ -133,42 +134,23 @@ public class GameManager extends Scene implements Client {
 
 
     public static GameManager joinGame(String addr, int port) throws IOException {
-        if (game == null) {
-            game = new GameManager(new ServerConnection(addr, port));
-        }
-        return game;
+        return new GameManager(new ServerConnection(addr, port));
     }
 
     public static GameManager testGame() {
-        if (game == null) {
-            game = new GameManager(new DemoWorld());
-        }
-        return game;
+        return new GameManager(new DemoWorld());
     }
 
     public static GameManager openGame(String worldName) {
-        if (game == null) {
-            game = new GameManager(new LocalWorld());
-        }
-        return game;
+        return new GameManager(new LocalWorld());
     }
 
     public static GameManager makeGame(String worldName, long seed) {
-        if (game == null) {
-            game = new GameManager(new LocalWorld());
-        }
-        return game;
+        return new GameManager(new LocalWorld());
     }
 
     public static GameManager makeGame(String worldName, long seed, WorldGenerator generator) {
-        if (game != null) throw new IllegalStateException();
-        game = new GameManager(new LocalWorld());
-        return game;
-    }
-
-    @Override
-    public void updateBlock(Vector3i block) {
-        this.renderer.updateBlock(block);
+        return new GameManager(new LocalWorld());
     }
 
     @Override
@@ -179,6 +161,11 @@ public class GameManager extends Scene implements Client {
     @Override
     public void updateBlock(int x, int y, int z) {
         updateBlock(new Vector3i(x, y, z));
+    }
+
+    @Override
+    public void updateBlock(Vector3i block) {
+        renderer.updateBlock(block);
     }
 
     @Override
@@ -201,7 +188,7 @@ public class GameManager extends Scene implements Client {
 
         float fov = (float) (Main.getSettings().getFOV()/180f * Math.PI);
 
-        return new Matrix4f().perspective(fov, (float) winW[0] / winH[0], 0.1f, 100f);
+        return new Matrix4f().perspective(fov, (float) winW[0] / winH[0], 0.1f, 10000f);
     }
 
     public Hotbar getHotbar() {

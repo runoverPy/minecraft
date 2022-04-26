@@ -2,6 +2,7 @@ package game.assets.widgets;
 
 import java.util.function.Function;
 
+import game.assets.boxes.Box;
 import game.main.Main;
 import game.util.Image;
 import game.util.buffer.FloatBuffer;
@@ -55,10 +56,10 @@ class Slider<T extends Number> extends ChildBox {
 
     @Override
     public void draw(int pxScale, Matrix4f matrix4f) {
-        ColorBox frame = new ColorBox(width, height, 0, 0, this, new Vector4f(0.375f, 0.375f, 0.375f, 1f));
+        ColorBox frame = new ColorBox(getWidth(), getHeight(), 0, 0, this, new Vector4f(0.375f, 0.375f, 0.375f, 1f));
         frame.draw(pxScale, matrix4f);
 
-        TextBox description = new TextBox(width - 2, height - 2, 1, 1, this, this.name + ": " + value.getValue().toString(), true, true);
+        TextBox description = new TextBox(getWidth() - 2, getHeight() - 2, 1, 1, this, this.name + ": " + value.getValue().toString(), true, true);
 
         scrollRail.draw(pxScale, matrix4f);
         knob.draw(pxScale, matrix4f);
@@ -107,9 +108,9 @@ class Slider<T extends Number> extends ChildBox {
 
             Vector4f frameColor = clicked || isHovering(pxScale) ? new Vector4f(1, 1, 1, 1) : new Vector4f(0, 0, 0, 1);
 
-            ColorBox outerBox = new ColorBox(width, height, 0, 0, this, frameColor);
+            ColorBox outerBox = new ColorBox(getWidth(), getHeight(), 0, 0, this, frameColor);
             outerBox.draw(pxScale, matrix4f);
-            ImageBox center = new ImageBox(width - 2, height - 2, 1, 1, this, Image.loadImage("/img/stone.png"));
+            ImageBox center = new ImageBox(getWidth() - 2, getHeight() - 2, 1, 1, this, Image.loadImage("/img/stone.png"));
             center.draw(pxScale, matrix4f);
         }
     }

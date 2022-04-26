@@ -22,17 +22,6 @@ public class GameRuntime {
     }
 
     /**
-     * gracefully quits the current running game runtime, if at all present
-     */
-    public static void delInstance() {
-        instance = null;
-    }
-
-    public static boolean hasInstance() {
-        return instance != null;
-    }
-
-    /**
      *
      * @return the current active game runtime
      * @throws IllegalStateException if no game runtime has been declared or the previous one was terminated and not replaced

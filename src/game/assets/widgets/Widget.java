@@ -1,5 +1,6 @@
 package game.assets.widgets;
 
+import game.assets.boxes.Box;
 import game.util.buffer.BoolBuffer;
 import game.util.buffer.FloatBuffer;
 import game.util.buffer.IntBuffer;

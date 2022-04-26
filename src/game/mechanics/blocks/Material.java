@@ -42,10 +42,4 @@ public class Material {
     public void loseTexture() {
         glBindTexture(GL_TEXTURE_2D, 0);
     }
-
-    public void withTexture(Runnable action) {
-        bindTexture();
-        action.run();
-        loseTexture();
-    }
 }

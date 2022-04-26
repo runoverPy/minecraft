@@ -1,5 +1,6 @@
 package game.assets.widgets;
 
+import game.assets.boxes.Box;
 import game.main.Main;
 import game.util.Image;
 import game.util.Util;
@@ -38,8 +39,8 @@ class ImageBox extends ChildBox {
 
     @Override
     public void draw(int pxScale, Matrix4f matrix4f) {
-        int horizontalImageCount = width / image.getWidth();
-        int verticalImageCount = height / image.getHeight();
+        int horizontalImageCount = getWidth() / image.getWidth();
+        int verticalImageCount = getHeight() / image.getHeight();
 
         int winWidth = Main.getActiveWindow().getWidth();
         int winHeight = Main.getActiveWindow().getHeight();

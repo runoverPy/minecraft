@@ -1,8 +1,9 @@
 package game.assets.widgets;
 
+import game.assets.boxes.Box;
 import game.main.Main;
 
-import static game.main.GLFWWindow.Position;
+import static game.assets.GLFWWindow.Position;
 
 import static org.lwjgl.glfw.GLFW.*;
 

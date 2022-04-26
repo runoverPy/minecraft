@@ -1,5 +1,6 @@
 package game.assets.widgets;
 
+import game.assets.boxes.Box;
 import org.joml.Matrix4f;
 
 public abstract class ChildBox extends Box {
@@ -12,12 +13,12 @@ public abstract class ChildBox extends Box {
 
     @Override
     public int getCornerX(int pxScale) {
-        return xOffset * pxScale + parent.getCornerX(pxScale);
+        return getXOffset(pxScale) + parent.getCornerX(pxScale);
     }
 
     @Override
     public int getCornerY(int pxScale) {
-        return yOffset * pxScale + parent.getCornerY(pxScale);
+        return getYOffset(pxScale) + parent.getCornerY(pxScale);
     }
 
     @Override

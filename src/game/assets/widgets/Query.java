@@ -1,5 +1,6 @@
 package game.assets.widgets;
 
+import game.assets.boxes.Box;
 import game.main.Main;
 import game.mechanics.input.CooldownKeyInput;
 import org.joml.Matrix4f;
@@ -59,14 +60,14 @@ class Query extends ClickFrame {
 
         Vector4f frameColor = selected ? new Vector4f(1, 1, 1, 1) : new Vector4f(0, 0, 0, 1);
 
-        ColorBox.draw(width, height, 0, 0, this, frameColor, pxScale, matrixPV);
-        ColorBox.draw(width - 2, height - 2, 1, 1, this, new Vector4f(0, 0, 0, 1), pxScale, matrixPV);
+        ColorBox.draw(getWidth(), getHeight(), 0, 0, this, frameColor, pxScale, matrixPV);
+        ColorBox.draw(getWidth() - 2, getHeight() - 2, 1, 1, this, new Vector4f(0, 0, 0, 1), pxScale, matrixPV);
 
         if (backspace.check() && contents.length() > 0) {
             contents.setLength(contents.length() - 1);
         }
 
-        TextBox queryText = new TextBox(width - 4, height - 4, 2, 2, this, getContents() + (selected ? "_" : ""), false, false);
+        TextBox queryText = new TextBox(getWidth() - 4, getHeight() - 4, 2, 2, this, getContents() + (selected ? "_" : ""), false, false);
         queryText.draw(pxScale, matrixPV);
     }
 }

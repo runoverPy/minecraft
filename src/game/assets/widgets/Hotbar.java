@@ -1,6 +1,6 @@
 package game.assets.widgets;
 
-import game.core.rendering.Renderer;
+import game.core.rendering.RenderUtils;
 import game.main.Main;
 import game.mechanics.blocks.Block;
 import game.util.Image;
@@ -106,7 +106,7 @@ public class Hotbar extends FlexBox {
                         sideLen * pxScale,
                         sideLen * pxScale
                 );
-                Renderer.drawBlockIcon(new Block(items[i]).getMaterial());
+                RenderUtils.drawBlockIcon(new Block(items[i]).getMaterial());
                 glViewport(0, 0, winWidth, winHeight);
             }
         }
