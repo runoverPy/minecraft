@@ -2,8 +2,8 @@ package game.core;
 
 import game.mechanics.blocks.Block;
 import game.core.modding.BlockBase;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;

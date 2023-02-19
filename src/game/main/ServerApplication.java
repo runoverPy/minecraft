@@ -1,14 +1,12 @@
 package game.main;
 
 import game.core.GameRuntime;
-import game.core.server.DemoWorld;
 import game.core.server.World;
 import game.core.server.connect.ConnectionConfig;
 import game.core.server.connect.ConnectionListener;
 import game.core.vanilla.Vanilla;
 
-import java.awt.Color;
-import java.awt.Font;
+import java.awt.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import javax.swing.*;
@@ -27,7 +25,6 @@ public class ServerApplication {
                 BorderFactory.createLineBorder(Color.BLACK, 1),
                 BorderFactory.createEmptyBorder(4, 4, 4, 4)
         );
-
         JFrame frame = new JFrame();
         frame.setTitle("Server Control Panel");
         System.out.println(frame.getDefaultCloseOperation());
@@ -47,7 +44,6 @@ public class ServerApplication {
         PrintStream out, err;
         out = createOutStream(textPane);
         err = createErrStream(textPane);
-
         System.setOut(out);
         System.setErr(err);
 
@@ -131,7 +127,7 @@ public class ServerApplication {
 
     private static void openWorld() {
         GameRuntime.setInstance(new Vanilla());
-        world = new DemoWorld();
+        world = World.demoWorld();
     }
 
     private static void openServer(int port) throws IOException {

@@ -5,7 +5,6 @@ import game.util.Util;
 
 import static org.lwjgl.opengl.GL46.*;
 import static org.lwjgl.system.MemoryUtil.*;
-import org.lwjgl.openvr.OpenVR.
 
 import org.javatuples.Pair;
 import org.joml.Matrix4f;

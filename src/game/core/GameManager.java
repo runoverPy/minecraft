@@ -2,14 +2,10 @@ package game.core;
 
 import game.assets.BlockFrame;
 import game.assets.Callback;
-import game.assets.Scene;
-import game.assets.widgets.Hotbar;
+import game.assets.ui_elements.Hotbar;
 import game.core.rendering.RenderUtils;
-import game.core.server.Client;
-import game.core.server.DemoWorld;
-import game.core.server.LocalWorld;
-import game.core.server.Server;
-import game.core.modding.WorldGenerator;
+import game.core.server.*;
+import game.core.modding.worldgen.WorldGenerator;
 import game.mechanics.entities.Entity;
 import game.mechanics.entities.Player;
 import game.core.rendering.Renderer;
@@ -32,7 +28,7 @@ import java.io.IOException;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL46.*;
 
-public class GameManager extends Scene implements Client {
+public class GameManager implements Client {
     /**
      * calculated, so the maximum height of the jump is 1.25f blocks
      */
@@ -95,10 +91,10 @@ public class GameManager extends Scene implements Client {
 
         Main.getActiveWindow().setKeyCallback(hotbarCallback);
 
-        scrollCallback = (window, xoffset, yoffset) -> {
-            if (yoffset > 0) {
+        scrollCallback = (window, xOffset, yOffset) -> {
+            if (yOffset > 0) {
                 hotbar.incSelect();
-            } else if (yoffset < 0) {
+            } else if (yOffset < 0) {
                 hotbar.decSelect();
             }
         };
@@ -120,6 +116,7 @@ public class GameManager extends Scene implements Client {
         Matrix4f matrixPV = player.getViewMatrix(getProjMatrix());
         renderer.draw(matrixPV);
         player.draw(matrixPV);
+
         Vector3i firstBlock = Ray.findFirstBlock(player, server, 4);
         if (firstBlock != null) BlockFrame.draw(matrixPV, new Vector3f(firstBlock));
         Vector3i beforeBlock = Ray.beforeFirstBlock(player, server, 4);
@@ -137,20 +134,16 @@ public class GameManager extends Scene implements Client {
         return new GameManager(new ServerConnection(addr, port));
     }
 
-    public static GameManager testGame() {
-        return new GameManager(new DemoWorld());
+    public static GameManager demoGame() {
+        return new GameManager(World.demoWorld());
+    }
+
+    public static GameManager makeGame(String worldName, WorldGenerator generator) {
+        return new GameManager(World.makeGame(worldName, generator));
     }
 
     public static GameManager openGame(String worldName) {
-        return new GameManager(new LocalWorld());
-    }
-
-    public static GameManager makeGame(String worldName, long seed) {
-        return new GameManager(new LocalWorld());
-    }
-
-    public static GameManager makeGame(String worldName, long seed, WorldGenerator generator) {
-        return new GameManager(new LocalWorld());
+        return new GameManager(World.loadGame(worldName));
     }
 
     @Override
@@ -178,8 +171,12 @@ public class GameManager extends Scene implements Client {
         renderer.dropChunk(new Vector3i(cX, cY, cZ));
     }
 
-    public void closeGame() throws IOException {
-        server.close();
+    public void closeGame() {
+        try {
+            server.close();
+        } catch (IOException e) {
+            Main.setError(e);
+        }
     }
 
     public Matrix4f getProjMatrix() {
@@ -194,4 +191,6 @@ public class GameManager extends Scene implements Client {
     public Hotbar getHotbar() {
         return hotbar;
     }
+
+    public void crash() {}
 }

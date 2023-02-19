@@ -32,11 +32,16 @@ public class ProportionalFont extends GlyphMap{
     private final Glyph missingGlyph;
     private final int vertexBuffer, texturePosBuffer, texture, program, transform, color;
 
-    public ProportionalFont() throws DocumentException {
+    public ProportionalFont() {
         glyphs = new HashMap<>();
 
         SAXReader reader = new SAXReader();
-        Document document = reader.read(getClass().getResourceAsStream("/font/prop/font.xml"));
+        Document document = null;
+        try {
+            document = reader.read(getClass().getResourceAsStream("/font/prop/font.xml"));
+        } catch (DocumentException e) {
+            throw new RuntimeException(e);
+        }
         Element font = document.getRootElement();
 
         int charCount = Integer.parseInt(font.valueOf("@charcount"));
@@ -90,7 +95,6 @@ public class ProportionalFont extends GlyphMap{
 
         };
         System.arraycopy(subarray, 0, glyphTexture, i * 8, subarray.length);
-
         vertexBuffer = Util.genArrayBuffer(glyphVertices);
         texturePosBuffer = Util.genArrayBuffer(glyphTexture);
         texture = Util.genTexture("/font/prop/ascii.png");
@@ -103,7 +107,7 @@ public class ProportionalFont extends GlyphMap{
     }
 
     public void drawGlyph(Matrix4f matrix4f, char c, Vector4f charColor) {
-        Glyph glyph = glyphs.get(c);
+        Glyph glyph = getGlyph(c);
         glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, NULL);
@@ -129,15 +133,15 @@ public class ProportionalFont extends GlyphMap{
     }
 
     public Glyph getGlyph(char c) {
-        return glyphs.get(c);
+        return glyphs.getOrDefault(c, missingGlyph);
     }
 
     public int getCharWidth(char chr) {
-        return glyphs.get(chr).getW();
+        return getGlyph(chr).getW();
     }
 
     public int getCharHeight(char chr) {
-        return glyphs.get(chr).getH();
+        return getGlyph(chr).getH();
     }
 
     public static class Glyph {

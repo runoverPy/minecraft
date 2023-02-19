@@ -6,10 +6,9 @@ import game.core.server.World;
 import game.mechanics.blocks.Block;
 import game.mechanics.entities.Entity;
 import org.joml.Vector3i;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -26,28 +25,28 @@ public class ClientConnection extends Connection implements Client {
     protected void receivePacket(String packet) {
         JSONObject object;
         try {
-            object = (JSONObject) new JSONParser().parse(packet);
-        } catch (ParseException e) {
+            object = new JSONObject(packet);
+        } catch (JSONException e) {
             e.printStackTrace(System.err);
             System.err.println("Malformed JSON packet:");
             System.err.println(packet);
             return;
         }
-        String msgType = (String) object.get("desc");
-        JSONObject msgData = (JSONObject) object.get("data");
+        String msgType = object.getString("desc");
+        JSONObject msgData = object.getJSONObject("data");
         switch (msgType) {
             case "set_block": {
-                JSONObject pos = (JSONObject) msgData.get("pos");
-                int x = (int) pos.get("x");
-                int y = (int) pos.get("y");
-                int z = (int) pos.get("z");
-                JSONObject block = (JSONObject) msgData.get("block");
+                JSONObject pos = msgData.getJSONObject("pos");
+                int x = pos.getInt("x");
+                int y = pos.getInt("y");
+                int z = pos.getInt("z");
+                JSONObject block = msgData.getJSONObject("block");
                 world.setBlock(x, y, z, Block.decode(block));
             }
             default: {
                 // erroneous message tag
                 System.err.println("Malformed JSON packet:");
-                System.err.println(object.toJSONString());
+                System.err.println(object.toString(2));
             }
         }
     }
@@ -69,7 +68,7 @@ public class ClientConnection extends Connection implements Client {
         JSONObject packet = new JSONObject();
         packet.put("desc", "update_block");
         packet.put("data", data);
-        write(packet.toJSONString());
+        write(packet.toString());
     }
 
     @Override
@@ -91,7 +90,7 @@ public class ClientConnection extends Connection implements Client {
         JSONObject packet = new JSONObject();
         packet.put("desc", "load_chunk");
         packet.put("data", data);
-        write(packet.toJSONString());
+        write(packet.toString());
     }
 
     @Override
@@ -106,7 +105,7 @@ public class ClientConnection extends Connection implements Client {
         JSONObject packet = new JSONObject();
         packet.put("desc", "drop_chunk");
         packet.put("data", pos);
-        write(packet.toJSONString());
+        write(packet.toString());
     }
 
     @Override

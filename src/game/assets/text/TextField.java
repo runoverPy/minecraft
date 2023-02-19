@@ -67,7 +67,7 @@ public class TextField {
         for (String line : lines) {
             int lineLength = line.length() - 1;
             for (char c : line.toCharArray()) {
-                lineLength += Main.getPropFont().getCharWidth(c);
+                lineLength += Main.getFont().getCharWidth(c);
             }
             Matrix4f lineMatrix = new Matrix4f(fieldMatrix);
             lineMatrix.translate(advance.getXAdvance() * lineLength, 0, 0);
@@ -76,17 +76,17 @@ public class TextField {
                 Matrix4f shadowLineMatrix = lineMatrix.translate(1, -1, 0, new Matrix4f());
 
                 for (char c : line.toCharArray()) {
-                    ProportionalFont.Glyph g = Main.getPropFont().getGlyph(c);
+                    ProportionalFont.Glyph g = Main.getFont().getGlyph(c);
                     Matrix4f charMatrix = shadowLineMatrix.scale(g.getW(), g.getH(), 1, new Matrix4f());
-                    Main.getPropFont().drawGlyph(charMatrix, c, new Vector4f(0.5f, 0.5f, 0.5f, 1f));
+                    Main.getFont().drawGlyph(charMatrix, c, new Vector4f(0.5f, 0.5f, 0.5f, 1f));
                     shadowLineMatrix.translate(g.getW() + 1, 0, 0);
                 }
             }
 
             for (char c : line.toCharArray()) {
-                ProportionalFont.Glyph g = Main.getPropFont().getGlyph(c);
+                ProportionalFont.Glyph g = Main.getFont().getGlyph(c);
                 Matrix4f charMatrix = lineMatrix.scale(g.getW(), g.getH(), 1, new Matrix4f());
-                Main.getPropFont().drawGlyph(charMatrix, c, color);
+                Main.getFont().drawGlyph(charMatrix, c, color);
                 lineMatrix.translate(g.getW() + 1, 0, 0);
             }
 

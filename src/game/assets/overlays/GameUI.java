@@ -1,13 +1,10 @@
 package game.assets.overlays;
 
 import game.assets.Crosshair;
-import game.main.Main;
-import game.assets.widgets.Hotbar;
+import game.assets.ui_elements.Hotbar;
 import org.joml.Matrix4f;
 
-import static org.lwjgl.glfw.GLFW.*;
-
-public class GameUI extends Overlay {
+public class GameUI {
 //    private boolean inInventory;
     private final Hotbar hotbar;
 
@@ -32,11 +29,10 @@ public class GameUI extends Overlay {
 
 
 
-    @Override
     public void render() {
-        Matrix4f matrixPV = make2DMatrix();
+        Matrix4f matrixPV = Overlay.make2DMatrix();
 
-        new Crosshair().drawReticle(matrixPV);
+        new Crosshair().draw(matrixPV);
         hotbar.draw(matrixPV);
     }
 }

@@ -1,7 +1,7 @@
 package game.core.server.connect;
 
 import game.main.Main;
-import org.json.simple.parser.ParseException;
+import org.json.JSONException;
 
 import java.io.Closeable;
 import java.io.DataInputStream;
@@ -52,7 +52,7 @@ public abstract class Connection extends Thread implements Closeable {
             } catch (IOException ioe) {
                 Main.setError(ioe);
                 break;
-            } catch (ParseException pe) {
+            } catch (JSONException pe) {
                 pe.printStackTrace(System.err);
             }
         }
@@ -66,5 +66,5 @@ public abstract class Connection extends Thread implements Closeable {
      * called once for every incoming packet, in order
      * @param packet incoming JSON packet as a string
      */
-    protected abstract void receivePacket(String packet) throws ParseException;
+    protected abstract void receivePacket(String packet) throws JSONException;
 }

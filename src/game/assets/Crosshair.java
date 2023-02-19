@@ -6,7 +6,7 @@ import org.joml.Matrix4f;
 
 import static org.lwjgl.opengl.GL46.*;
 
-public class Crosshair extends PixelWidget {
+public class Crosshair {
     private static final float[] vertices = new float[] {
         -1f, -1f, -1f, 0f, 1f,
         1f, -1f, -1f, 1f, 1f,
@@ -27,10 +27,9 @@ public class Crosshair extends PixelWidget {
     }
 
     public Crosshair() {
-        super(12, 12);
     }
 
-    public void drawReticle(Matrix4f matrixPV) {
+    public void draw(Matrix4f matrixPV) {
         boolean wasDepthTested = glGetBoolean(GL_DEPTH_TEST);
         if (wasDepthTested) glDisable(GL_DEPTH_TEST);
 

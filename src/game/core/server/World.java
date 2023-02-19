@@ -1,5 +1,7 @@
 package game.core.server;
 
+import game.core.modding.worldgen.WorldGenerator;
+import game.core.vanilla.TestWorldGenerator;
 import game.mechanics.blocks.Block;
 import game.mechanics.entities.Entity;
 import game.mechanics.entities.User;
@@ -17,10 +19,12 @@ import java.util.Set;
  * It is intended to run continuously, until stopped, no matter if any users are connected.
  * It maintains its own clock based on System.currentTimeMillis(), with t=0 being the starting time of the world.
  */
-public abstract class World extends Thread implements Server {
+public class World extends Thread implements Server {
     protected final Map<Vector3i, Chunk> chunks;
     protected final Map<Vector3i, Integer> refCounter;
     protected final Set<Entity> entities;
+    protected final WorldGenerator generator;
+    protected final WorldSaver saver;
     private final Set<Client> clients;
 
     private long serverTime, lastUpdateTime;
@@ -33,21 +37,36 @@ public abstract class World extends Thread implements Server {
     /**
      * to be called by static methods
      */
-    protected World() {
-        this(0L);
+    public World(WorldGenerator generator) {
+        this(generator, null, 0L);
     }
 
-    protected World(long storedServerTime) {
-        this.serverTime = storedServerTime;
+    private World(WorldGenerator generator, WorldSaver saver, long serverTime) {
+        this.generator = generator;
+        this.saver = saver;
+        this.serverTime = serverTime;
         this.lastUpdateTime = System.currentTimeMillis();
+
         this.entities = new HashSet<>();
-        this.chunks = new HashMap<>();
         this.clients = new HashSet<>();
+
+        this.chunks = new HashMap<>();
         this.refCounter = new HashMap<>();
+
         start();
     }
 
-    public static void createNew(String name, Long seed, String... settings) {}
+    public static World makeGame(String worldName, WorldGenerator generator) {
+        return null;
+    }
+
+    public static World loadGame(String worldDirectory) {
+        return null;
+    }
+
+    public static World demoWorld() {
+        return new World(new TestWorldGenerator());
+    }
 
     @Override
     public void run() {
@@ -60,8 +79,9 @@ public abstract class World extends Thread implements Server {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         this.terminate = true;
+        // still needs to save the world
     }
 
     @Override
@@ -112,7 +132,7 @@ public abstract class World extends Thread implements Server {
     }
 
     @Override
-    public void disconnectClient(Client client) throws IOException {
+    public void disconnectClient(Client client) {
         clients.remove(client);
     }
 
@@ -120,19 +140,16 @@ public abstract class World extends Thread implements Server {
     public Chunk getChunk(int cX, int cY, int cZ) {
         Chunk c = chunks.get(new Vector3i(cX, cY, cZ));
         if (c == null) {
-//            System.out.println(this + String.format(" loading chunk %d, %d, %d", cX, cY, cZ));
             c = loadChunk(cX, cY, cZ);
             chunks.put(new Vector3i(cX, cY, cZ), c);
         }
         return c;
-
     }
 
     public final void addChunkRef(int cX, int cY, int cZ) {
         Vector3i chunk = new Vector3i(cX, cY, cZ);
         refCounter.putIfAbsent(chunk, 0);
         if (refCounter.get(chunk) <= 0) {
-//            System.out.println(this + String.format(" loading chunk %d, %d, %d", cX, cY, cZ));
             chunks.put(chunk, loadChunk(cX, cY, cZ));
         }
         refCounter.put(chunk, refCounter.get(chunk) + 1);
@@ -148,11 +165,21 @@ public abstract class World extends Thread implements Server {
         if (refCounter.get(chunk) <= 0) {
             // unload chunk
             System.out.println(this + String.format(" unloading chunk %d, %d, %d", cX, cY, cZ));
-            unloadChunk(cX, cY, cZ, chunks.get(chunk));
-            chunks.put(chunk, null);
+            dropChunk(cX, cY, cZ, chunks.remove(chunk));
         }
     }
 
-    protected abstract Chunk loadChunk(int cX, int cY, int cZ);
-    protected abstract void unloadChunk(int cX, int cY, int cZ, Chunk chunk);
+    private Chunk loadChunk(int cX, int cY, int cZ) {
+        if (saver != null && saver.isChunkSaved(cX, cY, cZ))
+            return saver.loadChunk(cX, cY, cZ);
+        else return generator.generateChunk(cX, cY, cZ);
+    }
+
+    private void dropChunk(int cX, int cY, int cZ, Chunk chunk) {
+        try {
+            saver.saveChunk(cX, cY, cZ, chunk);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

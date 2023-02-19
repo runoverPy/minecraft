@@ -1,22 +1,21 @@
 package game.main;
 
-import game.assets.GLFWWindow;
+import game.core.GLFWWindow;
 import game.assets.menus.ErrorScreen;
 import game.assets.text.ProportionalFont;
 import game.core.GameManager;
-import game.assets.Scene;
 
 import game.assets.menus.MenuHandler;
 import game.core.GameRuntime;
 import game.core.settings.DefaultGeneralSettings;
 import game.core.settings.GeneralSettings;
 import game.core.vanilla.Vanilla;
-import org.dom4j.DocumentException;
-import org.json.simple.parser.ParseException;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static org.lwjgl.opengl.GL46.*;
 import static org.lwjgl.glfw.GLFW.*;
@@ -24,24 +23,20 @@ import static org.lwjgl.glfw.GLFW.*;
 public class Main {
     private static GLFWWindow _window;
     private static int vao;
-    private static Scene scene;
-    private static ProportionalFont propFont;
+    private static ProportionalFont font;
     private static GeneralSettings settings;
-    private static GameRuntime runtime;
+    private static GameManager game;
+    private static MenuHandler mainMenu;
 
-    private GLFWWindow window;
-//    private GameRuntime runtime;
-    private ProportionalFont font;
+    public static final Path HERE = Paths.get(Main.class.getResource("Main.class").getPath()); // Paths.get(".").normalize().toAbsolutePath(); // new File(".").toPath().normalize().toAbsolutePath();
 
-    public static void getResource(String resourceName) {}
+    public static void main(String[] args) throws IOException {
 
-    public static void main(String[] args) throws IOException, ParseException {
         setup();
-        loop();
-        exit();
+        exec();
     }
 
-    private static void setup() throws IOException, ParseException {
+    private static void setup() {
         if (!glfwInit()) {
             throw new RuntimeException("GLFW konnte nicht initialisiert werden");
         }
@@ -74,42 +69,23 @@ public class Main {
         glEnable(GL_CULL_FACE);
         glEnable(GL_SCISSOR_TEST);
         glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
-
-        try {
-            propFont = new ProportionalFont();
-        } catch (DocumentException e) {
-            e.printStackTrace();
-        }
         GameRuntime.setInstance(new Vanilla());
+        mainMenu = MenuHandler.mainMenu();
+        font = new ProportionalFont();
         settings = new DefaultGeneralSettings();
-        mainMenu();
     }
 
-    private static void loop() {
+    private static void exec() {
+        // rendering loop
         while (!_window.shouldClose()) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            scene.render();
+            if (game != null) game.render();
+            else mainMenu.render();
             _window.update();
         }
-    }
-
-    private static void exit() {
-        if (!_window.fullscreen()) {
-            for (int i = 0; i <= 100; i++) {
-                _window.setOpacity((100 - i) / 100f);
-                try {
-                    Thread.sleep(5);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+        // cleanup
         _window.destroy();
         glfwTerminate();
-    }
-
-    public static void closeGame() throws IOException {
-        if (scene instanceof GameManager) ((GameManager) scene).closeGame();
     }
 
     public static GLFWWindow getActiveWindow() {
@@ -120,25 +96,44 @@ public class Main {
         return _window.getWindow();
     }
 
-    public static void setScene(Scene scene) {
-        Main.scene = scene;
+    public static void openGame(GameManager game) {
+        if (Main.game == null) {
+            Main.game = game;
+        }
     }
 
+    public static void closeGame() {
+        if (game != null) {
+            game.closeGame();
+            game = null;
+            mainMenu = MenuHandler.mainMenu();
+        }
+    }
+
+    public static void crashGame(Throwable error) {
+        if (game != null) {
+            game.closeGame();
+            game = null;
+            setError(error);
+        }
+    }
+
+    public static void setError(Throwable error) {
+        if (mainMenu == null) mainMenu = MenuHandler.mainMenu(error);
+        else mainMenu.next(new ErrorScreen(mainMenu, error));
+    }
+
+    /**
+     * When a fatal error has occurred, and it is not useful to continue running the process
+     * this method can be called to crash the program.
+     */
     public static void crash(Throwable exception) {
         exception.printStackTrace(System.err);
         System.exit(0xf);
     }
 
-    public static void setError(Throwable error) {
-        setScene(new ErrorScreen(error));
-    }
-
-    public static void mainMenu() {
-        setScene(MenuHandler.mainMenu());
-    }
-
-    public static ProportionalFont getPropFont() {
-        return propFont;
+    public static ProportionalFont getFont() {
+        return font;
     }
 
     public static GeneralSettings getSettings() {

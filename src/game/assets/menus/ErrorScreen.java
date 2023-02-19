@@ -1,16 +1,15 @@
 package game.assets.menus;
 
 import game.assets.Background;
-import game.assets.widgets.Widget;
-import game.main.Main;
+import game.assets.ui_elements.Widget;
 
 public class ErrorScreen extends Menu {
-    public ErrorScreen(Throwable error) {
+    public ErrorScreen(MenuHandler handler, Throwable error) {
         super(Background.STEINLE, 224, 224);
 
-        try (WidgetManager manager = organiser(192, 18, 4, 4)){
+        try (WidgetOrganizer manager = organiser(192, 18, 4, 4)){
             manager.insert(Widget.textBox(error.toString(), true, true));
-            manager.insert(Widget.button("Return to Menu", Main::mainMenu));
+            manager.insert(Widget.button("Return to Menu", handler::prev));
         }
 
 //        TableOrganizer organizer = tableOrganizer(8, 8, 24, 24);

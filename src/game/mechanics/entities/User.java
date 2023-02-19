@@ -3,7 +3,7 @@ package game.mechanics.entities;
 import game.main.Main;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.json.simple.JSONObject;
+import org.json.JSONObject;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -152,14 +152,14 @@ public class User {
 
         public static UserStatus decode(JSONObject object) {
             return new UserStatus(
-                    (boolean) object.get("fwd"),
-                    (boolean) object.get("fwd"),
-                    (boolean) object.get("fwd"),
-                    (boolean) object.get("fwd"),
-                    (boolean) object.get("fwd"),
-                    (boolean) object.get("fwd"),
-                    (boolean) object.get("fwd"),
-                    (boolean) object.get("fwd")
+              object.getBoolean("fwd"),
+              object.getBoolean("fwd"),
+              object.getBoolean("fwd"),
+              object.getBoolean("fwd"),
+              object.getBoolean("fwd"),
+              object.getBoolean("fwd"),
+              object.getBoolean("fwd"),
+              object.getBoolean("fwd")
             );
         }
     }

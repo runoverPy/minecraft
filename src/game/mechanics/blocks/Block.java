@@ -2,8 +2,8 @@ package game.mechanics.blocks;
 
 import game.core.GameRuntime;
 import game.core.modding.BlockBase;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class Block {
     private final BlockBase innerBlock;

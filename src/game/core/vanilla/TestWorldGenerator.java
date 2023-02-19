@@ -1,6 +1,6 @@
 package game.core.vanilla;
 
-import game.core.modding.WorldGenerator;
+import game.core.modding.worldgen.WorldGenerator;
 import game.mechanics.blocks.Block;
 import game.core.server.Chunk;
 

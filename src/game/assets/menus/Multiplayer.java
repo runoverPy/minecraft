@@ -1,7 +1,7 @@
 package game.assets.menus;
 
 import game.assets.Background;
-import game.assets.widgets.Widget;
+import game.assets.ui_elements.Widget;
 import game.core.GameManager;
 import game.core.server.connect.ConnectionConfig;
 import game.main.Main;
@@ -24,13 +24,13 @@ class Multiplayer extends Menu {
             System.out.println("Address:" + " " + serverAddr);
             System.out.println("Port:" + " " + serverPort);
             try {
-                Main.setScene(GameManager.joinGame(serverAddr, serverPort));
+                Main.openGame(GameManager.joinGame(serverAddr, serverPort));
             } catch (IOException e) {
                 Main.setError(e);
             }
         };
 
-        try (WidgetManager manager = organiser(192, 18, 4, 4)) {
+        try (WidgetOrganizer manager = organiser(192, 18, 4, 4)) {
             manager.insert(Widget.query(addr));
             manager.insert(Widget.query(port));
             manager.insert(Widget.button("Join World", onJoinWorld));

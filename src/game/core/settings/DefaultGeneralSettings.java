@@ -1,8 +1,8 @@
 package game.core.settings;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import org.json.JSONObject;
+import org.json.parser.JSONParser;
+import org.json.parser.ParseException;
 
 import java.io.*;
 import java.net.URISyntaxException;

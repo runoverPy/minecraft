@@ -1,10 +1,14 @@
 <component name="libraryTable">
-  <library name="json">
+  <library name="json" type="repository">
+    <properties maven-id="org.json:json:20220320" />
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/lib/json" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/json/json/20220320/json-20220320.jar!/" />
     </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-    <jarDirectory url="file://$PROJECT_DIR$/lib/json" recursive="false" />
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/json/json/20220320/json-20220320-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/json/json/20220320/json-20220320-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>

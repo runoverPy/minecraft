@@ -2,13 +2,13 @@ package game.core.server;
 
 import game.mechanics.blocks.Block;
 import org.joml.Vector3i;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+
+import org.json.*;
 
 import java.io.Serializable;
 import java.util.function.Supplier;
 
-public class Chunk implements Serializable {
+public class Chunk {
     private final Block[][][] blocks;
 
     private static Block[][][] createBlocks() {
@@ -70,11 +70,11 @@ public class Chunk implements Serializable {
             for (int y = 0; y < 16; y++) {
                 JSONArray jsonSubArray2 = new JSONArray();
                 for (int z = 0; z < 16; z++) {
-                    jsonSubArray2.add(Block.encode(chunk.blocks[x][y][z]));
+                    jsonSubArray2.put(Block.encode(chunk.blocks[x][y][z]));
                 }
-                jsonSubArray1.add(jsonSubArray2);
+                jsonSubArray1.put(jsonSubArray2);
             }
-            jsonArray.add(jsonSubArray1);
+            jsonArray.put(jsonSubArray1);
         }
         return jsonArray;
     }

@@ -11,8 +11,10 @@ import static org.lwjgl.opengl.GL46.*;
 public enum Background {
     BRICKS ("/img/bricks.png"),
     STEINLE ("/img/witzig.png"),
+    DIRT ("/img/dirt_block.png"),
     GRAY (0f, 0f, 0f, 0.5f),
     WHITE (1f, 1f, 1f, 1f),
+    BLACK (0f, 0f, 0f, 1f),
     CLEAR (0f, 0f, 0f, 0f);
 
     private final int texture;

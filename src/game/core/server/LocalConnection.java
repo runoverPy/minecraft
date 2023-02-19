@@ -94,7 +94,7 @@ public class LocalConnection implements Server, Client {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         world.close();
     }
 }
