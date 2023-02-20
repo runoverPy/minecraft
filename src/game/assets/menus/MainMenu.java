@@ -13,7 +13,7 @@ class MainMenu extends Menu {
 //            manager.insert(Widget.button("Multiplayer", () -> handler.next(new Multiplayer(handler))));
 //            manager.insert(Widget.button("Settings", () -> handler.next(new GeneralSettingsMenu(handler))));
             manager.insert(Widget.button("Exit Game", () -> Main.getActiveWindow().close()));
-            manager.insert(Widget.button("Test MCUI", () -> handler.next(new MCUITest(handler))));
+//            manager.insert(Widget.button("Test MCUI", () -> handler.next(new MCUITest(handler))));
         }
     }
 }

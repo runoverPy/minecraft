@@ -2,10 +2,16 @@ package game.core.server;
 
 import java.io.IOException;
 
-public interface WorldSaver {
-    Chunk loadChunk(int cX, int cY, int cZ);
+public class WorldSaver {
+    public Chunk loadChunk(int cX, int cY, int cZ) {
+        return null;
+    }
 
-    boolean isChunkSaved(int cX, int cY, int cZ);
+    public boolean isChunkSaved(int cX, int cY, int cZ) {
+        return false;
+    }
 
-    void saveChunk(int cX, int cY, int cZ, Chunk chunk) throws IOException;
+    public void saveChunk(int cX, int cY, int cZ, Chunk chunk) throws IOException {
+
+    }
 }

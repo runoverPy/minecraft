@@ -4,7 +4,6 @@ import game.core.modding.Mod;
 
 public class GameRuntime {
     private final ModHandler modHandler;
-
     private final BlockRegister blockRegister;
     private final WorldGeneratorRegister generatorRegister;
 

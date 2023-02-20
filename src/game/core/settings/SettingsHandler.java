@@ -1,8 +1,6 @@
 package game.core.settings;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import org.json.JSONObject;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -11,18 +9,17 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 
 public class SettingsHandler {
-    public SettingsHandler(String path) throws IOException, ParseException {
+    public SettingsHandler(String path) throws IOException {
         InputStream stream = getClass().getResourceAsStream(path);
         if (stream == null) throw new FileNotFoundException();
 
-        JSONParser parser = new JSONParser();
-        JSONObject storedSettings = (JSONObject) parser.parse(new InputStreamReader(stream));
+        JSONObject storedSettings = new JSONObject(new InputStreamReader(stream));
 
         for (Field field : getClass().getFields()) {
             if (field.isAnnotationPresent(Setting.class)) {
                 String name = field.getName();
                 try {
-                    Integer.class.cast(null);
+                    Integer.class.cast(null); // TODO: 20.02.23 check if necessary
                     field.set(this, new SettingField<>(storedSettings.get(name)));
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();

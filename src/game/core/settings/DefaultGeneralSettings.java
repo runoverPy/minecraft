@@ -1,11 +1,7 @@
 package game.core.settings;
 
 import org.json.JSONObject;
-import org.json.parser.JSONParser;
-import org.json.parser.ParseException;
-
-import java.io.*;
-import java.net.URISyntaxException;
+import org.json.JSONTokener;
 
 public final class DefaultGeneralSettings extends GeneralSettings {
     @Override
@@ -13,23 +9,14 @@ public final class DefaultGeneralSettings extends GeneralSettings {
 
     @Override
     public void load() {
-        try {
-            JSONParser parser = new JSONParser();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/dat/settings.json")));
-            JSONObject fileContents = (JSONObject) parser.parse(reader);
-            reader.close();
+        JSONTokener tokenizer = new JSONTokener(getClass().getResourceAsStream("/dat/settings.json"));
+        JSONObject fileContents = new JSONObject(tokenizer);
 
-            JSONObject settings;
-            if (fileContents.containsKey("minecraft.general")) settings = (JSONObject) fileContents.get("minecraft.general");
-            else settings = fileContents;
+        JSONObject settings;
+        if (fileContents.has("minecraft.general")) settings = fileContents.getJSONObject("minecraft.general");
+        else settings = fileContents;
 
-            setFOV(((Long) settings.get("fov")).intValue());
-            setDPI(((Double) settings.get("dpi")).floatValue());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ParseException pe) {
-            System.err.println("Malformed JSON object");
-            pe.printStackTrace(System.err);
-        }
+        setFOV(settings.getInt("fov"));
+        setDPI(settings.getFloat("dpi"));
     }
 }

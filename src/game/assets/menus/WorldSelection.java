@@ -20,8 +20,9 @@ public class WorldSelection extends Menu {
         organizer.insert(Widget.query(new StringBuffer()), 4, 8, 1, 1);
         organizer.insert(Widget.button("Enter Game", () -> {}, new BoolRelay(false)), 2, 4, 10, 1);
         organizer.insert(Widget.button("Demo Game", () -> Main.openGame(GameManager.demoGame())), 6, 4, 10, 1);
-        organizer.insert(Widget.button("New Game", () -> {}, new BoolRelay(false)), 10, 4, 10, 1);
+        organizer.insert(Widget.button("New Game", () -> handler.next(new WorldCreation(handler))), 10, 4, 10, 1);
         organizer.insert(Widget.button("Return", handler::prev), 4, 8, 11, 1);
+        organizer.insert(Widget.cFrame(), 2, 12, 2, 8);
 
 //        insert(new ColorBox(0, 0, 0, 0, null, new Vector4f(0, 0, 1, 1)));
 //        topBar = new Container(0, 64, 0, 0, getRoot());

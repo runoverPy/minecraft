@@ -245,6 +245,11 @@ public class Player {
         );
     }
 
+
+    public boolean collides(Vector3f block) {
+        return Math.floor(block.x) == Math.ceil(pos.x);
+    }
+
     public EnumMap<Direction, Boolean> getWorldCollisions(Vector3f oldPos, Vector3f newPos) {
         EnumMap<Direction, Boolean> out = new EnumMap<>(Direction.class);
         int

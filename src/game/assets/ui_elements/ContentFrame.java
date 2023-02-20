@@ -2,15 +2,18 @@ package game.assets.ui_elements;
 
 import game.main.Main;
 import org.joml.Matrix4f;
+import org.joml.Vector4f;
 
 public class ContentFrame extends ChildBox {
     private final ScrollBarY scrollBar;
     private final Frame frame;
+    private final ColorBox background;
 
     public ContentFrame(int width, int height, int xOffset, int yOffset, Component parent) {
         super(width, height, xOffset, yOffset, parent);
         this.scrollBar = new ScrollBarY(height, width - 5, 0, this);
         this.frame = new Frame(width - 5, height, 0, 0, this);
+        this.background = new ColorBox(width, height, 0, 0, this, new Vector4f(0, 0, 0, 0.5f));
     }
 
     public int length() {
@@ -19,6 +22,7 @@ public class ContentFrame extends ChildBox {
 
     @Override
     public void draw(int pxScale, Matrix4f matrix4f) {
+        background.draw(pxScale, matrix4f);
         frame.draw(pxScale, matrix4f);
         scrollBar.draw(pxScale, matrix4f);
     }

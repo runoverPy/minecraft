@@ -1,10 +1,9 @@
 package game.assets.ui_elements;
 
 import game.util.Cyclic;
-import game.util.relay.BoolRelay;
-import game.util.relay.EnumRelay;
-import game.util.relay.FloatRelay;
-import game.util.relay.IntRelay;
+import game.util.relay.*;
+
+import java.util.List;
 
 public interface Widget {
     ChildBox create(int width, int height, int xOffset, int yOffset, Component parent);
@@ -43,5 +42,13 @@ public interface Widget {
 
     static Widget textBox(String text, boolean centered, boolean shaded) {
         return (width, height, xOffset, yOffset, parent) -> new TextBox(width, height, xOffset, yOffset, parent, text, centered, shaded);
+    }
+
+    static Widget cFrame() {
+        return ContentFrame::new;
+    }
+
+    static <E> Widget dropDown(String name, ObjectRelay<E> buffer, List<E> options) {
+        return (width, height, xOffset, yOffset, parent) -> new DropDownSelector<>(width, height, xOffset, yOffset, parent, name, buffer, options);
     }
 }

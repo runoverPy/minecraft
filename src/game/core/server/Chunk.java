@@ -2,11 +2,8 @@ package game.core.server;
 
 import game.mechanics.blocks.Block;
 import org.joml.Vector3i;
-
-import org.json.*;
-
-import java.io.Serializable;
-import java.util.function.Supplier;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class Chunk {
     private final Block[][][] blocks;

@@ -52,9 +52,9 @@ class ScrollBarY extends ChildBox {
             if (clicked) {
                 int mouseY = Main.getActiveWindow().getCursorPos().getY().intValue();
                 int knobPos = mouseY - clickOffset;
-                int scrollLength = getParent().getWidth(pxScale) - getWidth(pxScale);
-                int topEnd = getParent().getCornerY(pxScale), leftEnd = topEnd + scrollLength;
-                int framedLength = Math.max(topEnd, Math.min(knobPos, leftEnd)) - topEnd;
+                int scrollLength = getParent().getHeight(pxScale) - getHeight(pxScale);
+                int topEnd = getParent().getCornerY(pxScale), botEnd = topEnd + scrollLength;
+                int framedLength = Math.max(topEnd, Math.min(knobPos, botEnd)) - topEnd;
                 value = (double) framedLength / scrollLength;
             }
 
@@ -75,7 +75,7 @@ class ScrollBarY extends ChildBox {
         public boolean onMouseEvent(MouseEvent event, int pxScale) {
             if (event.eventType == MouseEvent.EventType.PRESSED && contains(event, pxScale)) {
                 clicked = true;
-                clickOffset = (int) event.mouseX - getCornerX(pxScale);
+                clickOffset = (int) event.mouseY - getCornerY(pxScale);
                 return true;
             }
             return false;

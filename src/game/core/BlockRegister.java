@@ -9,6 +9,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
+/*
+Block name syntax: mod::block.module.hierarchy
+ */
 public class BlockRegister {
     private final Map<String, Supplier<? extends BlockBase>> registeredBlocks;
 
@@ -53,5 +56,9 @@ public class BlockRegister {
     }
     public String getAlias(int id) {
         return null;
+    }
+
+    public class ModBlockMap {
+
     }
 }
