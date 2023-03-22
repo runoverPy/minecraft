@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="MDK:jar">
+    <output-path>$PROJECT_DIR$/../MDK/out/artifacts/MDK_jar</output-path>
+    <root id="archive" name="MDK.jar">
+      <element id="module-output" name="MDK" />
+    </root>
+  </artifact>
+</component>

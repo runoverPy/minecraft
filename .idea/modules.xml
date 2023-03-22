@@ -2,7 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Minecraft.iml" filepath="$PROJECT_DIR$/Minecraft.iml" />
+      <module fileurl="file://$PROJECT_DIR$/MDK/MDK.iml" filepath="$PROJECT_DIR$/MDK/MDK.iml" />
+      <module fileurl="file://$PROJECT_DIR$/core/core.iml" filepath="$PROJECT_DIR$/core/core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lutum.iml" filepath="$PROJECT_DIR$/lutum.iml" />
+      <module fileurl="file://$PROJECT_DIR$/VanillaMC/vanilla.iml" filepath="$PROJECT_DIR$/VanillaMC/vanilla.iml" />
     </modules>
   </component>
 </project>

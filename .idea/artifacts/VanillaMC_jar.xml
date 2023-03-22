@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="VanillaMC:jar">
+    <output-path>$PROJECT_DIR$/../VanillaMC/out/artifacts/</output-path>
+    <root id="archive" name="VanillaMC.jar">
+      <element id="module-output" name="vanilla" />
+      <element id="library" level="module" name="MDK" module-name="vanilla" />
+    </root>
+  </artifact>
+</component>
