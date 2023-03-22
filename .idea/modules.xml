@@ -5,7 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/MDK/MDK.iml" filepath="$PROJECT_DIR$/MDK/MDK.iml" />
       <module fileurl="file://$PROJECT_DIR$/core/core.iml" filepath="$PROJECT_DIR$/core/core.iml" />
       <module fileurl="file://$PROJECT_DIR$/lutum.iml" filepath="$PROJECT_DIR$/lutum.iml" />
-      <module fileurl="file://$PROJECT_DIR$/VanillaMC/vanilla.iml" filepath="$PROJECT_DIR$/VanillaMC/vanilla.iml" />
+      <module fileurl="file://$PROJECT_DIR$/vanilla/vanilla.iml" filepath="$PROJECT_DIR$/vanilla/vanilla.iml" />
     </modules>
   </component>
 </project>
