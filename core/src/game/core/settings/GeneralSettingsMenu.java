@@ -2,17 +2,16 @@ package game.core.settings;
 
 import game.assets.Background;
 import game.assets.Callback;
-import game.assets.menus.Menu;
 import game.assets.menus.MenuHandler;
+import game.assets.menus.UIELMenu;
 import game.assets.ui_elements.Widget;
-import game.core.settings.GeneralSettings;
 import game.main.Main;
 import game.util.relay.FloatRelay;
 import game.util.relay.IntRelay;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
 
-public class GeneralSettingsMenu extends Menu {
+public class GeneralSettingsMenu extends UIELMenu {
     public GeneralSettingsMenu(MenuHandler handler) {
         super(Background.GRAY, 224, 224);
         GeneralSettings generalSettings = Main.getSettings();

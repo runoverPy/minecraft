@@ -1,6 +1,9 @@
 package game.assets.text;
 
-public class GlyphMap {
+import org.joml.Matrix4f;
+import org.joml.Vector4f;
+
+public abstract class GlyphMap {
     protected static float[] getGlyphUV(int index, int countX, int countY) {
         return new float[] {
                 (index % countX) * 1f / countX,
@@ -22,4 +25,12 @@ public class GlyphMap {
         if (c > (char) 127) c = (char) 127;
         return (int) c - 32;
     }
+
+    public abstract void drawGlyph(Matrix4f matrix4f, char c, Vector4f charColor);
+
+    public abstract Glyph getGlyph(char c);
+
+    public abstract int getCharWidth(char chr);
+
+    public abstract int getCharHeight(char chr);
 }

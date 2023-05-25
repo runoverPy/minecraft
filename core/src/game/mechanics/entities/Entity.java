@@ -111,7 +111,7 @@ public abstract class Entity implements Drawable {
         move(posChange, velChange, collisions, dT);
 
         addVel(velChange);
-        addVel(new Vector3f(GameManager.GRAV_ACCEL).mul((float) dT / 1000));
+        addVel(new Vector3f(GameManager.physics.GRAV_ACCEL).mul((float) dT / 1000));
 
         posChange.add(getVel().mul((float) dT / 1000, new Vector3f()));
 

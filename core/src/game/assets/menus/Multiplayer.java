@@ -8,7 +8,7 @@ import game.main.Main;
 
 import java.io.IOException;
 
-class Multiplayer extends Menu {
+class Multiplayer extends UIELMenu {
     public Multiplayer(MenuHandler handler) {
         super(Background.BRICKS, 256, 256);
         StringBuffer addr = new StringBuffer(), port = new StringBuffer();

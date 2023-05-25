@@ -1,6 +1,22 @@
 {
   "mod-class": "Vanilla",
   "mod-name": "Vanilla",
+  "mod-desc": "The base game content",
+  "mod-icon": null,
+  "mod-name-int": "vanilla",
   "mod-version": "0.1.0.dev1",
-  "mod-dependencies": []
+  "mod-dependencies": [],
+
+  "blocks": {
+    "stone": "Stone",
+    "dirt": "Dirt",
+    "grass": "Grass",
+    "stone_bricks": "StoneBricks",
+    "bricks": "Bricks",
+    "steinle": "Steinle",
+    "blumen": "Blumen"
+  },
+  "generators": {
+    "flat_test": "TestWorldGenerator"
+  }
 }

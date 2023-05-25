@@ -8,7 +8,7 @@ public class TestWorldGenerator implements WorldGenerator {
         if (cZ == 0) {
             for (int i = 0; i < 16; i++) {
                 for (int j = 0; j < 16; j++) {
-                    chunk.setBlock(i, j, 0, factory.createBlock("vanilla::stone"));
+                    chunk.setBlock(i, j, 0, factory.createBlock("vanilla:stone"));
                 }
             }
         }

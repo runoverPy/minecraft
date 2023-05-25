@@ -27,7 +27,7 @@ public class ModRegister {
     }
 
     public void acquireMods(Path modDir) {
-        System.out.println(modDir.toAbsolutePath());
+        if (!Files.exists(modDir)) return;
         try (Stream<Path> contents = Files.list(modDir)) {
             for (Path file : contents.toList()) {
                 if (!Files.exists(file)) return;
@@ -65,11 +65,11 @@ public class ModRegister {
 
         public RegisteredMod(Path jarPath) throws IOException {
             this.jarPath = jarPath;
-            modClassLoader = new URLClassLoader(new URL[] {jarPath.toUri().toURL()}, parentClassLoader);
+            this.modClassLoader = new URLClassLoader(new URL[] {jarPath.toUri().toURL()}, parentClassLoader);
         }
 
         public Mod getModInstance() {
-            // TODO: 21.03.23 there are many error sources in this code that should be reported cleanly
+            // TODO: 21.03.23 there are many possible error sources in this code that should be reported cleanly
 
             try {
                 InputStream jsonStream = modClassLoader.getResourceAsStream("mod.json");

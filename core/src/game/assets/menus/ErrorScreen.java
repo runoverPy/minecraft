@@ -3,7 +3,7 @@ package game.assets.menus;
 import game.assets.Background;
 import game.assets.ui_elements.Widget;
 
-public class ErrorScreen extends Menu {
+public class ErrorScreen extends UIELMenu {
     public ErrorScreen(MenuHandler handler, Throwable error) {
         super(Background.STEINLE, 224, 224);
 

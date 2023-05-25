@@ -1,6 +1,6 @@
 package game.assets.ui_elements;
 
-import game.core.GLFWWindow;
+import game.window.GLFWWindow;
 import game.main.Main;
 import org.joml.Matrix4f;
 
@@ -91,7 +91,7 @@ public abstract class ChildBox implements Component {
         return contains(event.mouseX, event.mouseY, pxScale);
     }
 
-    protected final boolean contains(double x, double y, int pxScale) {
+    public final boolean contains(double x, double y, int pxScale) {
         int
           top = getCornerY(pxScale),
           left = getCornerX(pxScale),
@@ -107,7 +107,7 @@ public abstract class ChildBox implements Component {
 
     protected final boolean hovering(int pxScale) {
         GLFWWindow.Position<Double> cursorPos = Main.getActiveWindow().getCursorPos();
-        return contains(cursorPos.getX(), cursorPos.getY(), pxScale);
+        return contains(cursorPos.x(), cursorPos.y(), pxScale);
     }
 
     @Override

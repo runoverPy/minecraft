@@ -1,3 +1,11 @@
 package mdk;
 
-public interface ModLoader {}
+import mdk.blocks.BlockLoader;
+import mdk.worldgen.WorldGeneratorLoader;
+
+public interface ModLoader {
+
+    BlockLoader loadBlocks();
+
+    WorldGeneratorLoader loadGenerators();
+}

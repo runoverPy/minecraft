@@ -64,7 +64,7 @@ public class World extends Thread implements Server {
     }
 
     public static World demoWorld() {
-        return new World(GameRuntime.getInstance().getGeneratorRegister().getGenerator("vanilla::flat_test", 0));
+        return new World(GameRuntime.getInstance().getGeneratorRegister().getGenerator("vanilla:flat_test"));
     }
 
     @Override

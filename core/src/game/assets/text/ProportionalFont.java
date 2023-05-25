@@ -18,7 +18,7 @@ import org.lwjgl.system.MemoryStack;
 import static org.lwjgl.opengl.GL46.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-public class ProportionalFont extends GlyphMap{
+public class ProportionalFont extends GlyphMap {
     private static final float[] glyphVertices = new float[]{
             0, -1, -1,
             1, -1, -1,
@@ -36,7 +36,7 @@ public class ProportionalFont extends GlyphMap{
         glyphs = new HashMap<>();
 
         SAXReader reader = new SAXReader();
-        Document document = null;
+        Document document;
         try {
             document = reader.read(getClass().getResourceAsStream("/font/prop/font.xml"));
         } catch (DocumentException e) {
@@ -106,6 +106,7 @@ public class ProportionalFont extends GlyphMap{
         color = glGetUniformLocation(program, "color");
     }
 
+    @Override
     public void drawGlyph(Matrix4f matrix4f, char c, Vector4f charColor) {
         Glyph glyph = getGlyph(c);
         glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
@@ -128,42 +129,18 @@ public class ProportionalFont extends GlyphMap{
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    public void drawGlyph(Matrix4f matrix4f, char c) {
-        drawGlyph(matrix4f, c, new Vector4f(1f));
-    }
-
+    @Override
     public Glyph getGlyph(char c) {
         return glyphs.getOrDefault(c, missingGlyph);
     }
 
+    @Override
     public int getCharWidth(char chr) {
         return getGlyph(chr).getW();
     }
 
+    @Override
     public int getCharHeight(char chr) {
         return getGlyph(chr).getH();
-    }
-
-    public static class Glyph {
-        private final int w, h;
-        private final int index;
-
-        private Glyph(int w, int h, int index) {
-            this.w = w;
-            this.h = h;
-            this.index = index;
-        }
-
-        public int getW() {
-            return w;
-        }
-
-        public int getH() {
-            return h;
-        }
-
-        public int getIndex() {
-            return index;
-        }
     }
 }

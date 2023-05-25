@@ -1,7 +1,7 @@
 package game.assets;
 
 import game.assets.ui_elements.MouseEvent;
-import game.core.GLFWWindow;
+import game.window.GLFWWindow;
 import game.main.Main;
 
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
@@ -22,8 +22,8 @@ public class MouseEventGenerator {
         GLFWWindow.Position<Double> cursorPos = Main.getActiveWindow().getCursorPos();
         boolean oldMousePressed = mousePressed;
         mousePressed = isClicking();
-        if (oldMousePressed && !mousePressed) return new MouseEvent(MouseEvent.EventType.RELEASED, cursorPos.getX(), cursorPos.getY());
-        if (!oldMousePressed && mousePressed) return new MouseEvent(MouseEvent.EventType.PRESSED, cursorPos.getX(), cursorPos.getY());
+        if (oldMousePressed && !mousePressed) return new MouseEvent(MouseEvent.EventType.RELEASED, cursorPos.x(), cursorPos.y());
+        if (!oldMousePressed && mousePressed) return new MouseEvent(MouseEvent.EventType.PRESSED, cursorPos.x(), cursorPos.y());
         return null;
     }
 }

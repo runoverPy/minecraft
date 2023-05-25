@@ -2,7 +2,10 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
-      <profile default="true" name="Default" enabled="true" />
+      <profile name="Vanilla" enabled="true" procOnly="true">
+        <processor name="mdk.settings.annotation.AnnotationSettingProcessor" />
+        <module name="vanilla" />
+      </profile>
     </annotationProcessing>
   </component>
 </project>

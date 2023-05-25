@@ -4,7 +4,7 @@ import game.assets.Background;
 import game.assets.ui_elements.Widget;
 import game.util.relay.FloatRelay;
 
-class AudioSettings extends Menu {
+class AudioSettings extends UIELMenu {
     public AudioSettings(MenuHandler handler) {
         super(Background.BRICKS, 256, 256);
 

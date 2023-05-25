@@ -7,7 +7,7 @@ import game.util.relay.ObjectRelay;
 
 import java.util.ArrayList;
 
-public class WorldCreation extends Menu {
+public class WorldCreation extends UIELMenu {
     public WorldCreation(MenuHandler handler) {
         super(Background.DIRT, 224, 224);
         TableOrganizer organizer = tableOrganizer(16, 16, 20, 20, 1);

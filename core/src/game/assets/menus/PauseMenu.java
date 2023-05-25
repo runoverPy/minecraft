@@ -5,7 +5,7 @@ import game.assets.ui_elements.Widget;
 import game.core.settings.GeneralSettingsMenu;
 import game.main.Main;
 
-class PauseMenu extends Menu {
+class PauseMenu extends UIELMenu {
     public PauseMenu(PauseHandler handler) {
         super(Background.GRAY, 256, 256);
 

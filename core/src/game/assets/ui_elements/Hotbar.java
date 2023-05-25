@@ -1,5 +1,8 @@
 package game.assets.ui_elements;
 
+import game.assets.ui_elements.asset.ColorBox;
+import game.assets.ui_elements.asset.ImageBox;
+import game.assets.ui_elements.container.FlexBox;
 import game.core.rendering.RenderUtils;
 import game.main.Main;
 import game.core.server.Block;
@@ -27,13 +30,13 @@ public class Hotbar extends FlexBox {
 
     public static Hotbar demoHotbar() {
         Hotbar hotbar = new Hotbar();
-        hotbar.setItem(0, "vanilla::stone");
-        hotbar.setItem(1, "vanilla::dirt");
-        hotbar.setItem(2, "vanilla::grass");
-        hotbar.setItem(3, "vanilla::stone_bricks");
-        hotbar.setItem(4, "vanilla::bricks");
-        hotbar.setItem(5, "vanilla::steinle");
-        hotbar.setItem(6, "vanilla::blumen");
+        hotbar.setItem(0, "vanilla:stone");
+        hotbar.setItem(1, "vanilla:dirt");
+        hotbar.setItem(2, "vanilla:grass");
+        hotbar.setItem(3, "vanilla:stone_bricks");
+        hotbar.setItem(4, "vanilla:bricks");
+        hotbar.setItem(5, "vanilla:steinle");
+        hotbar.setItem(6, "vanilla:blumen");
         return hotbar;
     }
 

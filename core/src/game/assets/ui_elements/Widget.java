@@ -1,5 +1,8 @@
 package game.assets.ui_elements;
 
+import game.assets.ui_elements.asset.TextBox;
+import game.assets.ui_elements.container.ContentFrame;
+import game.assets.ui_elements.control.*;
 import game.util.Cyclic;
 import game.util.relay.*;
 
@@ -50,5 +53,9 @@ public interface Widget {
 
     static <E> Widget dropDown(String name, ObjectRelay<E> buffer, List<E> options) {
         return (width, height, xOffset, yOffset, parent) -> new DropDownSelector<>(width, height, xOffset, yOffset, parent, name, buffer, options);
+    }
+
+    static Widget selectable(String text, BoolRelay value) {
+        return (width, height, xOffset, yOffset, parent) -> new Selectable(width, height, xOffset, yOffset, parent, text, value);
     }
 }

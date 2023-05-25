@@ -1,6 +1,6 @@
 package game.assets.overlays;
 
-import game.assets.ui_elements.ColorBox;
+import game.assets.ui_elements.asset.ColorBox;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 

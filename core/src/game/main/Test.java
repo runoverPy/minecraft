@@ -1,6 +1,6 @@
 package game.main;
 
-import game.assets.mcui.event.MouseEvent;
+import game.assets.event.MouseEvent;
 
 import java.util.Arrays;
 

@@ -4,6 +4,7 @@ import game.main.Main;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 
+@Deprecated
 public class TextField {
     private final Advance advance;
     private final Vector4f color;
@@ -76,7 +77,7 @@ public class TextField {
                 Matrix4f shadowLineMatrix = lineMatrix.translate(1, -1, 0, new Matrix4f());
 
                 for (char c : line.toCharArray()) {
-                    ProportionalFont.Glyph g = Main.getFont().getGlyph(c);
+                    Glyph g = Main.getFont().getGlyph(c);
                     Matrix4f charMatrix = shadowLineMatrix.scale(g.getW(), g.getH(), 1, new Matrix4f());
                     Main.getFont().drawGlyph(charMatrix, c, new Vector4f(0.5f, 0.5f, 0.5f, 1f));
                     shadowLineMatrix.translate(g.getW() + 1, 0, 0);
@@ -84,7 +85,7 @@ public class TextField {
             }
 
             for (char c : line.toCharArray()) {
-                ProportionalFont.Glyph g = Main.getFont().getGlyph(c);
+                Glyph g = Main.getFont().getGlyph(c);
                 Matrix4f charMatrix = lineMatrix.scale(g.getW(), g.getH(), 1, new Matrix4f());
                 Main.getFont().drawGlyph(charMatrix, c, color);
                 lineMatrix.translate(g.getW() + 1, 0, 0);

@@ -1,22 +1,31 @@
 package game.core.loading;
 
-import mdk.blocks.BlockBase;
-
-import java.util.function.Supplier;
+import game.core.GameRuntime;
+import mdk.Mod;
+import mdk.blocks.BlockLoader;
+import mdk.worldgen.WorldGeneratorLoader;
 
 public class ModLoader implements mdk.ModLoader {
-    private final String modName;
+    private final Mod mod;
+    private final GameRuntime runtime;
 
-    public ModLoader(String modName) {
-        this.modName = modName;
+    public ModLoader(Mod mod, GameRuntime runtime) {
+        this.mod = mod;
+        this.runtime = runtime;
     }
 
     public void addDependency(String dependency) {
 
     }
 
-    public void addBlock(String blockName, Supplier<? extends BlockBase> toRegister) {
+    @Override
+    public BlockLoader loadBlocks() {
+        return runtime.getBlockRegister().getModBlockLoader(mod.getModName());
+    }
 
+    @Override
+    public WorldGeneratorLoader loadGenerators() {
+        return runtime.getGeneratorRegister();
     }
 }
 

@@ -1,13 +1,13 @@
 package game.assets.menus;
 
 import game.assets.Background;
-import game.assets.ui_elements.Button;
-import game.assets.ui_elements.ColorBox;
-import game.assets.ui_elements.ContentFrame;
+import game.assets.ui_elements.control.Button;
+import game.assets.ui_elements.asset.ColorBox;
+import game.assets.ui_elements.container.ContentFrame;
 import game.util.relay.IntRelay;
 import org.joml.Vector4f;
 
-public class ContentFrameTest extends Menu {
+public class ContentFrameTest extends UIELMenu {
     public ContentFrameTest(MenuHandler handler) {
         super(Background.BRICKS, 224, 224);
 

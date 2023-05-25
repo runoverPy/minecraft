@@ -25,7 +25,7 @@ public class CooldownKeyInput {
 
     public boolean check() {
         boolean out = false;
-        boolean isTriggered = glfwGetKey(Main.getWindowPtr(), key) == GLFW_PRESS;
+        boolean isTriggered = Main.getActiveWindow().getKey(key) == GLFW_PRESS;
         long now = System.currentTimeMillis();
         if ((now - lastTrigger >= cooldown || (spam && !wasTriggered)) && isTriggered) {
             lastTrigger = now;

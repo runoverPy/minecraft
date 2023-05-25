@@ -16,6 +16,7 @@ public class ModHandler {
 
     /**
      * Creates a unique string identifier for the current modpack
+     * (String modName, String modVersion)[] -> Byte[128]; such that the individual tuples are unordered
      * @return The current unique modpack identifier
      */
     public String getSignature() {
@@ -23,16 +24,8 @@ public class ModHandler {
     }
 
     public void loadMods(Mod[] mods, GameRuntime runtime) {
-        BlockRegister blockRegister = runtime.getBlockRegister();
-        WorldGeneratorRegister generatorRegister = runtime.getGeneratorRegister();
         for (Mod mod : mods) {
-            loadMod(mod, blockRegister, generatorRegister);
+            mod.loadMod(new ModLoader(mod, runtime));
         }
-    }
-
-    private void loadMod(Mod mod, BlockRegister blockRegister, WorldGeneratorRegister generatorRegister) {
-        String modName = mod.getModName();
-        mod.defineBlocks(blockRegister);
-        mod.defineGenerators(generatorRegister);
     }
 }

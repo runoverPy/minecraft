@@ -3,10 +3,9 @@ package game.main;
 import game.assets.menus.ErrorScreen;
 import game.assets.menus.MenuHandler;
 import game.assets.text.ProportionalFont;
-import game.core.GLFWWindow;
+import game.window.GLFWWindow;
 import game.core.GameManager;
 import game.core.GameRuntime;
-import game.core.GraphicsEngine;
 import game.core.settings.GeneralSettings;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
@@ -30,6 +29,11 @@ public class Main {
     public static final Path HERE = Paths.get(Main.class.getResource("Main.class").getPath()); // Paths.get(".").normalize().toAbsolutePath(); // new File(".").toPath().normalize().toAbsolutePath();
 
     public static void main(String[] args) throws IOException {
+//        System.out.println(KeyEvent.ANY);
+//        System.out.println(MouseEvent.ANY);
+//        System.out.println(EventType.ROOT);
+//        System.exit(0);
+
         setup();
         exec();
     }
@@ -93,10 +97,6 @@ public class Main {
         return _window;
     }
 
-    public static long getWindowPtr() {
-        return _window.getWindow();
-    }
-
     public static void openGame(GameManager game) {
         if (Main.game == null) {
             Main.game = game;
@@ -139,5 +139,13 @@ public class Main {
 
     public static GeneralSettings getSettings() {
         return settings;
+    }
+
+    private static final long startTime = System.currentTimeMillis();
+    public static long getStartTime() {
+        return startTime;
+    }
+    public static long getCurrentTime() {
+        return System.currentTimeMillis() - startTime;
     }
 }

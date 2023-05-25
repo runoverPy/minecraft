@@ -3,7 +3,8 @@
     <output-path>$PROJECT_DIR$/out/artifacts/</output-path>
     <root id="archive" name="vanilla.jar">
       <element id="module-output" name="vanilla" />
-      <element id="library" level="module" name="MDK" module-name="vanilla" />
+      <element id="module-output" name="MDK" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/json/json/20220320/json-20220320.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

@@ -16,8 +16,10 @@ import game.main.Main;
 import game.mechanics.entities.Entity;
 import game.mechanics.entities.Player;
 import game.mechanics.entities.User;
+import game.mechanics.physics.Physics;
 import game.util.Ray;
 
+import game.window.GLFWWindow;
 import mdk.worldgen.WorldGenerator;
 
 import org.joml.Matrix4f;
@@ -31,11 +33,7 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL46.glClearColor;
 
 public class GameManager implements Client {
-    /**
-     * calculated, so the maximum height of the jump is 1.25f blocks
-     */
-    public static final Vector3f JUMP_VELOCITY = new Vector3f(0, 0, 4.95f);
-    public static final Vector3f GRAV_ACCEL = new Vector3f(0, 0, -9.81f);
+    public static final Physics physics = new Physics();
 
     private final Player player;
     private final User user;
@@ -162,12 +160,11 @@ public class GameManager implements Client {
     }
 
     public Matrix4f getProjMatrix() {
-        int[] winW = new int[1], winH = new int[1];
-        glfwGetWindowSize(Main.getWindowPtr(), winW, winH);
+        GLFWWindow.Dimension windowSize = Main.getActiveWindow().getWindowSize();
 
         float fov = (float) (Main.getSettings().getFOV()/180f * Math.PI);
 
-        return new Matrix4f().perspective(fov, (float) winW[0] / winH[0], 0.1f, 10000f);
+        return new Matrix4f().perspective(fov, windowSize.getAspectRatio(), 0.1f, 10000f);
     }
 
     public void crash() {}

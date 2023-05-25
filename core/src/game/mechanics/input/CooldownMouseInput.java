@@ -25,7 +25,7 @@ public class CooldownMouseInput {
     
     public boolean check() {
         boolean out = false;
-        boolean isTriggered = glfwGetMouseButton(Main.getWindowPtr(), button) == GLFW_PRESS;
+        boolean isTriggered = Main.getActiveWindow().getMouseButton(button) == GLFW_PRESS;
         long now = System.currentTimeMillis();
         if ((now - lastTrigger >= cooldown || (spam && !wasTriggered)) && isTriggered) {
             lastTrigger = now;

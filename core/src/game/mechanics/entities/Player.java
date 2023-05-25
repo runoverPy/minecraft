@@ -10,6 +10,9 @@ import game.core.server.Server;
 import game.core.GameManager;
 import game.util.Ray;
 import game.core.server.Block;
+import game.window.GLFWWindow;
+import game.window.KeyCallback;
+import game.window.ScrollCallback;
 import mdk.blocks.Phase;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -27,10 +30,10 @@ public class Player {
      * the current movement mode
      */
     private final MovementMode movementMode;
-    private static final float rotSpeed = (float) (2 * Math.PI / 20f), movSpeed = 5 / 1000f;
+    private static final float rotSpeed = (float) (2 * Math.PI / 20f), movSpeed = 3.7f / 1000;
     private final CooldownMouseInput blockBreak, blockPlace;
-    private final GLFWKeyCallbackI hotbarCallback;
-    private final GLFWScrollCallbackI scrollCallback;
+    private final KeyCallback hotbarCallback;
+    private final ScrollCallback scrollCallback;
 
     private final Vector3f pos, vel;
     protected final Server server;
@@ -62,15 +65,15 @@ public class Player {
         this.lT = System.currentTimeMillis();
         reset();
 
-        hotbarCallback = (window, key, scancode, action, mods) -> {
+        hotbarCallback = (key, scancode, action, mods) -> {
             if ('0' <= key && key <= '9') {
                 hotbar.select(key - 49);
             }
         };
 
-        Main.getActiveWindow().setKeyCallback(hotbarCallback);
+        Main.getActiveWindow().addKeyCallback(hotbarCallback);
 
-        scrollCallback = (window, xOffset, yOffset) -> {
+        scrollCallback = (xOffset, yOffset) -> {
             if (yOffset > 0) {
                 hotbar.incSelect();
             } else if (yOffset < 0) {
@@ -78,7 +81,7 @@ public class Player {
             }
         };
 
-        Main.getActiveWindow().setScrollCallback(scrollCallback);
+        Main.getActiveWindow().addScrollCallback(scrollCallback);
     }
 
     public void draw(Matrix4f matrixPV) {
@@ -94,16 +97,14 @@ public class Player {
     }
 
     public void move(Vector3f posChange, Vector3f velChange, EnumMap<Direction, Boolean> collisions, long dT) {
-        double[] curX = new double[1], curY = new double[1];
-        int[] winW = new int[1], winH = new int[1];
-        glfwGetCursorPos(Main.getWindowPtr(), curX, curY);
-        glfwGetWindowSize(Main.getWindowPtr(), winW, winH);
-        glfwSetCursorPos(Main.getWindowPtr(), winW[0] / 2.0, winH[0] / 2.0);
+        GLFWWindow.Dimension windowSize = Main.getActiveWindow().getWindowSize();
+        GLFWWindow.Position<Double> cursorPos = Main.getActiveWindow().getCursorPos();
+        Main.getActiveWindow().setCursorPos(windowSize.width() / 2.0, windowSize.height() / 2.0);
 
         float rotSpeed = Main.getSettings().getDPI() * Player.rotSpeed;
 
-        horizontal += (winW[0] / 2.0 - curX[0]) * (dT / 1000f) * rotSpeed;
-        vertical += (winH[0] / 2.0 - curY[0]) * (dT / 1000f) * rotSpeed;
+        horizontal += (windowSize.width() / 2.0 - cursorPos.x()) * (dT / 1000f) * rotSpeed;
+        vertical += (windowSize.height() / 2.0 - cursorPos.y()) * (dT / 1000f) * rotSpeed;
 
         if (getVertical() < -Math.PI / 2) vertical = -Math.PI / 2;
         if (getVertical() > Math.PI / 2) vertical = Math.PI / 2;
@@ -123,49 +124,48 @@ public class Player {
 
         switch (movementMode) {
             case FLYING: {
-                if (glfwGetKey(Main.getWindowPtr(), GLFW_KEY_W) == GLFW_PRESS) {
+                if (Main.getActiveWindow().getKey(GLFW_KEY_W) == GLFW_PRESS) {
                     posChange.add(fwd.mul(dT * movSpeed, new Vector3f()));
                 }
-                if (glfwGetKey(Main.getWindowPtr(), GLFW_KEY_A) == GLFW_PRESS) {
+                if (Main.getActiveWindow().getKey(GLFW_KEY_A) == GLFW_PRESS) {
                     posChange.sub(right.mul(dT * movSpeed, new Vector3f()));
                 }
-                if (glfwGetKey(Main.getWindowPtr(), GLFW_KEY_S) == GLFW_PRESS) {
+                if (Main.getActiveWindow().getKey(GLFW_KEY_S) == GLFW_PRESS) {
                     posChange.sub(fwd.mul(dT * movSpeed, new Vector3f()));
                 }
-                if (glfwGetKey(Main.getWindowPtr(), GLFW_KEY_D) == GLFW_PRESS) {
+                if (Main.getActiveWindow().getKey(GLFW_KEY_D) == GLFW_PRESS) {
                     posChange.add(right.mul(dT * movSpeed, new Vector3f()));
                 }
-                if (glfwGetKey(Main.getWindowPtr(), GLFW_KEY_SPACE) == GLFW_PRESS) {
+                if (Main.getActiveWindow().getKey(GLFW_KEY_SPACE) == GLFW_PRESS) {
                     posChange.add(up.mul(dT * movSpeed, new Vector3f()));
                 }
-                if (glfwGetKey(Main.getWindowPtr(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+                if (Main.getActiveWindow().getKey(GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
                     posChange.sub(up.mul(dT * movSpeed, new Vector3f()));
                 }
             }
             case WALKING: {
-                if (glfwGetKey(Main.getWindowPtr(), GLFW_KEY_W) == GLFW_PRESS) {
+                if (Main.getActiveWindow().getKey(GLFW_KEY_W) == GLFW_PRESS) {
                     posChange.add(fwd.mul(dT * movSpeed, new Vector3f()));
                 }
-                if (glfwGetKey(Main.getWindowPtr(), GLFW_KEY_A) == GLFW_PRESS) {
+                if (Main.getActiveWindow().getKey(GLFW_KEY_A) == GLFW_PRESS) {
                     posChange.sub(right.mul(dT * movSpeed, new Vector3f()));
                 }
-                if (glfwGetKey(Main.getWindowPtr(), GLFW_KEY_S) == GLFW_PRESS) {
+                if (Main.getActiveWindow().getKey(GLFW_KEY_S) == GLFW_PRESS) {
                     posChange.sub(fwd.mul(dT * movSpeed, new Vector3f()));
                 }
-                if (glfwGetKey(Main.getWindowPtr(), GLFW_KEY_D) == GLFW_PRESS) {
+                if (Main.getActiveWindow().getKey(GLFW_KEY_D) == GLFW_PRESS) {
                     posChange.add(right.mul(dT * movSpeed, new Vector3f()));
                 }
-                if (glfwGetKey(Main.getWindowPtr(), GLFW_KEY_SPACE) == GLFW_PRESS && collisions.get(Direction.DOWN)) {
-                    velChange.add(GameManager.JUMP_VELOCITY);
+                if (Main.getActiveWindow().getKey(GLFW_KEY_SPACE) == GLFW_PRESS && collisions.get(Direction.DOWN)) {
+                    velChange.add(GameManager.physics.JUMP_VELOCITY);
                 }
             }
         }
     }
 
     public void reset() {
-        int[] nX = new int[1], nY = new int[1];
-        glfwGetWindowSize(Main.getWindowPtr(), nX, nY);
-        glfwSetCursorPos(Main.getWindowPtr(), nX[0] / 2.0, nY[0] / 2.0);
+        GLFWWindow.Dimension windowSize = Main.getActiveWindow().getWindowSize();
+        Main.getActiveWindow().setCursorPos(windowSize.width() / 2.0, windowSize.height() / 2.0);
         this.lT = System.currentTimeMillis();
     }
 
@@ -198,9 +198,6 @@ public class Player {
     }
 
     public Matrix4f getViewMatrix(Matrix4f projMatrix) {
-        int[] winW = new int[1], winH = new int[1];
-        glfwGetWindowSize(Main.getWindowPtr(), winW, winH);
-
         Vector3f dir = getDir();
         Vector3f up = new Vector3f(
                 (float) Math.cos(getHorizontal() - Math.PI / 2),
@@ -310,7 +307,7 @@ public class Player {
         EnumMap<Direction, Boolean> preCollisions = getWorldCollisions(this.pos, this.pos);
         move(posChange, velChange, preCollisions, dT);
 
-        velChange.add(new Vector3f(GameManager.GRAV_ACCEL).mul((float) dT / 1000));
+        velChange.add(new Vector3f(GameManager.physics.GRAV_ACCEL).mul((float) dT / 1000));
 
         vel.add(velChange);
 
@@ -364,7 +361,7 @@ public class Player {
             Vector3i block = Ray.beforeFirstBlock(this, server, 4);
             if (block != null && !collides(block)) {
                 String item = hotbar.getItem();
-                if (item != null && GameRuntime.getInstance().getBlockRegister().registered(item)) {
+                if (item != null && GameRuntime.getInstance().getBlockRegister().isLoaded(item)) {
                     server.setBlock(block, new Block(item));
                 } else System.out.println("cannot place block");
             }

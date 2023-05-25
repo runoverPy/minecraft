@@ -6,7 +6,7 @@ import game.assets.ui_elements.Widget;
 
 import static org.lwjgl.glfw.GLFW.*;
 
-class Settings extends Menu {
+class Settings extends UIELMenu {
     public Settings(MenuHandler handler) {
         super(Background.BRICKS, 224, 224);
 

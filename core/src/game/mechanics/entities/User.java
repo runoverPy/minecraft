@@ -1,7 +1,7 @@
 package game.mechanics.entities;
 
 import game.main.Main;
-import org.joml.Matrix4f;
+import game.window.GLFWWindow;
 import org.joml.Vector3f;
 import org.json.JSONObject;
 
@@ -18,9 +18,8 @@ public class User {
     }
 
     public void resetCursor() {
-        int[] nX = new int[1], nY = new int[1];
-        glfwGetWindowSize(Main.getWindowPtr(), nX, nY);
-        glfwSetCursorPos(Main.getWindowPtr(), nX[0] / 2.0, nY[0] / 2.0);
+        GLFWWindow.Dimension windowSize = Main.getActiveWindow().getWindowSize();
+        Main.getActiveWindow().setCursorPos(windowSize.width() / 2.0, windowSize.height() / 2.0);
     }
 
     public Vector3f getCamPos() {
@@ -39,49 +38,16 @@ public class User {
         );
     }
 
-    public Matrix4f getProjViewMatrix(Matrix4f projMatrix) {
-        int[] winW = new int[1], winH = new int[1];
-        glfwGetWindowSize(Main.getWindowPtr(), winW, winH);
-
-        Vector3f dir = getDir();
-
-        Vector3f up = new Vector3f(
-                (float) Math.cos(horizontal - Math.PI / 2),
-                (float) Math.sin(horizontal - Math.PI / 2),
-                (float) 0
-        ).cross(dir);
-
-        return projMatrix.lookAt(
-                getCamPos(),
-                getCamPos().add(dir),
-                up
-        );
-    }
-
-    public Matrix4f getProjectionView() {
-        int[] winW = new int[1], winH = new int[1];
-        glfwGetWindowSize(Main.getWindowPtr(), winW, winH);
-
-        return getProjViewMatrix(new Matrix4f().perspective(
-                (float)Math.PI/2,
-                (float) winW[0] / winH[0],
-                0.1f,
-                100f
-        ));
-
-    }
-
     public UserStatus getUserStatus() {
-        final long windowPtr = Main.getWindowPtr();
         return new UserStatus(
-                glfwGetKey(windowPtr, GLFW_KEY_W) == GLFW_PRESS,
-                glfwGetKey(windowPtr, GLFW_KEY_A) == GLFW_PRESS,
-                glfwGetKey(windowPtr, GLFW_KEY_S) == GLFW_PRESS,
-                glfwGetKey(windowPtr, GLFW_KEY_D) == GLFW_PRESS,
-                glfwGetKey(windowPtr, GLFW_KEY_SPACE) == GLFW_PRESS,
-                glfwGetKey(windowPtr, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS,
-                glfwGetMouseButton(windowPtr, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS,
-                glfwGetMouseButton(windowPtr, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS
+                Main.getActiveWindow().getKey(GLFW_KEY_W) == GLFW_PRESS,
+                Main.getActiveWindow().getKey(GLFW_KEY_A) == GLFW_PRESS,
+                Main.getActiveWindow().getKey(GLFW_KEY_S) == GLFW_PRESS,
+                Main.getActiveWindow().getKey(GLFW_KEY_D) == GLFW_PRESS,
+                Main.getActiveWindow().getKey(GLFW_KEY_SPACE) == GLFW_PRESS,
+                Main.getActiveWindow().getKey(GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS,
+                Main.getActiveWindow().getKey(GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS,
+                Main.getActiveWindow().getKey(GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS
         );
     }
 

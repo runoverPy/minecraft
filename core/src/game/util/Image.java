@@ -21,6 +21,7 @@ import java.util.Map;
 public class Image {
     private final int format;
     private final Raster raster;
+    private final String filePath;
 
     private static final Map<String, Image> loadedImages = new HashMap<>();
 
@@ -40,7 +41,7 @@ public class Image {
             BufferedImage imgBuffer = ImageIO.read(resource);
             format = (imgBuffer.getAlphaRaster() != null ? 4 : 3);
             raster = imgBuffer.getData();
-
+            this.filePath = filePath;
         } catch (IOException ioe) {
             ioe.printStackTrace();
             throw new RuntimeException();
@@ -75,6 +76,10 @@ public class Image {
         buffer.put(iconBytes, 0, iconBytes.length);
         buffer.flip();
         return GLFWImage.create().set(getWidth(), getHeight(), buffer);
+    }
+
+    public String getFilePath() {
+        return filePath;
     }
 
     public static GLFWImage.Buffer collect(GLFWImage... images) {
