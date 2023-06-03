@@ -44,7 +44,7 @@ public class ProportionalFont extends GlyphMap {
         }
         Element font = document.getRootElement();
 
-        int charCount = Integer.parseInt(font.valueOf("@charcount"));
+        int charCount = Integer.parseInt(font.valueOf("@charCount"));
         int imgWidth = Integer.parseInt(font.valueOf("@imgWidth"));
         int imgHeight = Integer.parseInt(font.valueOf("@imgHeight"));
 

@@ -3,6 +3,7 @@ package game.main;
 import game.assets.menus.ErrorScreen;
 import game.assets.menus.MenuHandler;
 import game.assets.text.ProportionalFont;
+import game.core.GraphicsEngine;
 import game.window.GLFWWindow;
 import game.core.GameManager;
 import game.core.GameRuntime;
@@ -10,6 +11,7 @@ import game.core.settings.GeneralSettings;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -18,63 +20,40 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL46.*;
 
 public class Main {
-//    private static GraphicsEngine engine;
-    private static GLFWWindow _window;
-    private static int vao;
+    private static GraphicsEngine engine;
+    private static GLFWWindow window;
+
     private static ProportionalFont font;
     private static GeneralSettings settings;
+    private static GameRuntime runtime;
     private static GameManager game;
     private static MenuHandler mainMenu;
 
-    public static final Path HERE = Paths.get(Main.class.getResource("Main.class").getPath()); // Paths.get(".").normalize().toAbsolutePath(); // new File(".").toPath().normalize().toAbsolutePath();
-
     public static void main(String[] args) throws IOException {
-//        System.out.println(KeyEvent.ANY);
-//        System.out.println(MouseEvent.ANY);
-//        System.out.println(EventType.ROOT);
-//        System.exit(0);
-
         setup();
         exec();
     }
 
-    private static void setup() {
-        if (!glfwInit()) {
+    private static void setup() throws FileNotFoundException {
+        // init glfw
+        if (!glfwInit())
             throw new RuntimeException("GLFW konnte nicht initialisiert werden");
-        }
-
         glfwSetErrorCallback(GLFWErrorCallback.createPrint(System.err));
         glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
 
-        long monitor = glfwGetPrimaryMonitor();
-
+        // init window
         String title = "HELP IM STUCK IN MINECRAFT";
-
         boolean fullscreen = false;
+        window = GLFWWindow.createOnPrimaryMonitor(title, fullscreen);
+        window.setContext();
+        window.setIcon("/img/MeinCraft.png");
 
-        _window = new GLFWWindow(title, monitor, fullscreen);
-        _window.setContext();
-        _window.setIcon("/img/MeinCraft.png");
+        // init engine
+        engine = new GraphicsEngine();
+        engine.init();
 
-//        engine = new GraphicsEngine();
-
-        GL.createCapabilities();
-        vao = glGenVertexArrays();
-        glBindVertexArray(vao);
-
-        glPolygonOffset(1, 1);
-        glLineWidth(2);
-
-        glEnable(GL_BLEND);
-        glEnable(GL_POLYGON_OFFSET_FILL);
-        glEnable(GL_LINE_SMOOTH);
-        glEnable(GL_TEXTURE_2D);
-        glEnable(GL_DEPTH_TEST);
-        glEnable(GL_CULL_FACE);
-        glEnable(GL_SCISSOR_TEST);
-        glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
-
-        GameRuntime.setInstance();
+        // init stuff
+        runtime = GameRuntime.setInstance();
         mainMenu = MenuHandler.mainMenu();
         font = new ProportionalFont();
         settings = new GeneralSettings();
@@ -82,19 +61,19 @@ public class Main {
 
     private static void exec() {
         // rendering loop
-        while (!_window.shouldClose()) {
+        while (!window.shouldClose()) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            if (game != null) game.render();
+            if (game != null) game.render(); // todo cleanup this
             else mainMenu.render();
-            _window.update();
+            window.update();
         }
         // cleanup
-        _window.destroy();
+        window.destroy();
         glfwTerminate();
     }
 
     public static GLFWWindow getActiveWindow() {
-        return _window;
+        return window;
     }
 
     public static void openGame(GameManager game) {

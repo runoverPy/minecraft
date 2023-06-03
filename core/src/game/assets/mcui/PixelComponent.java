@@ -18,21 +18,21 @@ public abstract class PixelComponent extends Component {
         }
     }
 
-//    @Override
-//    public void setWidth(int width) {
-//        if (getPxScale() == 0) setPxWidth(0);
-//        setPxWidth(width / getPxScale());
-//    }
-//
-//    @Override
-//    public void setHeight(int height) {
-//        setPxHeight(height / getPxScale());
-//    }
-//
-//    @Override
-//    public void setSize(int width, int height) {
-//        setPxSize((width / getPxScale()), (height / getPxScale()));
-//    }
+    @Override
+    public void setWidth(int width) {
+        if (getPxScale() == 0) setPxWidth(0);
+        setPxWidth(width / getPxScale());
+    }
+
+    @Override
+    public void setHeight(int height) {
+        setPxHeight(height / getPxScale());
+    }
+
+    @Override
+    public void setSize(int width, int height) {
+        setPxSize((width / getPxScale()), (height / getPxScale()));
+    }
 
     public void setPxWidth(int pxWidth) {
         super.setWidth(pxWidth);
@@ -56,11 +56,11 @@ public abstract class PixelComponent extends Component {
         return super.getHeight() * getPxScale();
     }
 
-    public int getAbsWidth() {
+    public int getPxWidth() {
         return super.getWidth();
     }
 
-    public int getAbsHeight() {
+    public int getPxHeight() {
         return super.getHeight();
     }
 
@@ -72,7 +72,7 @@ public abstract class PixelComponent extends Component {
         return PixelComponent.scale;
     }
 
-    protected static int getPxScale() {
+    public static int getPxScale() {
         int winWidth, winHeight;
         winWidth = Main.getActiveWindow().getWidth();
         winHeight = Main.getActiveWindow().getHeight();

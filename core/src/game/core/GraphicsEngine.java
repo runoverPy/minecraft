@@ -16,13 +16,16 @@ public class GraphicsEngine {
     }
 
     public void init() {
+        // init graphics thread
         GL.createCapabilities();
         vao = glGenVertexArrays();
         glBindVertexArray(vao);
 
+        // geometry stuff
         glPolygonOffset(1, 1);
         glLineWidth(2);
 
+        // gl settings
         glEnable(GL_BLEND);
         glEnable(GL_POLYGON_OFFSET_FILL);
         glEnable(GL_LINE_SMOOTH);
@@ -30,7 +33,10 @@ public class GraphicsEngine {
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
         glEnable(GL_SCISSOR_TEST);
+
+        // blend func
         glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
+
     }
 
     public void clear() {

@@ -25,11 +25,14 @@ public class Slider<T extends Number> extends ChildBox {
     private final Function<T, Double> invConverter;
 
     private final ColorBox scrollRail;
+    private final ColorBox frame;
     private final Knob knob;
 
     public Slider(int width, int height, int xOffset, int yOffset, Component parent, String name, ObjectRelay<T> value, Function<Double, T> converter, Function<T, Double> invConverter) {
         super(width, height, xOffset, yOffset, parent);
         scrollRail = new ColorBox(width - 2, height - 2, 1, 1, this, new Vector4f(0.75f, 0.75f, 0.75f, 1f));
+        frame = new ColorBox(getWidth(), getHeight(), 0, 0, this, new Vector4f(0.375f, 0.375f, 0.375f, 1f));
+
         knob = new Knob(8, height, 0, 0, this);
 
         this.name = name;
@@ -62,11 +65,9 @@ public class Slider<T extends Number> extends ChildBox {
 
     @Override
     public void draw(int pxScale, Matrix4f matrix4f) {
-        ColorBox frame = new ColorBox(getWidth(), getHeight(), 0, 0, this, new Vector4f(0.375f, 0.375f, 0.375f, 1f));
-        frame.draw(pxScale, matrix4f);
-
         TextBox description = new TextBox(getWidth() - 2, getHeight() - 2, 1, 1, this, this.name + ": " + value.getValue().toString(), true, true);
 
+        frame.draw(pxScale, matrix4f);
         scrollRail.draw(pxScale, matrix4f);
         knob.draw(pxScale, matrix4f);
         description.draw(pxScale, matrix4f);
@@ -103,13 +104,14 @@ public class Slider<T extends Number> extends ChildBox {
             }
 
             if (clicked) {
-                int mouseX = Main.getActiveWindow().getCursorPos().x().intValue();
-                int knobPos = mouseX - clickOffset;
-                int scrollLength = getParent().getWidth(pxScale) - getWidth(pxScale);
                 int
-                        leftEnd = getParent().getCornerX(pxScale),
-                        rightEnd = leftEnd + scrollLength;
-                int framedLength = Math.max(leftEnd, Math.min(knobPos, rightEnd)) - leftEnd;
+                  mouseX = Main.getActiveWindow().getCursorPos().x().intValue(),
+                  knobPos = mouseX - clickOffset,
+                  scrollLength = getParent().getWidth(pxScale) - getWidth(pxScale),
+                  leftEnd = getParent().getCornerX(pxScale),
+                  rightEnd = leftEnd + scrollLength,
+                  framedLength = Math.max(leftEnd, Math.min(knobPos, rightEnd)) - leftEnd;
+
                 value.setValue(converter.apply((double) framedLength / scrollLength));
                 sliderValue = invConverter.apply(value.getValue());
             }
@@ -117,8 +119,8 @@ public class Slider<T extends Number> extends ChildBox {
             Vector4f frameColor = clicked || hovering(pxScale) ? new Vector4f(1, 1, 1, 1) : new Vector4f(0, 0, 0, 1);
 
             ColorBox outerBox = new ColorBox(getWidth(), getHeight(), 0, 0, this, frameColor);
-            outerBox.draw(pxScale, matrix4f);
             ImageBox center = new ImageBox(getWidth() - 2, getHeight() - 2, 1, 1, this, Image.loadImage("/img/stone.png"));
+            outerBox.draw(pxScale, matrix4f);
             center.draw(pxScale, matrix4f);
         }
 

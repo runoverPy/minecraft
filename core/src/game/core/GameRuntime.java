@@ -26,9 +26,10 @@ public class GameRuntime {
         System.out.println(Arrays.toString(generatorRegister.getLoadedGenerators()));
     }
 
-    public static void setInstance() {
+    public static GameRuntime setInstance() {
         if (instance != null) throw new IllegalStateException("A new game runtime cannot be created without terminating the current game runtime");
         instance = new GameRuntime();
+        return instance;
     }
 
     /**

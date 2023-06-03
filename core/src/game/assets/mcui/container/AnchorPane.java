@@ -1,13 +1,22 @@
 package game.assets.mcui.container;
 
 import game.assets.mcui.Component;
+import game.assets.mcui.PixelComponent;
 import game.assets.mcui.Side;
+import org.joml.Matrix4f;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class AnchorPane extends Container {
     private static final Map<Component, Constraints> componentConstraints = new HashMap<>();
+
+    private PixelComponent reminder = new PixelComponent() {
+        @Override
+        public void layout() {
+            AnchorPane.this.layout();
+        }
+    };
 
     public AnchorPane() {}
 
@@ -51,6 +60,13 @@ public class AnchorPane extends Container {
         return getAnchor(node, Side.RIGHT);
     }
 
+
+    @Override
+    public void render(Matrix4f matrix) {
+        reminder.layoutIfScaleChanged();
+        super.render(matrix);
+    }
+
     private static class Constraints {
         private Double topAnchor;
         private Double botAnchor;
@@ -89,7 +105,7 @@ public class AnchorPane extends Container {
             if (top != null && bot != null) {
                 int height = (int) (getHeight() - (top + bot));
                 if (height > 0) {
-//                    System.out.println("Setting AnchorPane child " + child + " height to " + height);
+                    System.out.println("Setting AnchorPane child " + child + " height to " + height);
                     child.setLayoutY(top.intValue());
                     child.setHeight(height);
                 }

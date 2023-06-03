@@ -2,6 +2,7 @@ package game.assets.mcui.container;
 
 import game.assets.mcui.Align;
 import game.assets.mcui.Component;
+import game.assets.mcui.PixelComponent;
 
 public class VerticalContainer extends Container {
     private Align align;
@@ -13,6 +14,22 @@ public class VerticalContainer extends Container {
 
     public VerticalContainer(Align align) {
         this.align = align;
+    }
+
+    @Override
+    public int calcWidth() {
+        int width = 0;
+        for (Component child : getChildren())
+            width = Math.max(width, child.getWidth());
+        return width;
+    }
+
+    @Override
+    public int calcHeight() {
+        int height = (getChildren().size() - 1) * getSpacing();
+        for (Component child : getChildren())
+            height += child.getHeight();
+        return height;
     }
 
     @Override
@@ -35,7 +52,7 @@ public class VerticalContainer extends Container {
     }
 
     public int getSpacing() {
-        return spacing;
+        return spacing * PixelComponent.getPxScale();
     }
 
     public void setSpacing(int spacing) {

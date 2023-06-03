@@ -1,10 +1,4 @@
 {
-  "core": {
-    "general": {
-      "fov": 90,
-      "dpi": 1.0
-    }
-  },
   "minecraft.general": {
     "fov": 90,
     "dpi": 1.0

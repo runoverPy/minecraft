@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<font name="ascii" img="ascii.png" imgWidth="96" imgHeight="66" charcount="96">
+<font name="ascii" img="ascii.png" imgWidth="96" imgHeight="66" charCount="96" defaultHeight="10">
     <default height="10"/>
     <char cX="0" cY="0" w="5"> </char>
     <char cX="6" cY="0" w="1">!</char>
@@ -11,12 +11,12 @@
     <char cX="36" cY="0" w="1">'</char>
     <char cX="38" cY="0" w="3">(</char>
     <char cX="42" cY="0" w="3">)</char>
-    <char cX="46" cY="0" w="3">*</char>
-    <char cX="50" cY="0" w="5">+</char>
-    <char cX="56" cY="0" w="2">,</char>
-    <char cX="59" cY="0" w="5">-</char>
-    <char cX="65" cY="0" w="1">.</char>
-    <char cX="67" cY="0" w="5">/</char>
+    <char cX="46" cY="0" w="5">*</char>
+    <char cX="52" cY="0" w="5">+</char>
+    <char cX="58" cY="0" w="2">,</char>
+    <char cX="61" cY="0" w="5">-</char>
+    <char cX="67" cY="0" w="1">.</char>
+    <char cX="69" cY="0" w="5">/</char>
     <char cX="0" cY="11" w="5">0</char>
     <char cX="6" cY="11" w="4">1</char>
     <char cX="11" cY="11" w="5">2</char>
@@ -92,9 +92,9 @@
     <char cX="48" cY="55" w="5">x</char>
     <char cX="54" cY="55" w="5">y</char>
     <char cX="60" cY="55" w="5">z</char>
-    <char cX="66" cY="55" w="3">{</char>
-    <char cX="70" cY="55" w="1">|</char>
-    <char cX="72" cY="55" w="3">}</char>
-    <char cX="76" cY="55" w="5">~</char>
-    <missingchar cX="82" cY="55" w="5"/>
+    <char cX="66" cY="55" w="4">{</char>
+    <char cX="71" cY="55" w="1">|</char>
+    <char cX="73" cY="55" w="4">}</char>
+    <char cX="78" cY="55" w="5">~</char>
+    <missingchar cX="84" cY="55" w="5"/>
 </font>

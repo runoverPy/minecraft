@@ -15,8 +15,8 @@ public class GeneralSettings extends Settings {
     @Setting
     private float dpi;
 
-    public GeneralSettings() {
-        super("minecraft.general");
+    public GeneralSettings() throws FileNotFoundException {
+        super("/dat/settings.json", "minecraft.general");
         this.saveFile = getClass().getResource("/dat/settings.json");
         load();
     }
@@ -83,5 +83,13 @@ public class GeneralSettings extends Settings {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public String toString() {
+        return "GeneralSettings {\n" +
+          "\tfov: " + fov + ",\n" +
+          "\tdpi: " + dpi + "\n" +
+          '}';
     }
 }

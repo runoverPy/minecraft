@@ -62,32 +62,35 @@ public abstract class Component implements EventTarget {
     }
 
     public int getWidth() {
-        return width;
+        return width >= 0 ? width : calcWidth();
+    }
+
+    public int calcWidth() {
+        return 0;
     }
 
     public int getHeight() {
-        return height;
+        return height >= 0 ? height : calcHeight();
+    }
+
+    public int calcHeight() {
+        return 0;
     }
 
     public void setWidth(int width) {
         if (!isResizeable()) return;
-        if (width < minWidth() || maxWidth() < width) throw new IllegalArgumentException("Illegal width value");
         this.width = width;
         layout();
     }
 
     public void setHeight(int height) {
-//        setSize(getWidth(), height);
         if (!isResizeable()) return;
-        if (height < minHeight() || maxHeight() < height) throw new IllegalArgumentException("Illegal height value");
         this.height = height;
         layout();
     }
 
     public void setSize(int width, int height) {
         if (!isResizeable()) return;
-        if (width < minWidth() || maxWidth() < width) throw new IllegalArgumentException("Illegal width value");
-        if (height < minHeight() || maxHeight() < height) throw new IllegalArgumentException("Illegal height value");
         this.width = width;
         this.height = height;
         layout();

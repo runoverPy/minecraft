@@ -1,21 +1,24 @@
 package game.assets.overlays;
 
 import game.assets.Toggle;
-import game.assets.text.Advance;
-import game.assets.text.TextField;
+import game.assets.mcui.Align;
+import game.assets.mcui.ContentRoot;
+import game.assets.mcui.asset.TextTile;
+import game.assets.mcui.container.AnchorPane;
+import game.assets.mcui.container.StackContainer;
+import game.core.server.Server;
 import game.main.Main;
 import game.mechanics.entities.Player;
 import game.util.Ray;
-import game.core.server.Server;
+import game.window.GLFWWindow;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
-import org.joml.Vector4f;
 
-import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_F3;
 import static org.lwjgl.opengl.GL46.*;
 
-public class Debug {
+public class Debug extends ContentRoot {
     private long lastTime;
     private final Server server;
     private final Player player;
@@ -23,23 +26,46 @@ public class Debug {
     private static final int toggleKey = GLFW_KEY_F3;
     private final Toggle visible;
 
+    private TextTile leftText, rightText;
+
     public Debug(Server server, Player player) {
         this.server = server;
         this.player = player;
         this.counter = new FPSCounter();
         lastTime = System.currentTimeMillis();
         visible = new Toggle(toggleKey);
+        leftText = new TextTile();
+        rightText = new TextTile();
+        StackContainer.setAlignment(leftText, Align.TOP_LEFT);
+        leftText.setAlign(Align.TOP_LEFT);
+        StackContainer.setAlignment(rightText, Align.TOP_RIGHT);
+        rightText.setAlign(Align.TOP_RIGHT);
+        StackContainer innerContainer = new StackContainer();
+        innerContainer.getChildren()
+          .addAll(leftText, rightText);
+        AnchorPane.setTopAnchor(innerContainer, 4.0);
+        AnchorPane.setBottomAnchor(innerContainer, 4.0);
+        AnchorPane.setLeftAnchor(innerContainer, 4.0);
+        AnchorPane.setRightAnchor(innerContainer, 4.0);
+        AnchorPane outerContainer = new AnchorPane();
+        GLFWWindow.Dimension windowSize = Main.getActiveWindow().getWindowSize();
+        outerContainer.setSize(windowSize.width(), windowSize.height());
+        outerContainer.getChildren()
+          .add(innerContainer);
+        setRoot(outerContainer);
+
+        Main.getActiveWindow().addWindowSizeCallback(outerContainer::setSize);
     }
 
     public void render() {
-        int winWidth = Main.getActiveWindow().getWidth();
-        int winHeight = Main.getActiveWindow().getHeight();
+        glDisable(GL_DEPTH_TEST);
+        Matrix4f matrixPV = Overlay.make2DMatrix();
+        render(matrixPV);
+        glEnable(GL_DEPTH_TEST);
+    }
 
-        int pxWidth, pxHeight;
-        pxWidth = winWidth / 256;
-        pxHeight = winHeight / 256;
-        int pxScale = Math.min(pxWidth, pxHeight);
-
+    @Override
+    public void render(Matrix4f matrix) {
         long newTime = System.currentTimeMillis();
         long deltaTime = newTime - lastTime;
         lastTime = newTime;
@@ -49,36 +75,29 @@ public class Debug {
         visible.check();
         if (!isVisible()) return;
 
-        glDisable(GL_DEPTH_TEST);
-        Matrix4f matrixPV = Overlay.make2DMatrix();
-
-
-        int padding = 4 * pxScale;
-
-        TextField leftTextField = new TextField(true, padding, padding, Advance.DOWN_RIGHT, new Vector4f(0f, 0f, 0f, 1f));
-        TextField rightTextField = new TextField(true, winWidth - padding, padding, Advance.DOWN_LEFT, new Vector4f(0f, 0f, 0f, 1f));
-
         Vector3f camPos = player.getCamPos();
         Vector3f camVel = player.getVel();
         Vector3i chunk = player.getCurrentChunk();
         Vector3i firstBlock = Ray.findFirstBlock(player, server, 10);
         double vertical = player.getVertical(), horizontal = player.getHorizontal();
 
-        leftTextField.printlnf("XYZ: %.3f; %.3f; %.3f", camPos.x(), camPos.y(), camPos.z());
-        leftTextField.printlnf("Vel: %.3f; %.3f; %.3f", camVel.x(), camVel.y(), camVel.z());
-        leftTextField.printlnf("Angle: %.3f; %.3f", vertical * 360 / (Math.PI * 2) % 360, horizontal * 360 / (Math.PI * 2) % 360);
-        leftTextField.printlnf("Chunk: %d, %d, %d", chunk.x(), chunk.y(), chunk.z());
+        leftText.edit()
+          .clear()
+          .printf("XYZ: %.3f; %.3f; %.3f\n", camPos.x(), camPos.y(), camPos.z())
+          .printf("Vel: %.3f; %.3f; %.3f\n", camVel.x(), camVel.y(), camVel.z())
+          .printf("Angle: %.3f; %.3f\n", vertical * 360 / (Math.PI * 2) % 360, horizontal * 360 / (Math.PI * 2) % 360)
+          .printf("Chunk: %d, %d, %d\n", chunk.x(), chunk.y(), chunk.z());
 
-        rightTextField.println("FPS: " + counter.getAvgFramerate());
+        rightText.edit()
+          .clear()
+          .println("FPS: " + (long) counter.getAvgFrameRate());
 
         if (firstBlock != null) {
-            rightTextField.printlnf("Looking at block: %d, %d, %d", firstBlock.x(), firstBlock.y(), firstBlock.z());
+            rightText.edit()
+              .printf("Looking at block: %d, %d, %d\n", firstBlock.x(), firstBlock.y(), firstBlock.z());
         }
 
-        leftTextField.draw(pxScale, matrixPV);
-        rightTextField.draw(pxScale, matrixPV);
-
-        glEnable(GL_DEPTH_TEST);
+        super.render(matrix);
     }
 
     public boolean isVisible() {

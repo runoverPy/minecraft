@@ -1,5 +1,6 @@
 package game.assets.overlays;
 
+import game.assets.mcui.Component;
 import game.assets.ui_elements.asset.ColorBox;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
@@ -8,12 +9,17 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-public class FPSCounter {
+public class FPSCounter extends Component {
     private final Deque<Long> frames;
     private final int slots = 100;
 
     public FPSCounter() {
         this.frames = new LinkedList<>();
+    }
+
+    @Override
+    public void render(Matrix4f matrix) {
+
     }
 
     public void addFrame(long time) {
@@ -30,7 +36,7 @@ public class FPSCounter {
         }
     }
 
-    public double getAvgFrametime() {
+    public double getAvgFrameTime() {
         int frames = 0;
         long sum = 0;
         for (double value : this.frames) {
@@ -40,11 +46,11 @@ public class FPSCounter {
         return (double) sum / frames;
     }
 
-    public long getAvgFramerate() {
-        return (long) (1000 / getAvgFrametime());
+    public double getAvgFrameRate() {
+        return 1000 / getAvgFrameTime();
     }
 
-    public void draw(int pxScale, Matrix4f matrix4f, int x, int y) {
+    public void draw(int pxScale, Matrix4f matrix4f, int x, int y) { // todo
         int cols = 24;
         int colW = 1, colS = 1;
 

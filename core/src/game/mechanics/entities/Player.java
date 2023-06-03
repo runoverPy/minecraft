@@ -1,15 +1,17 @@
 package game.mechanics.entities;
 
-import game.assets.ui_elements.Hotbar;
+//import game.assets.ui_elements.Hotbar;
+
+import game.assets.mcui.export.Hotbar;
+import game.core.GameManager;
 import game.core.GameRuntime;
+import game.core.server.Block;
+import game.core.server.Server;
 import game.main.Main;
 import game.mechanics.collision.Direction;
 import game.mechanics.collision.Hitbox;
 import game.mechanics.input.CooldownMouseInput;
-import game.core.server.Server;
-import game.core.GameManager;
 import game.util.Ray;
-import game.core.server.Block;
 import game.window.GLFWWindow;
 import game.window.KeyCallback;
 import game.window.ScrollCallback;
@@ -17,11 +19,8 @@ import mdk.blocks.Phase;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
-import org.lwjgl.glfw.GLFWKeyCallbackI;
-import org.lwjgl.glfw.GLFWScrollCallbackI;
 
 import java.util.EnumMap;
-
 
 import static org.lwjgl.glfw.GLFW.*;
 

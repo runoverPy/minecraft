@@ -1,11 +1,12 @@
 package game.assets.overlays;
 
+import game.assets.mcui.ContentRoot;
 import org.joml.Matrix4f;
 
 /**
  *
  */
-public abstract class Layer {
+public abstract class Layer extends ContentRoot {
     protected LayerHandler handler;
     
     public final boolean isActive() {

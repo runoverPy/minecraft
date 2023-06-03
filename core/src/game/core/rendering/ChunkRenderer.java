@@ -44,7 +44,6 @@ public abstract class ChunkRenderer implements Renderer, Closeable {
 
     @Override
     public void updateChunks(Vector3i centerChunk, int renderRadius, boolean circular) {
-        System.out.println("updating chunks");
         Set<Vector3i> newChunks = new HashSet<>();
         Vector3i chunk;
         for (int x = centerChunk.x() - renderRadius; x <= centerChunk.x() + renderRadius; x++) {

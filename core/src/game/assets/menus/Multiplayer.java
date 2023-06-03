@@ -1,6 +1,13 @@
 package game.assets.menus;
 
 import game.assets.Background;
+import game.assets.event.ActionEvent;
+import game.assets.event.EventRunnable;
+import game.assets.mcui.Align;
+import game.assets.mcui.container.StackContainer;
+import game.assets.mcui.container.VerticalContainer;
+import game.assets.mcui.control.Button;
+import game.assets.mcui.control.InputField;
 import game.assets.ui_elements.Widget;
 import game.core.GameManager;
 import game.core.server.connect.ConnectionConfig;
@@ -8,12 +15,12 @@ import game.main.Main;
 
 import java.io.IOException;
 
-class Multiplayer extends UIELMenu {
+class Multiplayer extends MCUIMenu {
     public Multiplayer(MenuHandler handler) {
-        super(Background.BRICKS, 256, 256);
+        super(Background.BRICKS);
         StringBuffer addr = new StringBuffer(), port = new StringBuffer();
 
-        Runnable onJoinWorld = () -> {
+        EventRunnable<ActionEvent> onJoinWorld = () -> {
             String serverAddr = addr.toString();
             int serverPort;
             try {
@@ -30,11 +37,30 @@ class Multiplayer extends UIELMenu {
             }
         };
 
-        try (WidgetOrganizer manager = organiser(192, 18, 4, 4)) {
-            manager.insert(Widget.query(addr));
-            manager.insert(Widget.query(port));
-            manager.insert(Widget.button("Join World", onJoinWorld));
-            manager.insert(Widget.button("Back", handler::prev));
-        }
+        StackContainer outerContainer = new StackContainer();
+        outerContainer.setAlign(Align.CENTER);
+        VerticalContainer innerContainer = new VerticalContainer();
+        innerContainer.setAlign(Align.CENTER);
+        innerContainer.setSize(-1, -1);
+        innerContainer.setSpacing(2);
+
+        InputField addrInputField = new InputField();
+        addrInputField.setSize(192, 16);
+        addrInputField.setContents(addr);
+        InputField portInputField = new InputField();
+        portInputField.setSize(192, 16);
+        portInputField.setContents(port);
+        Button joinButton = new Button("Join World");
+        joinButton.setOnAction(onJoinWorld);
+        joinButton.setSize(192, 16);
+        Button returnButton = new Button("Back");
+        returnButton.setOnAction(handler::prev);
+        returnButton.setSize(192, 16);
+
+        innerContainer.getChildren()
+          .addAll(addrInputField, portInputField, joinButton, returnButton);
+        outerContainer.getChildren()
+          .setAll(innerContainer);
+        setRoot(outerContainer);
     }
 }

@@ -1,35 +1,45 @@
 package game.assets.overlays;
 
 import game.assets.Crosshair;
+import game.assets.mcui.ContentRoot;
+import game.core.GameManager;
+import game.main.Main;
 import game.mechanics.entities.Player;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
-public class GameUI {
-//    private boolean inInventory;
+import static org.lwjgl.glfw.GLFW.*;
+
+public class GameUI extends ContentRoot {
+    private boolean inInventory;
     private final Player player;
 
     public GameUI(Player player) {
         this.player = player;
     }
 
-//    public void openInventory() {
-//        Main.getActiveWindow().setInputMode(GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-//        inInventory = true;
-//    }
-//
-//    public void closeInventory() {
-//        Main.getActiveWindow().setInputMode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-//        inInventory = false;
-//    }
-//
-//    public boolean isInInventory() {
-//        return inInventory;
-//    }
+    public void openInventory() {
+        Main.getActiveWindow().setInputMode(GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        inInventory = true;
+    }
+
+    public void closeInventory() {
+        Main.getActiveWindow().setInputMode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        inInventory = false;
+    }
+
+    public boolean isInInventory() {
+        return inInventory;
+    }
 
     public void render() {
-        Matrix4f matrixPV = Overlay.make2DMatrix();
+        Matrix4f matrix = Overlay.make2DMatrix();
 
-        new Crosshair().draw(matrixPV);
-        player.getHotbar().draw(matrixPV);
+        double
+          horizontal = player.getHorizontal(),
+          vertical = player.getVertical();
+
+        new Crosshair().drawCompass(matrix, horizontal, vertical);
+        player.getHotbar().draw(matrix);
     }
 }

@@ -3,7 +3,24 @@ package game.assets.mcui.container;
 import game.assets.mcui.Align;
 import game.assets.mcui.Component;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class StackContainer extends Container {
+    private static final Map<Component, Align> componentAlignments = new HashMap<>();
+
+    public static void setAlignment(Component component, Align align) {
+        componentAlignments.put(component, align);
+    }
+
+    public static Align getAlignment(Component component) {
+        return componentAlignments.get(component);
+    }
+
+    public static Align getAlignmentOrDefault(Component component, Align alternative) {
+        return componentAlignments.getOrDefault(component, alternative);
+    }
+
     private Align align;
 
     public StackContainer() {
@@ -18,9 +35,11 @@ public class StackContainer extends Container {
     public void layout() {
         for (Component child : getChildren()) { // fixme doesnt align children properly
             child.layout();
-            int layoutX = align.getXOffset(getWidth(), child.getWidth());
+            int layoutX = getAlignmentOrDefault(child, align)
+              .getXOffset(getWidth(), child.getWidth());
             child.setLayoutX(layoutX);
-            int layoutY = align.getYOffset(getHeight(), child.getHeight());
+            int layoutY = getAlignmentOrDefault(child, align)
+              .getYOffset(getHeight(), child.getHeight());
             child.setLayoutY(layoutY);
         }
     }

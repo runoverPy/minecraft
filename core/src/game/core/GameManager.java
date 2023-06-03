@@ -159,12 +159,10 @@ public class GameManager implements Client {
         }
     }
 
-    public Matrix4f getProjMatrix() {
-        GLFWWindow.Dimension windowSize = Main.getActiveWindow().getWindowSize();
-
+    public static Matrix4f getProjMatrix() {
         float fov = (float) (Main.getSettings().getFOV()/180f * Math.PI);
 
-        return new Matrix4f().perspective(fov, windowSize.getAspectRatio(), 0.1f, 10000f);
+        return new Matrix4f().perspective(fov, Main.getActiveWindow().getAspectRatio(), 0.1f, 10000f);
     }
 
     public void crash() {}

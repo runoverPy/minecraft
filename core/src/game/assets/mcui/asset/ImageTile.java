@@ -48,8 +48,8 @@ public class ImageTile extends PixelComponent {
     public void render(Matrix4f matrix) {
         layoutIfScaleChanged();
         int pxScale = getPxScale();
-        int horizontalImageCount = getAbsWidth() / image.getWidth();
-        int verticalImageCount = getAbsHeight() / image.getHeight();
+        int horizontalImageCount = getPxWidth() / image.getWidth();
+        int verticalImageCount = getPxHeight() / image.getHeight();
 
         int winWidth = Main.getActiveWindow().getWidth();
         int winHeight = Main.getActiveWindow().getHeight();

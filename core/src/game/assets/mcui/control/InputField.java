@@ -47,10 +47,10 @@ public class InputField extends PixelComponent {
 
     @Override
     public void layout() {
-        inputFrame.setPxSize(getAbsWidth(), getAbsHeight());
-        inputField.setPxSize(getAbsWidth() - 2, getAbsHeight() - 2);
+        inputFrame.setPxSize(getPxWidth(), getPxHeight());
+        inputField.setPxSize(getPxWidth() - 2, getPxHeight() - 2);
         inputField.setLayoutPos(getPxScale(), getPxScale());
-        inputText.setPxSize(getAbsWidth() - 2, getAbsHeight() - 2);
+        inputText.setPxSize(getPxWidth() - 2, getPxHeight() - 2);
         inputText.setLayoutPos(getPxScale() * 2, getPxScale() * 2);
     }
 
@@ -60,6 +60,10 @@ public class InputField extends PixelComponent {
 
     public StringBuffer getContents() {
         return contents;
+    }
+
+    public void setContents(StringBuffer contents) {
+        this.contents = contents;
     }
 
     @Override

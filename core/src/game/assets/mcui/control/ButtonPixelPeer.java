@@ -23,11 +23,11 @@ public class ButtonPixelPeer extends PixelPeer {
 
     @Override
     public void layout() {
-        buttonCover.setPxSize(getAbsWidth(), getAbsHeight());
-        buttonFrame.setPxSize(getAbsWidth(), getAbsHeight());
-        buttonImage.setPxSize((getAbsWidth() - 2), (getAbsHeight() - 2));
+        buttonCover.setPxSize(getPxWidth(), getPxHeight());
+        buttonFrame.setPxSize(getPxWidth(), getPxHeight());
+        buttonImage.setPxSize((getPxWidth() - 2), (getPxHeight() - 2));
         buttonImage.setLayoutPos(getPxScale(), getPxScale());
-        description.setPxSize((getAbsWidth() - 2), (getAbsHeight() - 2));
+        description.setPxSize((getPxWidth() - 2), (getPxHeight() - 2));
         buttonImage.setLayoutPos(getPxScale(), getPxScale());
     }
 

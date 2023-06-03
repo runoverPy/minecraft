@@ -2,7 +2,6 @@ package game.assets.ui_elements;
 
 import game.assets.event.MouseButton;
 import game.assets.mcui.ContentRoot;
-import game.assets.mcui.PixelComponent;
 import game.assets.mcui.container.VerticalContainer;
 import game.assets.event.EventTarget;
 import game.assets.event.EventType;

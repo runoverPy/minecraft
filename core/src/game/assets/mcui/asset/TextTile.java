@@ -7,32 +7,36 @@ import game.main.Main;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 
+import java.io.IOException;
+import java.util.function.Function;
+
 public class TextTile extends PixelComponent {
     private Symbol[][] symbols; // todo
     private char[][] chars;
-    private Vector4f color;
+    private Vector4f color, shade;
     private boolean isShaded;
     private Align align;
 
-    public TextTile(String text, Vector4f color) {
+    public TextTile(String text, Vector4f color, Vector4f shade) {
         setText(text);
         this.color = color;
+        this.shade = shade;
         this.align = Align.TOP_LEFT;
     }
 
     public TextTile(String text) {
-        this(text, new Vector4f(1));
+        this(text, new Vector4f(1), new Vector4f(0.25f, 0.25f, 0.25f, 1f));
     }
 
     public TextTile() {
         this("");
     }
 
-    public String getText() {
+    private String getText() {
         return String.join("\n", getLines());
     }
 
-    public String[] getLines() {
+    private String[] getLines() {
         String[] output = new String[chars.length];
         for (int i = 0; i < chars.length; i++) {
             output[i] = new String(chars[i]);
@@ -40,12 +44,8 @@ public class TextTile extends PixelComponent {
         return output;
     }
 
-    public char[][] getChars() {
-        return chars;
-    }
-
     public void setText(String text) {
-        String[] lines = text.split("\\n");
+        String[] lines = text.split("\\n", -1);
         char[][] chars = new char[lines.length][];
         for (int i = 0; i < lines.length; i++) {
             chars[i] = lines[i].toCharArray();
@@ -67,6 +67,14 @@ public class TextTile extends PixelComponent {
 
     public void setColor(Vector4f color) {
         this.color = color;
+    }
+
+    public Vector4f getShade() {
+        return shade;
+    }
+
+    public void setShade(Vector4f shade) {
+        this.shade = shade;
     }
 
     public Align getAlign() {
@@ -107,7 +115,9 @@ public class TextTile extends PixelComponent {
         for (char chr : line) {
             width += Main.getFont().getCharWidth(chr);
         }
-        return width;
+        if (isShaded)
+            width++;
+        return width * getPxScale();
     }
 
     private int getLineHeight(int line) {
@@ -119,50 +129,37 @@ public class TextTile extends PixelComponent {
         for (char chr : line) {
             height = Math.max(height, Main.getFont().getCharHeight(chr));
         }
-        return height;
+        if (isShaded)
+            height++;
+        return height * getPxScale();
     }
 
     @Override
     public void render(Matrix4f matrix) {
         layoutIfScaleChanged();
-        int pxScale = getPxScale();
-        int winWidth = Main.getActiveWindow().getWidth();
-        int winHeight = Main.getActiveWindow().getHeight();
-        float aspectRatio = Main.getActiveWindow().getAspectRatio();
+        int startYOffset = getGlobalY() + align.getYOffset(getHeight(), getTextHeight());
 
-        int startXOffset = align.getXOffset(getWidth(), getTextWidth());
-        int startYOffset = align.getYOffset(getHeight(), getTextHeight());
+        MatrixCursor cursor = MatrixCursor.create(matrix, getGlobalX(), startYOffset);
 
-        // set advancing matrix
-        Matrix4f lineMatrix = new Matrix4f(matrix);
-        lineMatrix.translate(
-          ((float) (getGlobalX() + startXOffset) / winWidth - 0.5f) * aspectRatio,
-          0.5f - (float) (getGlobalY() + startYOffset) / winHeight,
-          0
-        ).scale(
-          (float) pxScale / winHeight,
-          (float) pxScale / winHeight,
-          0.5f
-        );
-
-        for (char[] line : chars) {
-            if (isShaded) {
-                Matrix4f shadowLineMatrix = lineMatrix.translate(1, -1, 0, new Matrix4f());
-                drawLine(shadowLineMatrix, line, new Vector4f(0.25f, 0.25f, 0.25f, 1f));
-            }
-            drawLine(lineMatrix, line, color);
+        if (isShaded) {
+            MatrixCursor shadow = cursor.offset(1, -1);
+            drawText(shadow, shade);
         }
+        drawText(cursor, color);
     }
 
-    private void drawLine(Matrix4f matrix, String string, Vector4f color) {
-        drawLine(matrix, string.toCharArray(), color);
-    }
-
-    private void drawLine(Matrix4f matrix, char[] line, Vector4f color) {
-        for (char c : line) {
-            Glyph g = Main.getFont().getGlyph(c);
-            Main.getFont().drawGlyph(matrix.scale(g.getW(), g.getH(), 1, new Matrix4f()), c, color);
-            matrix.translate(g.getW() + 1, 0, 0);
+    private void drawText(MatrixCursor cursor, Vector4f color) {
+        for (char[] line : chars) {
+            int lineHeight = 0;
+            cursor.translateX(align.getXOffset(getWidth(), getLineWidth(line)));
+            for (char c : line) {
+                Glyph g = Main.getFont().getGlyph(c);
+                Matrix4f charMatrix = cursor.getCharMatrix().scale(g.getW(), g.getH(), 1, new Matrix4f());
+                Main.getFont().drawGlyph(charMatrix, c, color);
+                cursor.advanceChar(g.getW() + 1);
+                lineHeight = Math.max(lineHeight, Main.getFont().getCharHeight(c));
+            }
+            cursor.advanceLine(lineHeight);
         }
     }
 
@@ -171,11 +168,10 @@ public class TextTile extends PixelComponent {
             int pxScale = getPxScale();
             int winWidth = Main.getActiveWindow().getWidth();
             int winHeight = Main.getActiveWindow().getHeight();
-            float aspectRatio = Main.getActiveWindow().getAspectRatio();
 
             matrix = new Matrix4f(matrix);
             matrix.translate(
-              (x / winWidth - 0.5f) * aspectRatio,
+              (x / winWidth - 0.5f) * ((float) winWidth / winHeight),
               0.5f - y / winHeight,
               0
             ).scale(
@@ -197,17 +193,12 @@ public class TextTile extends PixelComponent {
             this.charMatrix = new Matrix4f(matrix);
         }
 
-        public void reset() {
-            charMatrix = new Matrix4f(coreMatrix);
-            lineMatrix = new Matrix4f(coreMatrix);
-        }
-
         /**
          * basically newline
          * @param pixels
          */
         public void advanceLine(int pixels) {
-            lineMatrix.translate(0, pixels, 0);
+            lineMatrix.translate(0, -pixels, 0);
             charMatrix = new Matrix4f(lineMatrix);
         }
 
@@ -217,6 +208,23 @@ public class TextTile extends PixelComponent {
 
         public Matrix4f getCharMatrix() {
             return new Matrix4f(charMatrix);
+        }
+
+        public MatrixCursor offset(int x, int y) {
+            return new MatrixCursor(coreMatrix.translate(x, y, 0, new Matrix4f()));
+        }
+
+        public void translate(int x, int y) {
+            float pxScale = getPxScale();
+            charMatrix.translate(x / pxScale, y / pxScale, 0);
+        }
+
+        public void translateX(int x) {
+            translate(x, 0);
+        }
+
+        public void translateY(int y) {
+            translate(0, y);
         }
     }
 
@@ -229,6 +237,72 @@ public class TextTile extends PixelComponent {
         private Glyph g;
     }
 
-    public static class TextAccessor {
+    public TextAccessor edit() {
+        return new TextAccessor();
+    }
+
+    public class TextAccessor {
+        public void append(CharSequence csq) {
+            getThenSet(s -> s + csq);
+        }
+
+        public void append(CharSequence csq, int start, int end) {
+
+        }
+
+        public void append(char c) throws IOException {
+
+        }
+
+        public void insert(char c, int index) {
+
+        }
+
+        public void insert(CharSequence seq, int index, int length) {
+
+        }
+
+        public void insert(CharSequence seq, int index, int offset, int length) {
+
+        }
+
+        public void delete(int index) {
+
+        }
+
+        public void delete(int start, int end) {
+
+        }
+
+        public TextAccessor clear() {
+            setText("");
+            return this;
+        }
+
+        public TextAccessor print(String string) {
+            getThenSet(s -> s + string);
+            return this;
+        }
+
+        public TextAccessor println(String string) {
+            return print(string + "\n");
+        }
+
+        public TextAccessor printf(String format, Object... args) {
+            return print(String.format(format, args));
+        }
+
+        public TextAccessor newline() {
+            return println("");
+        }
+
+        @Override
+        public String toString() {
+            return TextTile.this.getText();
+        }
+
+        public void getThenSet(Function<String, String> conversion) {
+            setText(conversion.apply(getText()));
+        }
     }
 }

@@ -1,5 +1,6 @@
 package game.assets.mcui.control;
 
+import game.assets.event.EventRunnable;
 import game.assets.mcui.Align;
 import game.assets.mcui.PixelComponent;
 import game.assets.event.ActionEvent;
@@ -43,6 +44,7 @@ public abstract class AbstractButton extends PixelComponent implements Pixelated
         description = new TextTile(desc);
         description.setParent(this);
         description.setAlign(Align.CENTER);
+        description.setShaded(true);
     }
 
     protected AbstractButton(String desc) {
@@ -71,12 +73,12 @@ public abstract class AbstractButton extends PixelComponent implements Pixelated
 
     @Override
     public void layout() {
-        buttonCover.setPxSize(getAbsWidth(), getAbsHeight());
-        buttonFrame.setPxSize(getAbsWidth(), getAbsHeight());
-        buttonImage.setPxSize((getAbsWidth() - 2), (getAbsHeight() - 2));
+        buttonCover.setPxSize(getPxWidth(), getPxHeight());
+        buttonFrame.setPxSize(getPxWidth(), getPxHeight());
+        buttonImage.setPxSize((getPxWidth() - 2), (getPxHeight() - 2));
         buttonImage.setLayoutPos(getPxScale(), getPxScale());
-        description.setPxSize((getAbsWidth() - 2), (getAbsHeight() - 2));
-        buttonImage.setLayoutPos(getPxScale(), getPxScale());
+        description.setPxSize((getPxWidth() - 2), (getPxHeight() - 2));
+        description.setLayoutPos(getPxScale(), getPxScale());
     }
 
     @Override
@@ -105,6 +107,10 @@ public abstract class AbstractButton extends PixelComponent implements Pixelated
             addEventHandler(ActionEvent.ACTION, onAction);
             this.onAction = onAction;
         }
+    }
+
+    public void setOnAction(EventRunnable<ActionEvent> onAction) {
+        setOnAction((EventProcessor<ActionEvent>) onAction);
     }
 
     public String getDesc() {

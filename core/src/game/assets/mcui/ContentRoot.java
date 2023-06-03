@@ -6,9 +6,15 @@ import org.joml.Matrix4f;
 
 public class ContentRoot {
     private Component root;
+    private final EventGenerator generator;
 
     public ContentRoot(Component root) {
         this.root = root;
+        this.generator = new EventGenerator(this);
+    }
+
+    public ContentRoot() {
+        this(null);
     }
 
     public Component getRoot() {
@@ -20,16 +26,19 @@ public class ContentRoot {
     }
 
     public void render() {
-        Matrix4f matrix4f = Overlay.make2DMatrix();
-        root.render(matrix4f);
+        if (root != null) {
+            Matrix4f matrix4f = Overlay.make2DMatrix();
+            root.render(matrix4f);
+        }
     }
 
     public void render(Matrix4f matrix) {
-        root.render(matrix);
+        if (root != null)
+            root.render(matrix);
     }
 
     public Component pick(double x, double y) {
-        return root.pick(x, y);
+        return root != null ? root.pick(x, y) : null;
     }
 
     public Component getFocusedElement() {
@@ -37,6 +46,6 @@ public class ContentRoot {
     }
 
     public EventGenerator getGenerator() {
-        return null;
+        return generator;
     }
 }

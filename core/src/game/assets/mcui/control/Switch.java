@@ -7,7 +7,7 @@ import java.util.function.Supplier;
 public class Switch extends AbstractButton {
     private final BoolRelay relay;
 
-    protected Switch(String desc, Supplier<Boolean> activeCondition) {
+    public Switch(String desc, Supplier<Boolean> activeCondition) {
         super(desc, activeCondition);
         this.relay = new BoolRelay();
     }

@@ -162,8 +162,6 @@ public class World extends Thread implements Server {
         }
         refCounter.put(chunk, refCounter.get(chunk) - 1);
         if (refCounter.get(chunk) <= 0) {
-            // unload chunk
-            System.out.println(this + String.format(" unloading chunk %d, %d, %d", cX, cY, cZ));
             dropChunk(cX, cY, cZ, chunks.remove(chunk));
         }
     }

@@ -11,10 +11,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public abstract class Settings {
-    private URL saveFile = getClass().getResource("/dat/settings.json");
+    private final URL saveFile;
 
-    public Settings(String name) {
-
+    public Settings(String path, String name) throws FileNotFoundException {
+        saveFile = getClass().getResource("/dat/settings.json");
+        if (saveFile == null) throw new FileNotFoundException(path);
     }
 
     public void save() {
@@ -25,10 +26,6 @@ public abstract class Settings {
             reader.close();
 
             JSONObject settings = new JSONObject();
-
-//            settings.put("fov", fov);
-//            settings.put("dpi", dpi);
-
             fileContents.put("minecraft.general", settings);
 
             BufferedWriter writer = new BufferedWriter(new FileWriter(file));
@@ -50,11 +47,7 @@ public abstract class Settings {
 
             List<Field> fields = Arrays.stream(
                     getClass().getDeclaredFields()).filter(field -> field.isAnnotationPresent(Setting.class)
-            ).collect(Collectors.toList());
-
-//            fov = settings.getInt("fov");
-//            dpi = settings.getFloat("dpi");
-
+            ).toList();
         } catch (IOException e) {
             e.printStackTrace();
         }

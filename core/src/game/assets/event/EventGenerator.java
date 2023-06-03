@@ -4,7 +4,6 @@ import game.assets.event.dispatch.EventLauncher;
 import game.assets.mcui.ContentRoot;
 import game.window.*;
 import game.main.Main;
-import org.lwjgl.glfw.*;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -62,6 +61,7 @@ public class EventGenerator {
         MouseEvent mouseEvent = new MouseEvent(eventType, mouseButton, mods);
         GLFWWindow.Position<Double> cursorPosition = Main.getActiveWindow().getCursorPos();
         EventTarget eventTarget = contentRoot.pick(cursorPosition.x(), cursorPosition.y());
+        if (eventType == MouseEvent.MOUSE_PRESSED) System.out.println(eventTarget);
         fireEvent(mouseEvent, eventTarget);
     }
 
@@ -78,7 +78,7 @@ public class EventGenerator {
 
     }
 
-    public void registerCallbacks(GLFWWindow glfwWindow) {
+    public void attachCallbacks(GLFWWindow glfwWindow) {
         glfwWindow.addKeyCallback(keyCallback);
         glfwWindow.addCharCallback(charCallback);
         glfwWindow.addMouseButtonCallback(mouseButtonCallback);
@@ -86,7 +86,16 @@ public class EventGenerator {
         glfwWindow.addCursorPosCallback(cursorPosCallback);
     }
 
+    public void detachCallbacks(GLFWWindow glfwWindow) {
+        glfwWindow.delKeyCallback(keyCallback);
+        glfwWindow.delCharCallback(charCallback);
+        glfwWindow.delMouseButtonCallback(mouseButtonCallback);
+        glfwWindow.delScrollCallback(scrollCallback);
+        glfwWindow.delCursorPosCallback(cursorPosCallback);
+    }
+
     private void fireEvent(Event event, EventTarget target) {
-        EventLauncher.fireEvent(target, event);
+        if (target != null && event != null)
+            EventLauncher.fireEvent(target, event);
     }
 }

@@ -11,10 +11,15 @@ public class MenuHandler {
     }
 
     public void prev() {
-        menus.pop();
+        menus.pop().detach();
+        if (!menus.isEmpty())
+            menus.peek().attach();
     }
 
     public void next(Menu next) {
+        if (!menus.isEmpty())
+            menus.peek().detach();
+        next.attach();
         menus.push(next);
     }
 

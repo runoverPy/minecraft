@@ -4,8 +4,12 @@ import game.main.Main;
 import game.util.Image;
 import org.lwjgl.glfw.*;
 
+import java.util.ArrayDeque;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL46.*;
@@ -41,6 +45,7 @@ public class GLFWWindow {
         mouseButtonCallbackHandler.register();
         scrollCallbackHandler.register();
         cursorPosCallbackHandler.register();
+        windowSizeCallbackHandler.register();
 
         keyCallbackHandler.insert((key, scancode, action, mods) -> {
             if (key == GLFW_KEY_F11 && action == GLFW_RELEASE) {
@@ -67,12 +72,22 @@ public class GLFWWindow {
             }
         });
 
-        glfwSetWindowSizeCallback(window, (window1, width, height) -> {
+        windowSizeCallbackHandler.insert((width, height) -> {
             this.width = width;
             this.height = height;
             glViewport(0, 0, width, height);
             glScissor(0, 0, width, height);
         });
+
+        addKeyCallback((key, scancode, action, mods) -> {
+            if (key == GLFW_KEY_G)
+                System.out.println("G pressed");
+        });
+    }
+
+    public static GLFWWindow createOnPrimaryMonitor(String title, boolean fullscreen) {
+        long primaryMonitor = glfwGetPrimaryMonitor();
+        return new GLFWWindow(title, primaryMonitor, fullscreen);
     }
 
     public boolean fullscreen() {
@@ -147,11 +162,7 @@ public class GLFWWindow {
     }
 
 
-    public record Dimension(int width, int height) {
-        public float getAspectRatio() {
-                return (float) width / height;
-            }
-    }
+    public record Dimension(int width, int height) {}
     public record Position<T extends Number>(T x, T y) {}
 
 
@@ -162,21 +173,59 @@ public class GLFWWindow {
      */
 
     private abstract static class CallbackHandler<CB extends WindowCallback> {
-        protected final List<CB> callbacks;
+        private final List<CB> callbacks;
+        private final Queue<CB> insertions, removals;
+        private final AtomicBoolean inUse;
+        private volatile boolean dirty;
 
         public CallbackHandler() {
             this.callbacks = new LinkedList<>();
+            this.insertions = new ArrayDeque<>();
+            this.removals = new ArrayDeque<>();
+            this.inUse = new AtomicBoolean(false);
+            this.dirty = false;
         }
 
         public final void insert(CB callback) {
-            synchronized (callbacks) {
-                callbacks.add(callback);
+            if (!inUse.getAndSet(true)) {
+                synchronized (callbacks) {
+                    callbacks.add(callback);
+                }
+                inUse.set(false);
+            } else {
+                insertions.add(callback);
+                dirty = true;
             }
         }
 
         public final void remove(CB callback) {
-            synchronized (callbacks) {
-                callbacks.remove(callback);
+            if (!inUse.getAndSet(true)) {
+                synchronized (callbacks) {
+                    callbacks.remove(callback);
+                }
+                inUse.set(false);
+            } else {
+                removals.add(callback);
+                dirty = true;
+            }
+        }
+
+        protected void forEach(Consumer<CB> consumer) {
+            if (!inUse.getAndSet(true)) {
+                synchronized (callbacks) {
+                    for (CB callback : callbacks) {
+                        consumer.accept(callback);
+                    }
+                }
+                inUse.set(false);
+            }
+            if (dirty) {
+                synchronized (callbacks) {
+                    callbacks.addAll(insertions);
+                    insertions.clear();
+                    callbacks.removeAll(removals);
+                    removals.clear();
+                }
             }
         }
 
@@ -192,15 +241,12 @@ public class GLFWWindow {
     private class KeyCallbackHandler extends CallbackHandler<KeyCallback> implements GLFWKeyCallbackI {
         @Override
         protected void register() {
-            System.out.println("window: " + window + "; this: " + this);
             glfwSetKeyCallback(window, this);
         }
 
         @Override
         public void invoke(long window, int key, int scancode, int action, int mods) {
-            synchronized (callbacks) {
-                callbacks.forEach(callback -> callback.invoke(key, scancode, action, mods));
-            }
+            forEach(callback -> callback.invoke(key, scancode, action, mods));
         }
     }
     public void addKeyCallback(KeyCallback cbfun) {
@@ -220,9 +266,7 @@ public class GLFWWindow {
 
         @Override
         public void invoke(long window, int codepoint) {
-            synchronized (callbacks) {
-                callbacks.forEach(callback -> callback.invoke(codepoint));
-            }
+            forEach(callback -> callback.invoke(codepoint));
         }
     }
     public void addCharCallback(CharCallback callback) {
@@ -242,7 +286,7 @@ public class GLFWWindow {
 
         @Override
         public void invoke(long window, int button, int action, int mods) {
-            callbacks.forEach(callback -> callback.invoke(button, action, mods));
+            forEach(callback -> callback.invoke(button, action, mods));
         }
     }
     public void addMouseButtonCallback(MouseButtonCallback callback) {
@@ -261,9 +305,7 @@ public class GLFWWindow {
         }
         @Override
         public void invoke(long window, double xOffset, double yOffset) {
-            synchronized (callbacks) {
-                callbacks.forEach(callback -> callback.invoke(xOffset, yOffset));
-            }
+            forEach(callback -> callback.invoke(xOffset, yOffset));
         }
 
     }
@@ -283,7 +325,7 @@ public class GLFWWindow {
         }
         @Override
         public void invoke(long window, double xpos, double ypos) {
-            callbacks.forEach(callback -> callback.invoke(xpos, ypos));
+            forEach(callback -> callback.invoke(xpos, ypos));
         }
 
     }
@@ -292,5 +334,25 @@ public class GLFWWindow {
     }
     public void delCursorPosCallback(CursorPosCallback callback) {
         cursorPosCallbackHandler.remove(callback);
+    }
+
+
+    private final WindowSizeCallbackHandler windowSizeCallbackHandler = new WindowSizeCallbackHandler();
+    private class WindowSizeCallbackHandler extends CallbackHandler<WindowSizeCallback> implements GLFWWindowSizeCallbackI {
+        @Override
+        protected void register() {
+            glfwSetWindowSizeCallback(window, this);
+        }
+
+        @Override
+        public void invoke(long window, int width, int height) {
+            forEach(callback -> callback.invoke(width, height));
+        }
+    }
+    public void addWindowSizeCallback(WindowSizeCallback callback) {
+        windowSizeCallbackHandler.insert(callback);
+    }
+    public void delWindowSizeCallback(WindowSizeCallback callback) {
+        windowSizeCallbackHandler.remove(callback);
     }
 }

@@ -45,12 +45,12 @@ public class FrameTile extends PixelComponent {
 
     @Override
     public void layout() {
-        top.setPxSize(getAbsWidth(), getThickness());
-        bot.setPxSize((getAbsWidth() - 2 * getThickness()), getThickness());
+        top.setPxSize(getPxWidth(), getThickness());
+        bot.setPxSize((getPxWidth() - 2 * getThickness()), getThickness());
         bot.setLayoutPos((getThickness() * getPxScale()), (getHeight() - getThickness() * getPxScale()));
-        lft.setPxSize(getThickness(), getAbsHeight() - getThickness());
+        lft.setPxSize(getThickness(), getPxHeight() - getThickness());
         lft.setLayoutPos(0, (getThickness() * getPxScale()));
-        rgt.setPxSize(getThickness(), getAbsHeight() - getThickness());
+        rgt.setPxSize(getThickness(), getPxHeight() - getThickness());
         rgt.setLayoutPos((getWidth() - getThickness() * getPxScale()), (getThickness() * getPxScale()));
     }
 

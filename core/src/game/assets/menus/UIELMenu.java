@@ -27,10 +27,6 @@ public abstract class UIELMenu extends ContentsRoot implements Menu {
     private final MouseEventGenerator generator;
     private Component lastTopComponent = null;
 
-    public UIELMenu(Background background) {
-        this(background, 128, 128);
-    }
-
     public UIELMenu(Background background, int width, int height) {
         this.box = new FlexBox(width, height);
         setRoot(this.box);
@@ -114,7 +110,6 @@ public abstract class UIELMenu extends ContentsRoot implements Menu {
         Component currentTopComponent = getTopComponent(currentMousePos.x().intValue(), currentMousePos.y().intValue(), 1);
         if (currentTopComponent != lastTopComponent) {
             lastTopComponent = currentTopComponent;
-//            System.out.println("now hovering over: " + lastTopComponent);
         }
 
         background.render(matrixPV);
@@ -132,5 +127,11 @@ public abstract class UIELMenu extends ContentsRoot implements Menu {
 
     protected void insert(ChildBox childBox) {
         box.addChild(childBox);
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        System.out.println("Finalizing UIELMenu " + getClass().getSimpleName());
+        super.finalize();
     }
 }
