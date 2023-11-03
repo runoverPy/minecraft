@@ -1,6 +1,7 @@
 package game.core.server;
 
 import game.core.GameRuntime;
+import game.util.DeepCopy;
 import mdk.blocks.Metadata;
 import game.mechanics.Air;
 import mdk.blocks.BlockBase;
@@ -9,7 +10,7 @@ import org.json.JSONObject;
 import mdk.blocks.Phase;
 import mdk.blocks.Material;
 
-public class Block implements mdk.blocks.Block {
+public class Block implements mdk.blocks.Block, DeepCopy<Block> {
     private final BlockBase innerBlock;
     private final String blockId;
 
@@ -64,5 +65,10 @@ public class Block implements mdk.blocks.Block {
         String blockID = (String) input.get("blockID");
         String metadata;
         return new Block(blockID);
+    }
+
+    @Override
+    public Block copy() {
+        return new Block(blockId);
     }
 }

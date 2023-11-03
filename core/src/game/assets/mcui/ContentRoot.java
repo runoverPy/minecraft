@@ -1,16 +1,15 @@
 package game.assets.mcui;
 
-import game.assets.event.EventGenerator;
 import game.assets.overlays.Overlay;
 import org.joml.Matrix4f;
 
 public class ContentRoot {
     private Component root;
-    private final EventGenerator generator;
+    private Component focusedElement;
 
     public ContentRoot(Component root) {
         this.root = root;
-        this.generator = new EventGenerator(this);
+        this.focusedElement = null;
     }
 
     public ContentRoot() {
@@ -42,10 +41,12 @@ public class ContentRoot {
     }
 
     public Component getFocusedElement() {
-        return null;
+        return focusedElement;
     }
 
-    public EventGenerator getGenerator() {
-        return generator;
+    public void requestFocus(Component component) {
+        if (focusedElement != null) focusedElement.focusDetached();
+        this.focusedElement = component;
+        if (focusedElement != null) focusedElement.focusAttached();
     }
 }

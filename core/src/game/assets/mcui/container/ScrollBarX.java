@@ -5,9 +5,9 @@ import game.assets.event.dispatch.InputMap;
 import game.assets.mcui.Component;
 import game.assets.mcui.PixelComponent;
 import game.assets.mcui.asset.ColorTile;
-import game.assets.mcui.asset.ImageTile;
+import game.assets.mcui.asset.PixelImageTile;
 import game.main.Main;
-import game.util.Image;
+import game.util.ImageFile;
 import game.window.CursorPosCallback;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
@@ -20,14 +20,15 @@ class ScrollBarX extends PixelComponent {
     private ColorTile background;
 
     private double value;
+    private boolean active;
 
     public ScrollBarX() {
         this.value = 0;
 
-        background = new ColorTile(new Vector4f(0.375f, 0.375f, 0.375f, 1f));
+        background = new ColorTile(new Vector4f(0f, 0f, 0f, 0.5f));
         background.setParent(this);
         knob = new Knob();
-        knob.setWidth(8);
+        knob.setPxWidth(8);
         knob.setParent(this);
     }
 
@@ -39,14 +40,23 @@ class ScrollBarX extends PixelComponent {
         this.value = value;
     }
 
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
     @Override
     public void layout() {
-        background.setSize(getPxWidth(), getPxHeight());
-        knob.setHeight(getPxHeight());
+        background.setPxSize(getPxWidth(), getPxHeight());
+        knob.setPxHeight(getPxHeight());
     }
 
     @Override
     public void render(Matrix4f matrix) {
+        if (!active) return;
         layoutIfScaleChanged();
         background.render(matrix);
         knob.render(matrix);
@@ -54,6 +64,7 @@ class ScrollBarX extends PixelComponent {
 
     @Override
     public Component pick(double x, double y) {
+        if (!active) return null;
         Component optionalKnob = knob.pick(x, y);
         if (optionalKnob != null)
             return optionalKnob;
@@ -63,7 +74,7 @@ class ScrollBarX extends PixelComponent {
 
     private class Knob extends PixelComponent {
         private final ColorTile outerTile;
-        private final ImageTile innerTile;
+        private final PixelImageTile innerTile;
         private final InputMap<Knob> inputMap;
 
         private final CursorPosCallback cursorPosCallback = (xPos, yPos) -> {
@@ -76,7 +87,7 @@ class ScrollBarX extends PixelComponent {
         public Knob() {
             outerTile = new ColorTile(new Vector4f(0, 0, 0, 1));
             outerTile.setParent(this);
-            innerTile = new ImageTile(Image.loadImage("/img/stone.png"));
+            innerTile = new PixelImageTile(ImageFile.loadImage("/img/stone.png"));
             innerTile.setParent(this);
 
             inputMap = new InputMap<>(this);
@@ -102,6 +113,7 @@ class ScrollBarX extends PixelComponent {
 
         @Override
         public void render(Matrix4f matrix) {
+
             if (Main.getActiveWindow().getMouseButton(GLFW_MOUSE_BUTTON_LEFT) != GLFW_PRESS && clicked) {
                 clicked = false;
             }

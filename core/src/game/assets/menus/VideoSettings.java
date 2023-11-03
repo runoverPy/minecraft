@@ -8,12 +8,10 @@ import game.assets.mcui.container.VerticalContainer;
 import game.assets.mcui.control.Button;
 import game.assets.mcui.control.Slider;
 import game.assets.mcui.control.Switch;
-import game.assets.ui_elements.Widget;
 import game.util.relay.BoolRelay;
-import game.util.relay.FloatRelay;
 import game.util.relay.IntRelay;
 
-class VideoSettings extends MCUIMenu {
+class VideoSettings extends Menu {
     public VideoSettings(MenuHandler handler) {
         super(Background.BRICKS);
 
@@ -32,17 +30,17 @@ class VideoSettings extends MCUIMenu {
         line0.setSize(-1, -1);
         line0.setSpacing(2);
         Switch vsyncButton = new Switch("VSync", vsync);
-        vsyncButton.setSize(95, 16);
+        vsyncButton.setPxSize(95, 16);
         Slider<Integer> fovSlider = new Slider<>();
         fovSlider.setName("FOV");
         fovSlider.setTransformer(new Slider.IntTransformer(60, 120));
-        fovSlider.setSize(95, 16);
+        fovSlider.setPxSize(95, 16);
         fovSlider.setValueRelay(fov);
         line0.getChildren()
           .addAll(vsyncButton, fovSlider);
         Button returnButton = new Button("Back");
         returnButton.setOnAction(handler::prev);
-        returnButton.setSize(192, 16);
+        returnButton.setPxSize(192, 16);
 
         innerContainer.getChildren()
           .addAll(line0, returnButton);

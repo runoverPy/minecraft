@@ -1,6 +1,5 @@
 import mdk.blocks.BlockFactory;
 import mdk.blocks.Chunk;
-import mdk.settings.annotation.*;
 import mdk.settings.template.ConfigField;
 import mdk.settings.template.ConfigFactory;
 import mdk.settings.template.ConfigTemplate;
@@ -14,25 +13,26 @@ import java.util.Random;
 public class NoiseGenerator implements WorldGenerator {
     @Template
     public static void makeTemplate(ConfigTemplate template, ConfigFactory factory) {
-        template.add("seed", factory.seedQuery());
+        template
+          .add("seed", factory.seedQuery())
+          .add("desc", factory.inputField("Input Here"), "default text")
+          .add("scale", factory.intSlider(64))
+          .add("world_type", factory.button(WorldType.class), WorldType.WIDE);
     }
 
     @ConfigField
     public long seed;
 
     @ConfigField
-    // @TextField(query = "Try me if you dare")
-    public String desc = "default text";
+    public String desc;
 
     @ConfigField
-    // @Slider(stop = 10, text = "you're just the wrong type for me")
     public int scale;
 
-    // @Button(text = "select world type")
-    @ConfigField
-    public Test worldType = Test.WIDE;
+    @ConfigField(fieldName = "world_type")
+    public WorldType worldType;
 
-    private enum Test {
+    private enum WorldType {
         FLAT, WIDE, AMPL
     }
 
@@ -44,7 +44,7 @@ public class NoiseGenerator implements WorldGenerator {
     }
 
     @Override
-    public void populateChunk(int cX, int cY, int cZ, Chunk<?> chunk, BlockFactory factory) {
+    public void populateChunk(int cX, int cY, int cZ, Chunk chunk, BlockFactory factory) {
 
     }
 

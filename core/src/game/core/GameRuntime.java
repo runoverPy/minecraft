@@ -23,7 +23,7 @@ public class GameRuntime {
         materialDatabase = new MaterialDatabase();
         generatorRegister = new WorldGeneratorRegister();
         modHandler = new ModHandler(modRegister.getActiveModHandles(), this);
-        System.out.println(Arrays.toString(generatorRegister.getLoadedGenerators()));
+
     }
 
     public static GameRuntime setInstance() {

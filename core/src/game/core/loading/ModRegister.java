@@ -45,7 +45,6 @@ public class ModRegister {
     }
 
     private void loadModJar(Path jarPath) throws IOException {
-        System.out.println("Mod found: " + jarPath);
         registeredMods.put(jarPath.getFileName().toString(), new RegisteredMod(jarPath));
     }
 

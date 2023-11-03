@@ -3,7 +3,6 @@ package game.mechanics.entities;
 //import game.assets.ui_elements.Hotbar;
 
 import game.assets.mcui.export.Hotbar;
-import game.core.GameManager;
 import game.core.GameRuntime;
 import game.core.server.Block;
 import game.core.server.Server;
@@ -11,6 +10,7 @@ import game.main.Main;
 import game.mechanics.collision.Direction;
 import game.mechanics.collision.Hitbox;
 import game.mechanics.input.CooldownMouseInput;
+import game.mechanics.physics.Physics;
 import game.util.Ray;
 import game.window.GLFWWindow;
 import game.window.KeyCallback;
@@ -28,7 +28,8 @@ public class Player {
     /**
      * the current movement mode
      */
-    private final MovementMode movementMode;
+    private MovementMode movementMode;
+    private final ModeSwitcher switcher = new ModeSwitcher();
     private static final float rotSpeed = (float) (2 * Math.PI / 20f), movSpeed = 3.7f / 1000;
     private final CooldownMouseInput blockBreak, blockPlace;
     private final KeyCallback hotbarCallback;
@@ -43,7 +44,7 @@ public class Player {
 
     protected final float width = 0.5f, depth = 0.5f, height = 1.75f;
 
-    protected long lT;
+    protected long lT, lastJumpTime;
     public static final int KILL_DEPTH = -128;
 
     public Player(Server server) {
@@ -95,77 +96,14 @@ public class Player {
         return horizontal;
     }
 
-    public void move(Vector3f posChange, Vector3f velChange, EnumMap<Direction, Boolean> collisions, long dT) {
-        GLFWWindow.Dimension windowSize = Main.getActiveWindow().getWindowSize();
-        GLFWWindow.Position<Double> cursorPos = Main.getActiveWindow().getCursorPos();
-        Main.getActiveWindow().setCursorPos(windowSize.width() / 2.0, windowSize.height() / 2.0);
-
-        float rotSpeed = Main.getSettings().getDPI() * Player.rotSpeed;
-
-        horizontal += (windowSize.width() / 2.0 - cursorPos.x()) * (dT / 1000f) * rotSpeed;
-        vertical += (windowSize.height() / 2.0 - cursorPos.y()) * (dT / 1000f) * rotSpeed;
-
-        if (getVertical() < -Math.PI / 2) vertical = -Math.PI / 2;
-        if (getVertical() > Math.PI / 2) vertical = Math.PI / 2;
-
-        Vector3f fwd, right, up;
-        fwd = new Vector3f(
-                (float) Math.cos(getHorizontal()),
-                (float) Math.sin(getHorizontal()),
-                (float) 0
-        );
-        right = new Vector3f(
-                (float) Math.cos(getHorizontal() - Math.PI / 2),
-                (float) Math.sin(getHorizontal() - Math.PI / 2),
-                (float) 0
-        );
-        up = new Vector3f(0, 0, 1);
-
-        switch (movementMode) {
-            case FLYING: {
-                if (Main.getActiveWindow().getKey(GLFW_KEY_W) == GLFW_PRESS) {
-                    posChange.add(fwd.mul(dT * movSpeed, new Vector3f()));
-                }
-                if (Main.getActiveWindow().getKey(GLFW_KEY_A) == GLFW_PRESS) {
-                    posChange.sub(right.mul(dT * movSpeed, new Vector3f()));
-                }
-                if (Main.getActiveWindow().getKey(GLFW_KEY_S) == GLFW_PRESS) {
-                    posChange.sub(fwd.mul(dT * movSpeed, new Vector3f()));
-                }
-                if (Main.getActiveWindow().getKey(GLFW_KEY_D) == GLFW_PRESS) {
-                    posChange.add(right.mul(dT * movSpeed, new Vector3f()));
-                }
-                if (Main.getActiveWindow().getKey(GLFW_KEY_SPACE) == GLFW_PRESS) {
-                    posChange.add(up.mul(dT * movSpeed, new Vector3f()));
-                }
-                if (Main.getActiveWindow().getKey(GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-                    posChange.sub(up.mul(dT * movSpeed, new Vector3f()));
-                }
-            }
-            case WALKING: {
-                if (Main.getActiveWindow().getKey(GLFW_KEY_W) == GLFW_PRESS) {
-                    posChange.add(fwd.mul(dT * movSpeed, new Vector3f()));
-                }
-                if (Main.getActiveWindow().getKey(GLFW_KEY_A) == GLFW_PRESS) {
-                    posChange.sub(right.mul(dT * movSpeed, new Vector3f()));
-                }
-                if (Main.getActiveWindow().getKey(GLFW_KEY_S) == GLFW_PRESS) {
-                    posChange.sub(fwd.mul(dT * movSpeed, new Vector3f()));
-                }
-                if (Main.getActiveWindow().getKey(GLFW_KEY_D) == GLFW_PRESS) {
-                    posChange.add(right.mul(dT * movSpeed, new Vector3f()));
-                }
-                if (Main.getActiveWindow().getKey(GLFW_KEY_SPACE) == GLFW_PRESS && collisions.get(Direction.DOWN)) {
-                    velChange.add(GameManager.physics.JUMP_VELOCITY);
-                }
-            }
-        }
-    }
-
     public void reset() {
         GLFWWindow.Dimension windowSize = Main.getActiveWindow().getWindowSize();
         Main.getActiveWindow().setCursorPos(windowSize.width() / 2.0, windowSize.height() / 2.0);
         this.lT = System.currentTimeMillis();
+    }
+
+    public Vector3f getPos() {
+        return new Vector3f(pos);
     }
 
     public Vector3f getCamPos() {
@@ -211,86 +149,159 @@ public class Player {
         );
     }
 
-
     public boolean collides(Vector3i block) {
         return  pos.x - width / 2 < block.x + 1 && block.x < pos.x + width / 2 &&
                 pos.y - depth / 2 < block.y + 1 && block.y < pos.y + depth / 2 &&
                 pos.z < block.z + 1 && block.z < pos.z + height;
     }
 
-    public EnumMap<Direction, Boolean> getWorldCollisions(Vector3f oldPos, Vector3f newPos) {
-        EnumMap<Direction, Boolean> out = new EnumMap<>(Direction.class);
+    private boolean getWorldCollision(Direction direction, Vector3f oldPos, Vector3f newPos) {
         int
-                north1 = (int) Math.ceil(oldPos.x + width / 2 - 1),
-                south1 = (int) Math.floor(oldPos.x - width / 2),
-                west1 = (int) Math.ceil(oldPos.y + depth / 2 - 1),
-                east1 = (int) Math.floor(oldPos.y - depth / 2),
-                top1 = (int) Math.floor(oldPos.z + height),
-                bot1 = (int) Math.ceil(oldPos.z);
+          north1 = (int) Math.ceil(oldPos.x + width / 2 - 1),
+          south1 = (int) Math.floor(oldPos.x - width / 2),
+          west1 = (int) Math.ceil(oldPos.y + depth / 2 - 1),
+          east1 = (int) Math.floor(oldPos.y - depth / 2),
+          top1 = (int) Math.ceil(oldPos.z + height - 1),
+          bot1 = (int) Math.floor(oldPos.z);
 
         int
-                north2 = (int) Math.floor(newPos.x + width / 2),
-                south2 = (int) Math.floor(newPos.x - width / 2),
-                west2 = (int) Math.floor(newPos.y + depth / 2),
-                east2 = (int) Math.floor(newPos.y - depth / 2),
-                top2 = (int) Math.floor(newPos.z + height),
-                bot2 = (int) Math.ceil(newPos.z - 1);
+          north2 = (int) Math.floor(newPos.x + width / 2),
+          south2 = (int) Math.floor(newPos.x - width / 2),
+          west2 = (int) Math.floor(newPos.y + depth / 2),
+          east2 = (int) Math.floor(newPos.y - depth / 2),
+          top2 = (int) Math.floor(newPos.z + height),
+          bot2 = (int) Math.ceil(newPos.z - 1); // 1
 
-        for (Vector3i block : new Vector3i[] {
-                new Vector3i(north2, east1, bot1),
-                new Vector3i(north2, west1, bot1),
-                new Vector3i(north2, east1, top1),
-                new Vector3i(north2, west1, top1)
-        }) {
-            out.put(Direction.NORTH, server.getBlock(block).getPhase() == Phase.SOLID);
-            if (out.get(Direction.NORTH)) break;
+
+        return switch (direction) {
+            case NORTH -> {
+                for (int y = east1; y <= west1; y++) {
+                    for (int z = bot1; z <= top1; z++) {
+                        if (server.getBlock(north2, y, z).getPhase() == Phase.SOLID) yield true;
+                    }
+                }
+                yield false;
+            }
+            case SOUTH -> {
+                for (int y = east1; y <= west1; y++) {
+                    for (int z = bot1; z <= top1; z++) {
+                        if (server.getBlock(south2, y, z).getPhase() == Phase.SOLID) yield true;
+                    }
+                }
+                yield false;
+            }
+            case WEST -> {
+                for (int x = south1; x <= north1; x++) {
+                    for (int z = bot1; z <= top1; z++) {
+                        if (server.getBlock(x, west2, z).getPhase() == Phase.SOLID) yield true;
+                    }
+                }
+                yield false;
+            }
+            case EAST -> {
+                for (int x = south1; x <= north1; x++) {
+                    for (int z = bot1; z <= top1; z++) {
+                        if (server.getBlock(x, east2, z).getPhase() == Phase.SOLID) yield true;
+                    }
+                }
+                yield false;
+            }
+            case UP -> {
+                for (int x = south1; x <= north1; x++) {
+                    for (int y = east1; y <= west1; y++) {
+                        if (server.getBlock(x, y, top2).getPhase() == Phase.SOLID) yield true;
+                    }
+                }
+                yield false;
+            }
+            case DOWN -> {
+                for (int x = south1; x <= north1; x++) {
+                    for (int y = east1; y <= west1; y++) {
+                        if (server.getBlock(x, y, bot2).getPhase() == Phase.SOLID) yield true;
+                    }
+                }
+                yield false;
+            }
+            case FILL -> {
+                for (int x = south1; x <= north1; x++) {
+                    for (int y = east1; y <= west1; y++) {
+                        for (int z = bot1; z <= top1; z++) {
+                            if (server.getBlock(x, y, z).getPhase() == Phase.SOLID) yield true;
+                        }
+                    }
+                }
+                yield false;
+            }
+        };
+    }
+
+    public void move(Vector3f posChange, Vector3f velChange, long dT) {
+        GLFWWindow.Dimension windowSize = Main.getActiveWindow().getWindowSize();
+        GLFWWindow.Position<Double> cursorPos = Main.getActiveWindow().getCursorPos();
+        Main.getActiveWindow().setCursorPos(windowSize.width() / 2.0, windowSize.height() / 2.0);
+
+        float rotSpeed = Main.getSettings().getDPI() * Player.rotSpeed;
+
+        horizontal += (windowSize.width() / 2.0 - cursorPos.x()) * (dT / 1000f) * rotSpeed;
+        vertical += (windowSize.height() / 2.0 - cursorPos.y()) * (dT / 1000f) * rotSpeed;
+
+        if (getVertical() < -Math.PI / 2) vertical = -Math.PI / 2;
+        if (getVertical() > Math.PI / 2) vertical = Math.PI / 2;
+
+        if (getWorldCollision(Direction.FILL, pos, pos)) return;
+
+        Vector3f fwd, right, up;
+        fwd = new Vector3f(
+          (float) Math.cos(getHorizontal()),
+          (float) Math.sin(getHorizontal()),
+          (float) 0
+        );
+        right = new Vector3f(
+          (float) Math.cos(getHorizontal() - Math.PI / 2),
+          (float) Math.sin(getHorizontal() - Math.PI / 2),
+          (float) 0
+        );
+        up = new Vector3f(0, 0, 1);
+
+        switch (movementMode) {
+            case FLYING -> {
+                if (Main.getActiveWindow().getKey(GLFW_KEY_W) == GLFW_PRESS) {
+                    posChange.add(fwd.mul(dT * movSpeed, new Vector3f()));
+                }
+                if (Main.getActiveWindow().getKey(GLFW_KEY_A) == GLFW_PRESS) {
+                    posChange.sub(right.mul(dT * movSpeed, new Vector3f()));
+                }
+                if (Main.getActiveWindow().getKey(GLFW_KEY_S) == GLFW_PRESS) {
+                    posChange.sub(fwd.mul(dT * movSpeed, new Vector3f()));
+                }
+                if (Main.getActiveWindow().getKey(GLFW_KEY_D) == GLFW_PRESS) {
+                    posChange.add(right.mul(dT * movSpeed, new Vector3f()));
+                }
+                if (Main.getActiveWindow().getKey(GLFW_KEY_SPACE) == GLFW_PRESS) {
+                    posChange.add(up.mul(dT * movSpeed, new Vector3f()));
+                }
+                if (Main.getActiveWindow().getKey(GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+                    posChange.sub(up.mul(dT * movSpeed, new Vector3f()));
+                }
+            }
+            case WALKING, SNEAKING -> {
+                if (Main.getActiveWindow().getKey(GLFW_KEY_W) == GLFW_PRESS) {
+                    posChange.add(fwd.mul(dT * movSpeed, new Vector3f()));
+                }
+                if (Main.getActiveWindow().getKey(GLFW_KEY_A) == GLFW_PRESS) {
+                    posChange.sub(right.mul(dT * movSpeed, new Vector3f()));
+                }
+                if (Main.getActiveWindow().getKey(GLFW_KEY_S) == GLFW_PRESS) {
+                    posChange.sub(fwd.mul(dT * movSpeed, new Vector3f()));
+                }
+                if (Main.getActiveWindow().getKey(GLFW_KEY_D) == GLFW_PRESS) {
+                    posChange.add(right.mul(dT * movSpeed, new Vector3f()));
+                }
+                if (Main.getActiveWindow().getKey(GLFW_KEY_SPACE) == GLFW_PRESS && getWorldCollision(Direction.DOWN, pos, pos)) {
+                    velChange.add(Physics.JUMP_VELOCITY);
+                }
+            }
         }
-        for (Vector3i block : new Vector3i[] {
-                new Vector3i(south2, east1, bot1),
-                new Vector3i(south2, west1, bot1),
-                new Vector3i(south2, east1, top1),
-                new Vector3i(south2, west1, top1)
-        }) {
-            out.put(Direction.SOUTH, server.getBlock(block).getPhase() == Phase.SOLID);
-            if (out.get(Direction.SOUTH)) break;
-        }
-        for (Vector3i block : new Vector3i[] {
-                new Vector3i(south1, west2, bot1),
-                new Vector3i(north1, west2, bot1),
-                new Vector3i(south1, west2, top1),
-                new Vector3i(north1, west2, top1)
-        }) {
-            out.put(Direction.WEST, server.getBlock(block).getPhase() == Phase.SOLID);
-            if (out.get(Direction.WEST)) break;
-        }
-        for (Vector3i block : new Vector3i[] {
-                new Vector3i(south1, east2, bot1),
-                new Vector3i(north1, east2, bot1),
-                new Vector3i(south1, east2, top1),
-                new Vector3i(north1, east2, top1)
-        }) {
-            out.put(Direction.EAST, server.getBlock(block).getPhase() == Phase.SOLID);
-            if (out.get(Direction.EAST)) break;
-        }
-        for (Vector3i block : new Vector3i[] {
-                new Vector3i(south1, east1, top2),
-                new Vector3i(north1, east1, top2),
-                new Vector3i(south1, west1, top2),
-                new Vector3i(north1, west1, top2)
-        }) {
-            out.put(Direction.UP, server.getBlock(block).getPhase() == Phase.SOLID);
-            if (out.get(Direction.UP)) break;
-        }
-        for (Vector3i block : new Vector3i[] {
-                new Vector3i(south1, east1, bot2),
-                new Vector3i(north1, east1, bot2),
-                new Vector3i(south1, west1, bot2),
-                new Vector3i(north1, west1, bot2)
-        }) {
-            out.put(Direction.DOWN, server.getBlock(block).getPhase() == Phase.SOLID);
-            if (out.get(Direction.DOWN)) break;
-        }
-        return out;
     }
 
     public void update() {
@@ -299,53 +310,52 @@ public class Player {
         dT = nT - lT;
         lT = nT;
 
-        final float stepSize = 0.1f;
+        switcher.update();
 
         // the subclass specified changes to position and velocity
         Vector3f posChange = new Vector3f(), velChange = new Vector3f();
-        EnumMap<Direction, Boolean> preCollisions = getWorldCollisions(this.pos, this.pos);
-        move(posChange, velChange, preCollisions, dT);
+        move(posChange, velChange, dT);
 
-        velChange.add(new Vector3f(GameManager.physics.GRAV_ACCEL).mul((float) dT / 1000));
+        if (movementMode != MovementMode.FLYING)
+            velChange.add(new Vector3f(Physics.GRAV_ACCEL).mul((float) dT / 1000));
 
         vel.add(velChange);
 
         posChange.add(new Vector3f(vel).mul((float) dT / 1000));
 
-        EnumMap<Direction, Boolean> postCollisions = getWorldCollisions(this.pos, new Vector3f(pos).add(posChange));
-        if (clipGuard) {
-            if (postCollisions.get(Direction.NORTH)) {
-                pos.x = (float) Math.ceil(pos.x + width / 2) - (width / 2);
-                if (vel.x > 0) vel.x = 0;
-                if (posChange.x > 0) posChange.x = 0;
+        int steps = (int) Math.ceil(posChange.length() / 0.01);
+        Vector3f posStep = posChange.div(steps, new Vector3f());
+
+        for (int i = 0; i < steps; i++) {
+            Vector3f nextPos = new Vector3f(pos).add(posStep);
+            if (clipGuard) {
+                if (getWorldCollision(Direction.NORTH, this.pos, nextPos)) {
+                    if (vel.x > 0) vel.x = 0;
+                    if (posStep.x > 0) posStep.x = (int) Math.floor(nextPos.x + width) - (pos.x + width / 2);
+                }
+                if (getWorldCollision(Direction.SOUTH, this.pos, nextPos)) {
+                    if (vel.x < 0) vel.x = 0;
+                    if (posStep.x < 0) posStep.x = (int) Math.ceil(nextPos.x - width) - (pos.x - width / 2);
+                }
+                if (getWorldCollision(Direction.WEST, this.pos, nextPos)) {
+                    if (vel.y > 0) vel.y = 0;
+                    if (posStep.y > 0) posStep.y = (int) Math.floor(nextPos.y + depth) - (pos.y + depth / 2);
+                }
+                if (getWorldCollision(Direction.EAST, this.pos, nextPos)) {
+                    if (vel.y < 0) vel.y = 0;
+                    if (posStep.y < 0) posStep.y = (int) Math.ceil(nextPos.y - depth) - (pos.y - depth / 2);
+                }
+                if (getWorldCollision(Direction.UP, this.pos, nextPos)) {
+                    if (vel.z > 0) vel.z = 0;
+                    if (posStep.z > 0) posStep.z = (int) Math.floor(nextPos.z + height) - (pos.z + height);
+                }
+                if (getWorldCollision(Direction.DOWN, this.pos, nextPos)) {
+                    if (vel.z < 0) vel.z = 0;
+                    if (posStep.z < 0) posStep.z = (int) Math.ceil(nextPos.z) - pos.z;
+                }
             }
-            if (postCollisions.get(Direction.SOUTH)) {
-                pos.x = (float) Math.floor(pos.x - width / 2) + (width / 2);
-                if (vel.x < 0) vel.x = 0;
-                if (posChange.x < 0) posChange.x = 0;
-            }
-            if (postCollisions.get(Direction.WEST)) {
-                pos.y = (float) Math.ceil(pos.y + depth / 2) - (depth / 2);
-                if (vel.y > 0) vel.y = 0;
-                if (posChange.y > 0) posChange.y = 0;
-            }
-            if (postCollisions.get(Direction.EAST)) {
-                pos.y = (float) Math.floor(pos.y - depth / 2) + (depth / 2);
-                if (vel.y < 0) vel.y = 0;
-                if (posChange.y < 0) posChange.y = 0;
-            }
-            if (postCollisions.get(Direction.UP)) {
-                pos.z = (float) Math.ceil(pos.z + height) - height;
-                if (vel.z > 0) vel.z = 0;
-                if (posChange.z > 0) posChange.z = 0;
-            }
-            if (postCollisions.get(Direction.DOWN)) {
-                pos.z = (float) Math.floor(pos.z);
-                if (vel.z < 0) vel.z = 0;
-                if (posChange.z < 0) posChange.z = 0;
-            }
+            pos.add(posStep);
         }
-        pos.add(posChange);
 
         if (pos.z < KILL_DEPTH) onDeath();
 
@@ -362,7 +372,7 @@ public class Player {
                 String item = hotbar.getItem();
                 if (item != null && GameRuntime.getInstance().getBlockRegister().isLoaded(item)) {
                     server.setBlock(block, new Block(item));
-                } else System.out.println("cannot place block");
+                } else System.out.println("cannot place block, because it is not loaded");
             }
         }
     }
@@ -374,5 +384,43 @@ public class Player {
 
     public Hotbar getHotbar() {
         return hotbar;
+    }
+
+    private class ModeSwitcher {
+        Long lastJumpTime = null;
+        long jumpCoolDown = 250;
+        boolean jumped, switched;
+
+        public void update() {
+            if (movementMode == MovementMode.FLYING && getWorldCollision(Direction.DOWN, pos, pos)) {
+                movementMode = MovementMode.WALKING;
+            }
+            if (Main.getActiveWindow().getKey(GLFW_KEY_SPACE) == GLFW_PRESS && !jumped) {
+                long thisJumpTime = System.currentTimeMillis();
+                if (!switched) {
+                    if (lastJumpTime != null && thisJumpTime - lastJumpTime < jumpCoolDown) {
+                        movementMode = switch (movementMode) {
+                            case WALKING, SNEAKING -> MovementMode.FLYING;
+                            case FLYING -> MovementMode.WALKING;
+                            case SWIMMING -> MovementMode.SWIMMING;
+                        };
+                        vel.z = 0;
+                        switched = true;
+                    }
+                } else {
+                    switched = false;
+                }
+                jumped = true;
+                lastJumpTime = thisJumpTime;
+            }
+            if (Main.getActiveWindow().getKey(GLFW_KEY_SPACE) == GLFW_RELEASE && jumped) {
+                jumped = false;
+            }
+        }
+    }
+
+    public void close() {
+        Main.getActiveWindow().delKeyCallback(hotbarCallback);
+        Main.getActiveWindow().delScrollCallback(scrollCallback);
     }
 }

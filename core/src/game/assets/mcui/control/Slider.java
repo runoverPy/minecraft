@@ -6,10 +6,10 @@ import game.assets.mcui.Align;
 import game.assets.mcui.Component;
 import game.assets.mcui.PixelComponent;
 import game.assets.mcui.asset.ColorTile;
-import game.assets.mcui.asset.ImageTile;
+import game.assets.mcui.asset.PixelImageTile;
 import game.assets.mcui.asset.TextTile;
 import game.main.Main;
-import game.util.Image;
+import game.util.ImageFile;
 import game.util.relay.ObjectRelay;
 import game.window.CursorPosCallback;
 import org.joml.Matrix4f;
@@ -25,7 +25,7 @@ public class Slider<T> extends PixelComponent {
     private ColorTile outerTile;
     private ColorTile innerTile;
     private TextTile description;
-    private ImageTile restricted;
+    private PixelImageTile restricted;
 
     private Transformer<T> transformer;
     private double innerValue;
@@ -45,7 +45,7 @@ public class Slider<T> extends PixelComponent {
         description.setParent(this);
         description.setShaded(true);
         description.setAlign(Align.CENTER);
-        restricted = new ImageTile(Image.loadImage("/img/restricted.png"));
+        restricted = new PixelImageTile(ImageFile.loadImage("/img/restricted.png"));
         restricted.setParent(this);
     }
 
@@ -130,7 +130,7 @@ public class Slider<T> extends PixelComponent {
 
     private class Knob extends PixelComponent {
         private final ColorTile outerTile;
-        private final ImageTile innerTile;
+        private final PixelImageTile innerTile;
         private final InputMap<Knob> inputMap;
 
         private final CursorPosCallback cursorPosCallback = (xPos, yPos) -> {
@@ -143,7 +143,7 @@ public class Slider<T> extends PixelComponent {
         public Knob() {
             outerTile = new ColorTile(new Vector4f(0, 0, 0, 1));
             outerTile.setParent(this);
-            innerTile = new ImageTile(Image.loadImage("/img/stone.png"));
+            innerTile = new PixelImageTile(ImageFile.loadImage("/img/stone.png"));
             innerTile.setParent(this);
 
             inputMap = new InputMap<>(this);
@@ -289,6 +289,54 @@ public class Slider<T> extends PixelComponent {
 
         @Override
         protected double reverseValue(Float value) {
+            double smoothValue = (value - start) / (stop - start);
+            return roundValue(smoothValue);
+        }
+    }
+
+    public static final class DoubleTransformer extends Transformer<Double> {
+        private final double start;
+        private final double stop;
+        private final int digits;
+
+        public DoubleTransformer(double start, double stop, int digits) {
+            if (stop <= start) throw new IllegalArgumentException("cannot create transformer if stop <= start");
+            this.start = start;
+            this.stop = stop;
+            this.digits = digits;
+        }
+
+        public DoubleTransformer(float start, float stop) {
+            this(start, stop, -1);
+        }
+
+        public DoubleTransformer(float stop) {
+            this(0, stop, -1);
+        }
+
+        public DoubleTransformer() {
+            this(0, 1, -1);
+        }
+
+        @Override
+        protected double roundValue(double value) {
+            if (digits >= 0) {
+                int steps = (int) ((stop - start) * Math.pow(10, digits));
+                return Math.round(steps * value) / (double) steps;
+            } else return value;
+        }
+
+        @Override
+        protected Double convertValue(double value) {
+            if (digits >= 0) {
+                int steps = (int) ((stop - start) * Math.pow(10, digits));
+                return (double) Math.round(steps * value) / Math.pow(10, digits) + start;
+            } else
+                return (stop - start) * value + start;
+        }
+
+        @Override
+        protected double reverseValue(Double value) {
             double smoothValue = (value - start) / (stop - start);
             return roundValue(smoothValue);
         }

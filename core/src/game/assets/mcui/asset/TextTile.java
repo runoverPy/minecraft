@@ -7,21 +7,24 @@ import game.main.Main;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 
-import java.io.IOException;
+import java.util.Arrays;
 import java.util.function.Function;
 
 public class TextTile extends PixelComponent {
     private Symbol[][] symbols; // todo
+    private final StringBuilder internalString;
     private char[][] chars;
     private Vector4f color, shade;
     private boolean isShaded;
     private Align align;
+    private OverflowBehavior overflowBehavior = OverflowBehavior.OVERFLOW;
 
     public TextTile(String text, Vector4f color, Vector4f shade) {
-        setText(text);
         this.color = color;
         this.shade = shade;
         this.align = Align.TOP_LEFT;
+        internalString = new StringBuilder();
+        setText(text);
     }
 
     public TextTile(String text) {
@@ -59,6 +62,14 @@ public class TextTile extends PixelComponent {
 
     public void setShaded(boolean shaded) {
         isShaded = shaded;
+    }
+
+    public OverflowBehavior getOverflowBehavior() {
+        return overflowBehavior;
+    }
+
+    public void setOverflowBehavior(OverflowBehavior overflowBehavior) {
+        this.overflowBehavior = overflowBehavior;
     }
 
     public Vector4f getColor() {
@@ -242,29 +253,60 @@ public class TextTile extends PixelComponent {
     }
 
     public class TextAccessor {
-        public void append(CharSequence csq) {
-            getThenSet(s -> s + csq);
-        }
-
-        public void append(CharSequence csq, int start, int end) {
+        public void append(char c) {
 
         }
 
-        public void append(char c) throws IOException {
+        public TextAccessor append(char[] str) {
+            getThenSet(s -> s + new String(str));
+            return this;
+        }
+
+        public TextAccessor append(String str) {
+            getThenSet(s -> s + str);
+            return this;
+        }
+
+        public TextAccessor append(char[] str, int offset, int length) {
+            char[] strRange = Arrays.copyOfRange(str, offset, offset + length);
+            append(strRange);
+            return this;
+        }
+
+        public TextAccessor append(String str, int start, int end) {
+            String strRange = str.substring(start, end);
+            append(strRange);
+            return this;
+        }
+
+
+        public void insert(int index, char c) {
 
         }
 
-        public void insert(char c, int index) {
+        public void insert(int index, char[] str) {
 
         }
 
-        public void insert(CharSequence seq, int index, int length) {
+        public void insert(int index, String str) {}
+
+        public void insert(int index, char[] str, int offset, int length) {}
+
+        public void insert(int index, String seq, int offset, int length) {
 
         }
 
-        public void insert(CharSequence seq, int index, int offset, int length) {
 
-        }
+        public void replace(int index, char c) {}
+
+        public void replace(int index, char[] str) {}
+
+        public void replace(int index, String str) {}
+
+        public void replace(int index, char[] str, int offset, int length) {}
+
+        public void replace(int index, String str, int offset, int length) {}
+
 
         public void delete(int index) {
 
@@ -274,11 +316,14 @@ public class TextTile extends PixelComponent {
 
         }
 
-        public TextAccessor clear() {
+
+        public TextAccessor reset() {
             setText("");
             return this;
         }
 
+
+        // print stuff
         public TextAccessor print(String string) {
             getThenSet(s -> s + string);
             return this;
@@ -301,8 +346,13 @@ public class TextTile extends PixelComponent {
             return TextTile.this.getText();
         }
 
-        public void getThenSet(Function<String, String> conversion) {
+        @Deprecated
+        private void getThenSet(Function<String, String> conversion) {
             setText(conversion.apply(getText()));
         }
+    }
+
+    public enum OverflowBehavior {
+        OVERFLOW, SCISSOR, WRAP, WRAP_INDENT, ELLIPSIS
     }
 }

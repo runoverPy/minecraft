@@ -1,9 +1,8 @@
 package game.assets.mcui.container;
 
-import game.assets.Scissor;
+import game.assets.GLUtils;
 import game.assets.mcui.Component;
 import game.assets.mcui.PixelComponent;
-import game.main.Main;
 import org.joml.Matrix4f;
 
 public class ScrollPane extends PixelComponent {
@@ -18,45 +17,66 @@ public class ScrollPane extends PixelComponent {
         this.frame = new Frame();
         frame.setParent(this);
         this.scrollBarX = new ScrollBarX();
+        scrollBarX.setParent(this);
+        scrollBarX.setPxHeight(5);
         this.scrollBarY = new ScrollBarY();
         scrollBarY.setParent(this);
-        this.scrollBarY.setPxWidth(5);
+        scrollBarY.setPxWidth(5);
     }
 
     @Override
     public void layout() {
-//        if (content == null) return;
-//        boolean
-//          xActive = switch (barXActivity) {
-//              case NEVER -> false;
-//              case SOMETIMES -> content.getWidth() > getWidth();
-//              case ALWAYS -> true;
-//          },
-//          yActive = switch (barYActivity) {
-//              case NEVER -> false;
-//              case SOMETIMES -> content.getHeight() > getHeight();
-//              case ALWAYS -> true;
-//          };
-
+        if (content == null) return;
         int scrollBarDiameter = 5;
-        int pxWidth = PixelComponent.getPxScale();
-        frame.setSize(getWidth() - scrollBarDiameter * pxWidth, getHeight());
-        scrollBarY.setPxHeight(getPxHeight());
-        scrollBarY.setLayoutX(getWidth() - scrollBarDiameter * pxWidth);
+        boolean
+          xActive = switch (barXActivity) {
+            case NEVER -> false;
+            case SOMETIMES -> content.getWidth() + scrollBarDiameter > getWidth();
+            case ALWAYS -> true;
+        },
+          yActive = switch (barYActivity) {
+              case NEVER -> false;
+              case SOMETIMES -> content.getHeight() + scrollBarDiameter > getHeight();
+              case ALWAYS -> true;
+          };
+
+        scrollBarX.setActive(xActive);
+        scrollBarY.setActive(yActive);
+        int pxWidth = Component.getPxScale();
+        if (xActive && yActive) {
+            frame.setSize(getWidth() - scrollBarDiameter * pxWidth, getHeight() - scrollBarDiameter * pxWidth);
+            scrollBarX.setPxWidth(getPxWidth() - scrollBarDiameter);
+            scrollBarX.setLayoutY(getHeight() - scrollBarDiameter * pxWidth);
+            scrollBarY.setPxHeight(getPxHeight() - scrollBarDiameter);
+            scrollBarY.setLayoutX(getWidth() - scrollBarDiameter * pxWidth);
+        } else if (xActive) {
+            frame.setSize(getWidth(), getHeight() - scrollBarDiameter * pxWidth);
+            scrollBarX.setPxWidth(getPxWidth());
+            scrollBarX.setLayoutY(getHeight() - scrollBarDiameter * pxWidth);
+        } else if (yActive) {
+            frame.setSize(getWidth() - scrollBarDiameter * pxWidth, getHeight());
+            scrollBarY.setPxHeight(getPxHeight());
+            scrollBarY.setLayoutX(getWidth() - scrollBarDiameter * pxWidth);
+        } else {
+            frame.setSize(getWidth(), getHeight());
+        }
     }
 
     @Override
     public void render(Matrix4f matrix) {
         frame.render(matrix);
+        scrollBarX.render(matrix);
         scrollBarY.render(matrix);
     }
 
     @Override
     public Component pick(double x, double y) {
-        Component picked = null;
-        picked = frame.pick(x, y);
+        Component picked;
+        picked = scrollBarX.pick(x, y);
         if (picked != null) return picked;
         picked = scrollBarY.pick(x, y);
+        if (picked != null) return picked;
+        picked = frame.pick(x, y);
         return picked;
     }
 
@@ -88,29 +108,26 @@ public class ScrollPane extends PixelComponent {
         public int getLayoutX() {
             if (content == null) return 0;
             int delta = content.getWidth() - getWidth();
-            return (int) Math.round(delta * scrollBarX.getValue());
+            return (int) -Math.round(delta * scrollBarX.getValue());
         }
 
         @Override
         public int getLayoutY() {
             if (content == null) return 0;
-            int delta = Math.max(content.getHeight() - getHeight(), 0);
-//            System.out.println("content.getHeight() = " + content.getHeight() + "; getHeight() = " + getHeight());
+            int delta = content.getHeight() - getHeight();
             return (int) -Math.round(delta * scrollBarY.getValue());
         }
 
         @Override
         public void render(Matrix4f matrix) {
-            int winHeight = Main.getActiveWindow().getHeight();
-            if (content != null) try (Scissor ignored = Scissor.cut(
+            if (content != null) try (GLUtils.GLOP ignored = GLUtils.scissor(
               ScrollPane.this.getGlobalX(),
-              (winHeight - ScrollPane.this.getGlobalY() - getHeight()),
+              ScrollPane.this.getGlobalY(),
               getWidth(),
               getHeight()
             )) {
-            }
-            if (content != null)
                 content.render(matrix);
+            }
         }
     }
 

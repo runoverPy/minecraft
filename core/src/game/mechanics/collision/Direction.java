@@ -6,7 +6,8 @@ public enum Direction {
     WEST (0, 1, 0),
     EAST (0, -1, 0),
     UP (0, 0, 1),
-    DOWN (0, 0, -1);
+    DOWN (0, 0, -1),
+    FILL (0, 0, 0);
 
     private final float x, y, z;
 

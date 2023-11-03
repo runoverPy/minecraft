@@ -13,4 +13,14 @@ public class ConfigFactoryImpl implements ConfigFactory {
     public ConfigDetails<Integer> intSlider(int start, int stop, int step) {
         return null;
     }
+
+    @Override
+    public ConfigDetails<String> inputField(String query) {
+        return null;
+    }
+
+    @Override
+    public <T extends Enum<T>> ConfigDetails<T> button(Class<T> tClass) {
+        return null;
+    }
 }

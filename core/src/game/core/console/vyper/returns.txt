@@ -1,0 +1,25 @@
+ success | execute | operator
+---------+---------+----------
+    y    |    y    | ';' , '&'
+   (t)   |    n    | '||'
+---------+---------+----------
+    n    |    y    | ';' , '||'
+   (f)   |    n    | '&'
+---------+---------+----------
+
+
+SEMICOLON:
+        s -> x
+        f -> x
+
+AND:
+t t t   s -> x
+t f f   f -> c
+f t f
+f f f
+
+OR:
+t t t   s -> c
+t f t   f -> x
+f t t
+f f f

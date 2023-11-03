@@ -16,7 +16,7 @@ public class WorldGeneratorRegister implements WorldGeneratorLoader {
     }
 
     public <T, U> void register(String generatorName, Supplier<T> presetSupplier, Function<T, U> generatorFactory) {
-        throw new RuntimeException();
+        throw new UnsupportedOperationException();
     }
 
     @Deprecated
@@ -27,10 +27,41 @@ public class WorldGeneratorRegister implements WorldGeneratorLoader {
 
     @Override
     public WorldGeneratorLoader register(String generatorName, Class<? extends WorldGenerator> generatorClass) {
-        System.out.println("registering generator class " + generatorName);
         if (generatorClasses.containsKey(generatorName)) throw new RegistrationException("Generator registered with same name");
         generatorClasses.put(generatorName, generatorClass);
         return this;
+    }
+
+    @Override
+    public GeneratorTemplateBuilder generator() {
+        return new GeneratorTemplateBuilder() {
+            private String name;
+            private Class<? extends WorldGenerator> generatorClass;
+
+            @Override
+            public GeneratorTemplateBuilder setName(String name) {
+                this.name = name;
+                return this;
+            }
+
+            @Override
+            public GeneratorTemplateBuilder setImage(Object image) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public GeneratorTemplateBuilder setClass(Class<? extends WorldGenerator> generatorClass) {
+                this.generatorClass = generatorClass;
+                return this;
+            }
+
+            @Override
+            public void submit() {
+                if (name == null) throw new IllegalStateException("a name must be supplied to the template builder before submitting");
+                if (generatorClass == null) throw new IllegalStateException("a world generator class must be assigned to the template builder before submitting");
+                register(name, generatorClass);
+            }
+        };
     }
 
     public boolean isGeneratorRegistered(String generatorName) {

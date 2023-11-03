@@ -1,0 +1,12 @@
+{
+    value: [
+        {
+            name: "value",
+            type: "f64"
+        },
+        {
+            name: "foo",
+            type: "f64"
+        }
+    ],
+}

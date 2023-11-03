@@ -6,6 +6,8 @@ import game.assets.mcui.ContentRoot;
 import game.assets.mcui.asset.TextTile;
 import game.assets.mcui.container.AnchorPane;
 import game.assets.mcui.container.StackContainer;
+import game.core.rendering.ChunkRenderer;
+import game.core.rendering.Renderer;
 import game.core.server.Server;
 import game.main.Main;
 import game.mechanics.entities.Player;
@@ -22,15 +24,17 @@ public class Debug extends ContentRoot {
     private long lastTime;
     private final Server server;
     private final Player player;
+    private final Renderer renderer;
     private final FPSCounter counter;
     private static final int toggleKey = GLFW_KEY_F3;
     private final Toggle visible;
 
     private TextTile leftText, rightText;
 
-    public Debug(Server server, Player player) {
+    public Debug(Server server, Player player, Renderer renderer) {
         this.server = server;
         this.player = player;
+        this.renderer = renderer;
         this.counter = new FPSCounter();
         lastTime = System.currentTimeMillis();
         visible = new Toggle(toggleKey);
@@ -82,15 +86,21 @@ public class Debug extends ContentRoot {
         double vertical = player.getVertical(), horizontal = player.getHorizontal();
 
         leftText.edit()
-          .clear()
+          .reset()
           .printf("XYZ: %.3f; %.3f; %.3f\n", camPos.x(), camPos.y(), camPos.z())
           .printf("Vel: %.3f; %.3f; %.3f\n", camVel.x(), camVel.y(), camVel.z())
           .printf("Angle: %.3f; %.3f\n", vertical * 360 / (Math.PI * 2) % 360, horizontal * 360 / (Math.PI * 2) % 360)
           .printf("Chunk: %d, %d, %d\n", chunk.x(), chunk.y(), chunk.z());
 
         rightText.edit()
-          .clear()
-          .println("FPS: " + (long) counter.getAvgFrameRate());
+          .reset()
+          .println("FPS: " + (long) counter.getAvgFrameRate())
+          .printf("Loaded Chunks W: %d, R: %d\n", server.getChunkCount(), renderer.getChunkCount());
+        if (renderer instanceof ChunkRenderer chunkRenderer) {
+            rightText.edit()
+              .printf("executor queue: %d, tasks: %d, threads: %d\n",
+                chunkRenderer.getExecutorQueueSize(), chunkRenderer.getExecutorTasks(), chunkRenderer.getExecutorThreads());
+        }
 
         if (firstBlock != null) {
             rightText.edit()

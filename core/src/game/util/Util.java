@@ -56,6 +56,22 @@ public class Util {
         }
     }
 
+    public static void updateTexture(Image image, int texture) {
+        int format = image.getFormat() == 4 ? GL_RGBA : GL_RGB;
+        glBindTexture(GL_TEXTURE_2D, texture);
+        glTexImage2D(
+          GL_TEXTURE_2D,
+          0,
+          GL_RGBA,
+          image.getWidth(),
+          image.getHeight(),
+          0,
+          format,
+          GL_FLOAT,
+          image.getImg()
+        );
+    }
+
     public static int genTexture(Image texture, int target, int wrap_s, int wrap_t, int tex_mag, int tex_min) {
         int textureID = glGenTextures();
         int format = texture.getFormat() == 4 ? GL_RGBA : GL_RGB;
@@ -80,7 +96,7 @@ public class Util {
     }
 
     public static int genTexture(String source, int target, int wrap_s, int wrap_t, int tex_mag, int tex_min) {
-        Image texture = Image.loadImage(source);
+        ImageFile texture = ImageFile.loadImage(source);
         return genTexture(texture, target, wrap_s, wrap_t, tex_mag, tex_min);
     }
 

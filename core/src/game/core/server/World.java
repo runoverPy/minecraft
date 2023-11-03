@@ -1,6 +1,7 @@
 package game.core.server;
 
 import game.core.GameRuntime;
+import mdk.blocks.Phase;
 import mdk.worldgen.WorldGenerator;
 import game.mechanics.entities.Entity;
 import game.mechanics.entities.User;
@@ -8,10 +9,7 @@ import org.joml.Vector3f;
 import org.joml.Vector3i;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Code related to maintaining game functions. Includes entity updating, block storage etc.
@@ -80,6 +78,9 @@ public class World extends Thread implements Server {
     @Override
     public void close() {
         this.terminate = true;
+        synchronized (chunks) {
+            chunks.clear();
+        }
         // still needs to save the world
     }
 
@@ -117,7 +118,21 @@ public class World extends Thread implements Server {
 
     @Override
     public Vector3f getSpawnPoint() {
-        return new Vector3f(0, 0, 1);
+        int centerX = 0, centerY = 0, radius = 8;
+        Random rng = new Random();
+        int cycles = 0;
+        outer: do {
+            if (cycles++ >= 256) throw new RuntimeException("Infinite Loop");
+            int
+              spawnX = rng.nextInt(2 * radius) - radius + centerX,
+              spawnY = rng.nextInt(2 * radius) - radius + centerY;
+
+            int i = 256;
+            while (getBlock(spawnX, spawnY, i).getPhase() == Phase.GAS) {
+                if (--i < 0) continue outer;
+            }
+            return new Vector3f(spawnX + 0.5f, spawnY + 0.5f, i + 1);
+        } while (true);
     }
 
     @Override
@@ -137,14 +152,61 @@ public class World extends Thread implements Server {
 
     @Override
     public Chunk getChunk(int cX, int cY, int cZ) {
-        Chunk c = chunks.get(new Vector3i(cX, cY, cZ));
-        if (c == null) {
-            c = loadChunk(cX, cY, cZ);
-            chunks.put(new Vector3i(cX, cY, cZ), c);
+        synchronized (chunks) {
+            Chunk c = chunks.get(new Vector3i(cX, cY, cZ));
+            if (c == null) {
+                c = loadChunk(cX, cY, cZ);
+                chunks.put(new Vector3i(cX, cY, cZ), c);
+            }
+            return c;
         }
-        return c;
     }
 
+    @Override
+    public int getChunkCount() {
+        return chunks.size();
+    }
+
+    @Override
+    public void updateChunks(Vector3i centerChunk, int renderRadius, boolean circular) {
+        Set<Vector3i> newChunks = new HashSet<>();
+        Vector3i chunk;
+        for (int x = centerChunk.x() - renderRadius; x <= centerChunk.x() + renderRadius; x++) {
+            for (int y = centerChunk.y() - renderRadius; y <= centerChunk.y() + renderRadius; y++) {
+                for (int z = centerChunk.z() - renderRadius; z <= centerChunk.z() + renderRadius; z++) {
+                    chunk = new Vector3i(x, y, z);
+                    if (centerChunk.distance(chunk) < renderRadius || !circular) newChunks.add(chunk);
+                }
+            }
+        }
+
+        Set<Vector3i> loadedChunks;
+        synchronized (chunks) {
+            loadedChunks = chunks.keySet();
+            // all in newChunks and not in loadedChunks
+            SortedSet<Vector3i> toLoad = new TreeSet<>((o1, o2) -> {
+                int LT = -1, EQ = 0, GT = 1;
+                double dist = new Vector3i(o1).sub(centerChunk).length() - new Vector3i(o2).sub(centerChunk).length();
+                if (o1 == o2) return EQ;
+                if (dist == 0d) return GT;
+                return dist < 0d ? LT : GT;
+            });
+            toLoad.addAll(newChunks);
+            toLoad.removeAll(loadedChunks);
+
+            // all in loadedChunks and not in newChunks
+            Set<Vector3i> toUnload = new HashSet<>(loadedChunks);
+            toUnload.removeAll(newChunks);
+
+//            for (Vector3i chunkToLoad : toLoad) {
+//                addChunkRef(chunkToLoad.x, chunkToLoad.y, chunkToLoad.z);
+//            }
+            for (Vector3i chunkToUnload : toUnload) {
+                dropChunk(chunkToUnload.x, chunkToUnload.y, chunkToUnload.z, chunks.remove(chunkToUnload));
+            }
+        }
+    }
+    
     public final void addChunkRef(int cX, int cY, int cZ) {
         Vector3i chunk = new Vector3i(cX, cY, cZ);
         refCounter.putIfAbsent(chunk, 0);
@@ -170,7 +232,7 @@ public class World extends Thread implements Server {
         if (saver != null && saver.isChunkSaved(cX, cY, cZ))
             return saver.loadChunk(cX, cY, cZ);
         else {
-            Chunk chunk = new Chunk();
+            Chunk chunk = new Chunk(cX, cY, cZ);
             generator.populateChunk(cX, cY, cZ, chunk, Block::new);
             return chunk;
         }
@@ -178,7 +240,7 @@ public class World extends Thread implements Server {
 
     private void dropChunk(int cX, int cY, int cZ, Chunk chunk) {
         try {
-            saver.saveChunk(cX, cY, cZ, chunk);
+            if (saver != null) saver.saveChunk(cX, cY, cZ, chunk);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

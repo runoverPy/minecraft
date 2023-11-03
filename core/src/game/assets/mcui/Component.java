@@ -13,11 +13,14 @@ import game.window.GLFWWindow;
 import org.joml.Matrix4f;
 
 public abstract class Component implements EventTarget {
+    protected static ItemScale scale = ItemScale.LARGE;
     private int layoutX, layoutY;
     private int width, height;
     private boolean resizeable = true;
-    private Component parent; // TODO: 23.05.23 currently unused, finish implementing
+    private Component parent;
+    private ContentRoot root;
     private final ComponentEventDispatcher dispatcher = new ComponentEventDispatcher();
+    private int lastPxScale = 0;
 
     public Component() {
         width = minWidth();
@@ -59,6 +62,14 @@ public abstract class Component implements EventTarget {
     public final void setLayoutPos(int layoutX, int layoutY) {
         setLayoutX(layoutX);
         setLayoutY(layoutY);
+    }
+
+    public void layoutIfScaleChanged() {
+        int nextPxScale = Component.getPxScale();
+        if (lastPxScale != nextPxScale) {
+            lastPxScale = nextPxScale;
+            layout();
+        }
     }
 
     public int getWidth() {
@@ -104,7 +115,28 @@ public abstract class Component implements EventTarget {
         return resizeable;
     }
 
-    public abstract void render(Matrix4f matrix);
+    public static void setScale(ItemScale scale) {
+        Component.scale = scale;
+    }
+
+    public static ItemScale getScale() {
+        return Component.scale;
+    }
+
+    public static int getPxScale() {
+        int winWidth, winHeight;
+        winWidth = Main.getActiveWindow().getWidth();
+        winHeight = Main.getActiveWindow().getHeight();
+
+        int pxWidth, pxHeight;
+        pxWidth = winWidth / scale.getPixels();
+        pxHeight = winHeight / scale.getPixels();
+        return Math.min(pxWidth, pxHeight);
+    }
+
+    public void render(Matrix4f matrix) {
+
+    }
 
     public void layout() {}
 
@@ -151,6 +183,14 @@ public abstract class Component implements EventTarget {
         this.parent = parent;
     }
 
+    public ContentRoot getRoot() {
+        return root;
+    }
+
+    public void setRoot(ContentRoot root) {
+        this.root = root;
+    }
+
     @Override
     public final EventDispatchChain buildEventDispatchChain(EventDispatchChain chain) {
         for (Component component = this; component != null; component = component.getParent()) {
@@ -179,4 +219,34 @@ public abstract class Component implements EventTarget {
     public final Event fireEvent(Event event) {
         return EventLauncher.fireEvent(this, event);
     }
+
+    public enum ItemScale {
+        SMALL (512),
+        MEDIUM (384),
+        LARGE (256),
+        GIANT (128);
+
+        private final int pixels;
+
+        ItemScale(int pixels) {
+            this.pixels = pixels;
+        }
+
+        public int getPixels() {
+            return pixels;
+        }
+    }
+
+    public void requestFocus() {
+        if (root != null)
+            root.requestFocus(this);
+    } //todo implement
+
+    public boolean hasFocus() {
+        return root != null && root.getFocusedElement() == this;
+    }
+
+    public void focusAttached() {}
+
+    public void focusDetached() {}
 }

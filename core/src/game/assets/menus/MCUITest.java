@@ -1,10 +1,10 @@
 package game.assets.menus;
 
 import game.assets.mcui.Align;
-import game.assets.mcui.PixelComponent;
+import game.assets.mcui.Component;
 import game.assets.mcui.asset.ColorTile;
 import game.assets.mcui.asset.FrameTile;
-import game.assets.mcui.asset.ImageTile;
+import game.assets.mcui.asset.PixelImageTile;
 import game.assets.mcui.asset.TextTile;
 import game.assets.mcui.container.AnchorPane;
 import game.assets.mcui.container.ScrollPane;
@@ -12,13 +12,14 @@ import game.assets.mcui.container.VerticalContainer;
 import game.assets.mcui.control.Button;
 import game.assets.mcui.control.InputField;
 import game.assets.mcui.control.Slider;
-import game.util.Image;
+import game.main.Main;
+import game.util.ImageFile;
 import org.joml.Vector4f;
 
-public class MCUITest extends MCUIMenu {
+public class MCUITest extends Menu {
     private VerticalContainer testContainer;
     private ColorTile testColor;
-    private ImageTile testImage;
+    private PixelImageTile testImage;
     private InputField testInput;
     private TextTile testTextTile;
     private FrameTile testFrameTile;
@@ -29,14 +30,16 @@ public class MCUITest extends MCUIMenu {
     private Slider<String> testSlider;
 
     public MCUITest(MenuHandler handler) {
-        PixelComponent.setScale(PixelComponent.ItemScale.LARGE);
+        Component.setScale(Component.ItemScale.LARGE);
         testColor = new ColorTile(new Vector4f(0, 0, 1, 1));
         testColor.setPxSize(16, 16);
-        testImage = new ImageTile(Image.loadImage("/img/stone.png"));
+        testImage = new PixelImageTile(ImageFile.loadImage("/img/stone.png"));
         testImage.setPxSize(32, 32);
+        InputField testInput2 = new InputField();
+        testInput2.setPxSize(128, 16);
         testInput = new InputField();
         testInput.setPxSize(128, 16);
-        testTextTile = new TextTile("Hello World!\nSuperbus Via Scientiae\nLorem Ipsum dolor sit amet");
+        testTextTile = new TextTile(Main.getLogPath().toAbsolutePath().toString());
         testTextTile.setColor(new Vector4f(0, 0, 0, 1));
         testTextTile.setShade(new Vector4f(0.75f, 0.75f, 0.75f, 1f));
         testTextTile.setPxSize(256, 36);
@@ -65,13 +68,11 @@ public class MCUITest extends MCUIMenu {
         square.setPxSize(64, 48);
         AnchorPane.setTopAnchor(square, 10.0);
         AnchorPane.setLeftAnchor(square, 40.0);
-        testAnchorPane = new AnchorPane();
-        testAnchorPane.getChildren()
-            .addAll(background1, square);
-        testAnchorPane.setSize(256, 160);
+        PixelImageTile stupidStock = new PixelImageTile(ImageFile.loadImage("/img/dumb.png"));
+        stupidStock.setPxSize(256, 183);
         testScrollPane = new ScrollPane();
-        testScrollPane.setContent(testAnchorPane);
-        testScrollPane.setSize(256, 60);
+        testScrollPane.setContent(stupidStock);
+        testScrollPane.setPxSize(300, 100);
 
 
         testButton.setOnAction(() ->
@@ -79,7 +80,7 @@ public class MCUITest extends MCUIMenu {
 
         testContainer = new VerticalContainer();
         testContainer.getChildren()
-          .addAll(testColor, testImage, testInput, testTextTile, testButton, returnButton, testSlider, testScrollPane);
+          .addAll(testColor, testImage, testInput, testInput2, testTextTile, testButton, returnButton, testSlider, testScrollPane);
         testContainer.setSize(256, 256);
         testContainer.setSpacing(4);
         setRoot(testContainer);

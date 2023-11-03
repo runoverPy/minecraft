@@ -7,9 +7,9 @@ import game.assets.event.ActionEvent;
 import game.assets.event.EventProcessor;
 import game.assets.mcui.Pixelated;
 import game.assets.mcui.asset.ColorTile;
-import game.assets.mcui.asset.ImageTile;
+import game.assets.mcui.asset.PixelImageTile;
 import game.assets.mcui.asset.TextTile;
-import game.util.Image;
+import game.util.ImageFile;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 
@@ -28,9 +28,9 @@ public abstract class AbstractButton extends PixelComponent implements Pixelated
 
     private final ColorTile buttonFrame;
 
-    private final ImageTile buttonImage;
+    private final PixelImageTile buttonImage;
     private final TextTile description;
-    protected static final Image filler = Image.loadImage("/img/stone.png");
+    protected static final ImageFile filler = ImageFile.loadImage("/img/stone.png");
 
     protected AbstractButton(String desc, Supplier<Boolean> activeCondition) {
         this.isActive = activeCondition;
@@ -39,7 +39,7 @@ public abstract class AbstractButton extends PixelComponent implements Pixelated
         buttonCover.setParent(this);
         buttonFrame = new ColorTile(new Vector4f());
         buttonFrame.setParent(this);
-        buttonImage = new ImageTile(filler);
+        buttonImage = new PixelImageTile(filler);
         buttonImage.setParent(this);
         description = new TextTile(desc);
         description.setParent(this);

@@ -1,0 +1,16 @@
+<component name="ArtifactManager">
+  <artifact name="siculut">
+    <output-path>$PROJECT_DIR$/out/artifacts/siculut</output-path>
+    <root id="root">
+      <element id="directory" name="core">
+        <element id="directory" name="mods">
+          <element id="dir-copy" path="$PROJECT_DIR$/core/mods" />
+        </element>
+        <element id="directory" name="dat">
+          <element id="dir-copy" path="$PROJECT_DIR$/core/dat" />
+        </element>
+      </element>
+      <element id="artifact" artifact-name="core:jar" />
+    </root>
+  </artifact>
+</component>

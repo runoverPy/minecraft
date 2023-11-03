@@ -2,7 +2,6 @@ package game.assets.mcui.container;
 
 import game.assets.mcui.Align;
 import game.assets.mcui.Component;
-import game.assets.mcui.PixelComponent;
 
 public class VerticalContainer extends Container {
     private Align align;
@@ -52,7 +51,7 @@ public class VerticalContainer extends Container {
     }
 
     public int getSpacing() {
-        return spacing * PixelComponent.getPxScale();
+        return spacing * Component.getPxScale();
     }
 
     public void setSpacing(int spacing) {

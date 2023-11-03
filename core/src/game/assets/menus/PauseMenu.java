@@ -5,11 +5,9 @@ import game.assets.mcui.Align;
 import game.assets.mcui.container.StackContainer;
 import game.assets.mcui.container.VerticalContainer;
 import game.assets.mcui.control.Button;
-import game.assets.ui_elements.Widget;
-import game.core.settings.GeneralSettingsMenu;
 import game.main.Main;
 
-class PauseMenu extends MCUIMenu {
+class PauseMenu extends Menu {
     public PauseMenu(PauseHandler handler) {
         super(Background.GRAY);
 
@@ -27,19 +25,24 @@ class PauseMenu extends MCUIMenu {
         innerContainer.setSpacing(2);
 
         Button returnButton = new Button("Back");
-        returnButton.setOnAction(handler::deactivate);
-        returnButton.setSize(192, 16);
+        returnButton.setOnAction(handler::disable);
+        returnButton.setPxSize(192, 16);
         Button settingsButton = new Button("Settings");
         settingsButton.setOnAction(() -> handler.next(new SettingsMenu(handler)));
-        settingsButton.setSize(192, 16);
+        settingsButton.setPxSize(192, 16);
         Button mainMenuButton = new Button("Main Menu");
         mainMenuButton.setOnAction(Main::closeGame);
-        mainMenuButton.setSize(192, 16);
+        mainMenuButton.setPxSize(192, 16);
 
         innerContainer.getChildren()
           .addAll(returnButton, settingsButton, mainMenuButton);
         outerContainer.getChildren()
           .setAll(innerContainer);
         setRoot(outerContainer);
+    }
+
+    @Override
+    public void attach() {
+        super.attach();
     }
 }

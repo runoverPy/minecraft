@@ -5,7 +5,7 @@ import mdk.structure.ElementFactory;
 
 import java.util.Random;
 
-public class GeneratorSeed extends GeneratorSetting {
+public class GeneratorSeed extends GeneratorSetting<Long> {
     private final StringBuffer buffer;
 
     public GeneratorSeed() {

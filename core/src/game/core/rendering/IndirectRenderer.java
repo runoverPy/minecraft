@@ -1,9 +1,12 @@
 package game.core.rendering;
 
 import game.core.GameRuntime;
+import game.core.server.Block;
+import game.core.server.Chunk;
 import game.core.server.Server;
 import game.util.Side;
 import game.util.Util;
+import mdk.blocks.Phase;
 import org.javatuples.Pair;
 import org.javatuples.Triplet;
 import org.joml.Matrix4f;
@@ -12,17 +15,14 @@ import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 import mdk.blocks.Material;
 
 import static org.lwjgl.opengl.GL46.*;
 
-public class IndirectRenderer extends ChunkRenderer {
+public class IndirectRenderer extends ChunkRenderer<IndirectRenderer.IndirectRenderingChunk> {
     private static final int programID;
     private static final int fullTransform;
 
@@ -59,20 +59,70 @@ public class IndirectRenderer extends ChunkRenderer {
         return null;
     }
 
+    @Override
+    public void updateBlock(Vector3i block) {
+        getExecutor().execute(() -> {
+            if (!containsBlock(block)) return;
+
+            Block block1 = server.getBlock(block);
+            Phase blockPhase1 = block1.getPhase();
+
+            Set<RenderingChunk> affectedChunks = new HashSet<>();
+            affectedChunks.add(getChunkForBlock(block));
+
+            for (Side side : Side.values()) {
+                Vector3i nextBlock = block.add(side.getVec(), new Vector3i());
+
+                Block block2 = server.getBlock(nextBlock);
+                Phase blockPhase2 = block2.getPhase();
+
+                synchronized (this) {
+                    affectedChunks.add(getChunkForBlock(nextBlock));
+                    if (blockPhase1 != blockPhase2) {
+                        // add a new face
+                        if (blockPhase1 != Phase.GAS) {
+                            addFace(new Face(block, side), block1.getMaterial());
+                        } else {
+                            addFace(new Face(nextBlock, side.invert()), block2.getMaterial());
+                        }
+                    } else {
+                        // remove a face
+                        delFace(new Face(block, side));
+                        delFace(new Face(nextBlock, side.invert()));
+                    }
+                }
+            }
+            for (RenderingChunk chunk : affectedChunks) {
+                chunk.requestUpload();
+            }
+        });
+    }
+
+    // todo move to IndirectRenderer or other class
+    public void addFace(Face face, Material type) {
+        getChunkForBlock(face.getPosition()).addFace(face, type);
+    }
+
+    public void delFace(Face face) {
+        getChunkForBlock(face.getPosition()).delFace(face);
+    }
+
     protected class IndirectRenderingChunk extends RenderingChunk {
         private final Map<Material, Triplet<Integer, Integer, Integer>> renderData;
 
-        private final UploadOperation upload;
+        private boolean doUpload = false;
 
         private IndirectRenderingChunk(Vector3i chunkPos) {
             super(chunkPos);
             this.renderData = new HashMap<>();
-            this.upload = new UploadOperation();
         }
 
         @Override
         public void draw(Matrix4f matrixPV) {
-            this.upload.runIfPossible();
+            if (doUpload) {
+                upload();
+                doUpload = false;
+            }
 
             glBindVertexBuffer(0, RenderUtils.vertexBuffer, 0, 20);
             glEnableVertexAttribArray(0);
@@ -105,7 +155,12 @@ public class IndirectRenderer extends ChunkRenderer {
             }
         }
 
-        public void update() {
+        @Override
+        public void requestUpload() {
+            doUpload = true;
+        }
+
+        public void upload() {
             Map<Material, Map<Side, List<Vector3i>>> sortedFaces = new HashMap<>();
             synchronized (faces) {
                 faces.forEach((face, material) -> {
@@ -129,14 +184,14 @@ public class IndirectRenderer extends ChunkRenderer {
                 int i = 0;
                 for (Entry<Side, List<Vector3i>> entry : sides.entrySet()) {
                     indirect.put(4)
-                            .put(entry.getValue().size())
-                            .put(4 * entry.getKey().ordinal())
-                            .put(i);
+                      .put(entry.getValue().size())
+                      .put(4 * entry.getKey().ordinal())
+                      .put(i);
 
                     for (Vector3i offset : entry.getValue()) {
                         position.put(offset.x())
-                                .put(offset.y())
-                                .put(offset.z());
+                          .put(offset.y())
+                          .put(offset.z());
                     }
                     i += entry.getValue().size();
                 }
@@ -144,10 +199,7 @@ public class IndirectRenderer extends ChunkRenderer {
                 position.flip();
                 bufferData.put(material, new Triplet<>(sides.size(), indirect, position));
             });
-            upload.setOperation(() -> upload(bufferData));
-        }
 
-        public void upload(Map<Material, Triplet<Integer, IntBuffer, FloatBuffer>> bufferData) {
             for (Triplet<Integer, Integer, Integer> buffers : renderData.values()) {
                 glDeleteBuffers(buffers.getValue1());
                 glDeleteBuffers(buffers.getValue2());
@@ -169,6 +221,59 @@ public class IndirectRenderer extends ChunkRenderer {
                 MemoryUtil.memFree(indirect);
                 MemoryUtil.memFree(position);
                 renderData.put(buffers.getKey(), new Triplet<>(buffers.getValue().getValue0(), indirectBuffer, positionBuffer));
+            }
+        }
+
+        @Override
+        public void map() {
+            final Queue<Pair<Vector3i, Block>> processingQueue = new ArrayDeque<>();
+            final Set<Vector3i> visitedBlocks = new HashSet<>();
+
+            Chunk chunk = server.getChunk(getChunkPos());
+            if (chunk == null) return;
+            processingQueue.add(new Pair<>(getChunkPos().mul(16), chunk.getBlock(0, 0, 0)));
+
+            while (!processingQueue.isEmpty()) {
+                Pair<Vector3i, Block> active = processingQueue.remove();
+                Vector3i prevBlock = active.getValue0();
+
+                if (visitedBlocks.contains(prevBlock)) continue;
+                else visitedBlocks.add(prevBlock);
+
+                Block block1 = active.getValue1();
+                Phase blockPhase1 = block1.getPhase();
+
+                for (Side side : Side.values()) {
+                    Vector3i nextBlock = prevBlock.add(side.getVec(), new Vector3i());
+
+                    // ist nächster Block erlaubt?
+                    Block block2 = server.getBlock(nextBlock);
+                    Phase blockPhase2 = block2.getPhase();
+
+                    if (blockPhase1 != blockPhase2) { // bei jedem Phasenübergang
+                        if (blockPhase1 != Phase.GAS) {
+                            addFace(new Face(prevBlock, side), block1.getMaterial());
+                        } else {
+                            if (containsBlock(nextBlock)) {
+                                addFace(new Face(nextBlock, side.invert()), block2.getMaterial());
+                            }
+                        }
+                    }
+                    if (containsBlock(nextBlock)) processingQueue.add(new Pair<>(nextBlock, block2));
+                }
+            }
+            requestUpload();
+        }
+
+        public final void delFace(Face face) {
+            synchronized (this.faces) {
+                faces.remove(face);
+            }
+        }
+
+        public final void addFace(Face face, Material material) {
+            synchronized (this.faces) {
+                faces.put(face, material);
             }
         }
     }

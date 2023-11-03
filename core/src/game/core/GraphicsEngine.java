@@ -4,6 +4,7 @@ import org.lwjgl.opengl.GL;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.GL_ONE;
+import static org.lwjgl.opengl.GL13.GL_MULTISAMPLE;
 import static org.lwjgl.opengl.GL14.glBlendFuncSeparate;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
@@ -27,7 +28,9 @@ public class GraphicsEngine {
 
         // gl settings
         glEnable(GL_BLEND);
+//        glEnable(GL_MULTISAMPLE);
         glEnable(GL_POLYGON_OFFSET_FILL);
+//        glEnable(GL_POLYGON_SMOOTH);
         glEnable(GL_LINE_SMOOTH);
         glEnable(GL_TEXTURE_2D);
         glEnable(GL_DEPTH_TEST);
@@ -37,6 +40,7 @@ public class GraphicsEngine {
         // blend func
         glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
 
+        System.out.println("GL version: " + glGetString(GL_VERSION));
     }
 
     public void clear() {

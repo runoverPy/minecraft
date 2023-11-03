@@ -1,0 +1,73 @@
+@startuml
+interface game.assets.mcui.data.ObservableSet {
+}
+interface game.assets.mcui.data.Observable {
+~ void addListener(CL)
+~ void removeListener(CL)
+}
+interface game.assets.mcui.data.ObservableList {
+}
+interface game.assets.mcui.data.MapChangeListener {
+}
+class game.assets.mcui.data.MapChangeListener.MapChange {
+}
+interface game.assets.mcui.data.SetChangeListener {
+}
+class game.assets.mcui.data.SetChangeListener.SetChange {
+}
+class game.assets.mcui.data.ObservableListWrapper {
+- List<T> innerList
+- List<ListChangeListener<T>> changeListeners
++ T get(int)
++ int size()
++ T set(int,T)
++ void add(int,T)
++ T remove(int)
++ void addListener(ListChangeListener<T>)
++ void removeListener(ListChangeListener<T>)
+- void fireListChange(ListChangeListener.ListChange<T>)
+}
+interface game.assets.mcui.data.ObservableMap {
+}
+interface game.assets.mcui.data.ChangeListener {
+}
+class game.assets.mcui.data.ChangeListener.Change {
+- O observable
++ O getObservable()
+}
+interface game.assets.mcui.data.ListChangeListener {
+}
+class game.assets.mcui.data.ListChangeListener.ListChange {
+- T changeValue
+- int changeIndex
+- ChangeType changeType
++ T getValue()
++ int getIndex()
++ ChangeType getType()
+}
+enum game.assets.mcui.data.ChangeType {
++  INSERT
++  REMOVE
+}
+
+
+game.assets.mcui.data.Observable <|-- game.assets.mcui.data.ObservableSet
+java.util.Set <|-- game.assets.mcui.data.ObservableSet
+java.util.List <|-- game.assets.mcui.data.ObservableList
+game.assets.mcui.data.Observable <|-- game.assets.mcui.data.ObservableList
+game.assets.mcui.data.ChangeListener <|-- game.assets.mcui.data.MapChangeListener
+game.assets.mcui.data.MapChangeListener +.. game.assets.mcui.data.MapChangeListener.MapChange
+game.assets.mcui.data.Change <|-- game.assets.mcui.data.MapChangeListener.MapChange
+game.assets.mcui.data.ChangeListener <|-- game.assets.mcui.data.SetChangeListener
+game.assets.mcui.data.SetChangeListener +.. game.assets.mcui.data.SetChangeListener.SetChange
+game.assets.mcui.data.Change <|-- game.assets.mcui.data.SetChangeListener.SetChange
+game.assets.mcui.data.ObservableList <|.. game.assets.mcui.data.ObservableListWrapper
+java.util.AbstractList <|-- game.assets.mcui.data.ObservableListWrapper
+game.assets.mcui.data.Observable <|-- game.assets.mcui.data.ObservableMap
+java.util.Map <|-- game.assets.mcui.data.ObservableMap
+java.util.function.Consumer <|-- game.assets.mcui.data.ChangeListener
+game.assets.mcui.data.ChangeListener +.. game.assets.mcui.data.ChangeListener.Change
+game.assets.mcui.data.ChangeListener <|-- game.assets.mcui.data.ListChangeListener
+game.assets.mcui.data.ListChangeListener +.. game.assets.mcui.data.ListChangeListener.ListChange
+game.assets.mcui.data.Change <|-- game.assets.mcui.data.ListChangeListener.ListChange
+@enduml

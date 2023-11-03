@@ -7,17 +7,9 @@ import game.assets.mcui.container.VerticalContainer;
 import game.assets.mcui.control.Button;
 import game.core.settings.GeneralSettingsMenu;
 
-class SettingsMenu extends MCUIMenu {
+class SettingsMenu extends Menu {
     public SettingsMenu(MenuHandler handler) {
         super(Background.BRICKS);
-
-//        callbacks.add(new Callback(GLFW_KEY_ESCAPE, handler::prev));
-//
-//        try (WidgetOrganizer manager = organiser(192, 18, 4, 4)) {
-//            manager.insert(Widget.button("Audio Settings", () -> handler.next(new AudioSettings(handler))));
-//            manager.insert(Widget.button("Video Settings", () -> handler.next(new VideoSettings(handler))));
-//            manager.insert(Widget.button("Back", handler::prev));
-//        }
 
         StackContainer outerContainer = new StackContainer();
         outerContainer.setAlign(Align.CENTER);
@@ -29,18 +21,18 @@ class SettingsMenu extends MCUIMenu {
         Button generalSettingsButton = new Button("General Settings");
         generalSettingsButton.setOnAction(() ->
           handler.next(new GeneralSettingsMenu(handler)));
-        generalSettingsButton.setSize(192, 16);
+        generalSettingsButton.setPxSize(192, 16);
         Button audioSettingsButton = new Button("Audio Settings");
         audioSettingsButton.setOnAction(() ->
           handler.next(new AudioSettings(handler)));
-        audioSettingsButton.setSize(192, 16);
+        audioSettingsButton.setPxSize(192, 16);
         Button videoSettingsButton = new Button("Video Settings");
         videoSettingsButton.setOnAction(() ->
           handler.next(new VideoSettings(handler)));
-        videoSettingsButton.setSize(192, 16);
+        videoSettingsButton.setPxSize(192, 16);
         Button returnButton = new Button("Back");
         returnButton.setOnAction(handler::prev);
-        returnButton.setSize(192, 16);
+        returnButton.setPxSize(192, 16);
 
         innerContainer.getChildren()
           .addAll(generalSettingsButton, audioSettingsButton, videoSettingsButton, returnButton);

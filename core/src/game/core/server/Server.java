@@ -25,6 +25,7 @@ public interface Server extends Closeable {
     default Chunk getChunk(Vector3i chunkPos) {
         return getChunk(chunkPos.x(), chunkPos.y(), chunkPos.z());
     }
+    int getChunkCount();
 
     long getServerTime();
     Vector3f getSpawnPoint();
@@ -36,4 +37,6 @@ public interface Server extends Closeable {
 
     void registerClient(Client client);
     void disconnectClient(Client client) throws IOException;
+
+    void updateChunks(Vector3i centerChunk, int renderRadius, boolean circular);
 }

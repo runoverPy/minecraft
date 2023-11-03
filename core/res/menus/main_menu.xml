@@ -1,0 +1,13 @@
+<Menus>
+    <Menu name="MainMenu" background="dirt">
+        <StackContainer align="CENTER">
+            <VerticalContainer aling="CENTER" width="-1" height="-1" spacing="2">
+                <Button onAction="..." pxWidth="192" pxHeight="16">Singleplayer</Button>
+                <Button onAction="..." pxWidth="192" pxHeight="16">Multiplayer</Button>
+                <Button onAction="..." pxWidth="192" pxHeight="16">Settings</Button>
+                <Button onAction="..." pxWidth="192" pxHeight="16">Exit Game</Button>
+                <Button onAction="..." pxWidth="192" pxHeight="16">Test MCUI</Button>
+            </VerticalContainer>
+        </StackContainer>
+    </Menu>
+</Menus>

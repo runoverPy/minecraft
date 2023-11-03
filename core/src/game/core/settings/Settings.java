@@ -5,30 +5,33 @@ import org.json.JSONTokener;
 
 import java.io.*;
 import java.lang.reflect.Field;
-import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public abstract class Settings {
-    private final URL saveFile;
+    private final Path save;
 
     public Settings(String path, String name) throws FileNotFoundException {
-        saveFile = getClass().getResource("/dat/settings.json");
-        if (saveFile == null) throw new FileNotFoundException(path);
+        save = Paths.get("core/dat/settings.json");
+    }
+
+    public Path getSavePath() {
+        return save;
     }
 
     public void save() {
         try {
-            File file = new File(saveFile.getPath());
-            BufferedReader reader = new BufferedReader(new FileReader(file));
+            BufferedReader reader = Files.newBufferedReader(save);
             JSONObject fileContents = new JSONObject(new JSONTokener(reader));
             reader.close();
 
             JSONObject settings = new JSONObject();
             fileContents.put("minecraft.general", settings);
 
-            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+            BufferedWriter writer = Files.newBufferedWriter(save);
             writer.write(fileContents.toString());
             writer.close();
         } catch (IOException ioe) {
@@ -38,8 +41,7 @@ public abstract class Settings {
 
     public void load() {
         try {
-            File file = new File(saveFile.getPath());
-            BufferedReader reader = new BufferedReader(new FileReader(file));
+            BufferedReader reader = Files.newBufferedReader(save);
             JSONObject fileContents = new JSONObject(new JSONTokener(reader));
             reader.close();
 

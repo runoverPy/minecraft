@@ -1,52 +1,63 @@
 package game.assets.menus;
 
 import game.assets.Background;
-import game.assets.ui_elements.asset.ColorBox;
-import game.assets.ui_elements.container.Container;
-import game.assets.ui_elements.Widget;
+import game.assets.mcui.Align;
+import game.assets.mcui.asset.TextTile;
+import game.assets.mcui.container.HorizontalContainer;
+import game.assets.mcui.container.ScrollPane;
+import game.assets.mcui.container.StackContainer;
+import game.assets.mcui.container.VerticalContainer;
+import game.assets.mcui.control.Button;
+import game.assets.mcui.control.InputField;
 import game.core.GameManager;
 import game.core.GameRuntime;
 import game.main.Main;
-import game.util.relay.BoolRelay;
-import org.joml.Matrix4f;
 
-public class WorldSelection extends UIELMenu {
-    private Container topBar, midBar, botBar;
-    private ColorBox selectorFrame;
+public class WorldSelection extends Menu {
 
     public WorldSelection(MenuHandler handler) {
-        super(Background.DIRT, 16 * 20, 12 * 20);
+        super(Background.DIRT);
+
         boolean demoGameExists = GameRuntime.getInstance().getGeneratorRegister().isGeneratorRegistered("vanilla:flat_test");
 
-        TableOrganizer organizer = tableOrganizer(16, 12, 20, 20, 1);
-        organizer.insert(
-          Widget.textBox("Select World:", false, true),
-          4, 8, 0, 1);
-        organizer.insert(
-          Widget.query(new StringBuffer()),
-          4, 8, 1, 1);
-        organizer.insert(
-          Widget.cFrame(),
-          2, 12, 2, 8);
-        organizer.insert(
-          Widget.button("Enter Game", () -> {}, new BoolRelay(false)),
-          2, 4, 10, 1);
-        if (demoGameExists) organizer.insert(
-          Widget.button("Demo Game", () -> Main.openGame(GameManager.demoGame())),
-          6, 4, 10, 1);
-        organizer.insert(
-          Widget.button("New Game", () -> handler.next(new WorldCreation(handler))),
-          10, 4, 10, 1);
-        organizer.insert(
-          Widget.button("Return", handler::prev),
-          4, 8, 11, 1);
-    }
+        StackContainer outerContainer = new StackContainer();
+        outerContainer.setAlign(Align.CENTER);
+        VerticalContainer innerContainer = new VerticalContainer();
+        innerContainer.setAlign(Align.CENTER);
+        innerContainer.setSize(-1, -1);
+        innerContainer.setSpacing(2);
 
-    @Override
-    public void render(Matrix4f matrix4f) {
-        int minSelectorHeight = 16;
-        int pxScale = 0;
+        TextTile title = new TextTile("Select World");
+        title.setAlign(Align.BOTTOM_CENTER);
+        title.setShaded(true);
+        title.setPxSize(192, 16);
+        InputField lookupField = new InputField();
+        lookupField.setPxSize(192, 16);
+        ScrollPane saves = new ScrollPane();
+        saves.setPxSize(224, 192);
+        // todo add VerticalContainer to saves;
+        HorizontalContainer buttons = new HorizontalContainer();
+        buttons.setAlign(Align.CENTER);
+        buttons.setSize(-1, -1);
+        buttons.setSpacing(2);
+        Button demoWorldButton = new Button("Demo Game");
+        demoWorldButton.setPxSize(95, 16);
+        if (demoGameExists) demoWorldButton.setOnAction(() ->
+          Main.openGame(GameManager.demoGame()));
+        Button createWorldButton = new Button("New Game");
+        createWorldButton.setPxSize(95, 16);
+        createWorldButton.setOnAction(() ->
+          handler.next(new WorldCreation(handler)));
+        buttons.getChildren()
+          .addAll(demoWorldButton, createWorldButton);
+        Button returnButton = new Button("Back");
+        returnButton.setPxSize(128, 16);
+        returnButton.setOnAction(handler::prev);
 
-        super.render(matrix4f);
+        innerContainer.getChildren()
+          .addAll(title, lookupField, saves, buttons, returnButton);
+        outerContainer.getChildren()
+          .setAll(innerContainer);
+        setRoot(outerContainer);
     }
 }

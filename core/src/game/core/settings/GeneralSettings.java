@@ -5,11 +5,9 @@ import org.json.JSONTokener;
 
 import java.io.*;
 import java.net.URL;
-import java.nio.file.Paths;
+import java.nio.file.Files;
 
 public class GeneralSettings extends Settings {
-    protected final URL saveFile;
-
     @Setting
     private int fov;
     @Setting
@@ -17,7 +15,6 @@ public class GeneralSettings extends Settings {
 
     public GeneralSettings() throws FileNotFoundException {
         super("/dat/settings.json", "minecraft.general");
-        this.saveFile = getClass().getResource("/dat/settings.json");
         load();
     }
 
@@ -38,10 +35,8 @@ public class GeneralSettings extends Settings {
     }
 
     public void save() {
-        System.out.println("saving settings");
         try {
-            File file = new File(saveFile.getPath());
-            BufferedReader reader = new BufferedReader(new FileReader(file));
+            BufferedReader reader = Files.newBufferedReader(getSavePath());
             JSONObject fileContents = new JSONObject(new JSONTokener(reader));
             reader.close();
 
@@ -56,7 +51,7 @@ public class GeneralSettings extends Settings {
                 fileContents = settings;
             }
 
-            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+            BufferedWriter writer = Files.newBufferedWriter(getSavePath());
             writer.write(fileContents.toString());
             writer.close();
         } catch (IOException ioe) {
@@ -65,10 +60,8 @@ public class GeneralSettings extends Settings {
     }
 
     public void load() {
-        System.out.println("loading settings");
         try {
-            File file = new File(saveFile.getPath());
-            BufferedReader reader = new BufferedReader(new FileReader(file));
+            BufferedReader reader = Files.newBufferedReader(getSavePath());
             JSONObject fileContents = new JSONObject(new JSONTokener(reader));
             reader.close();
 

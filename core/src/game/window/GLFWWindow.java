@@ -1,13 +1,12 @@
 package game.window;
 
-import game.main.Main;
 import game.util.Image;
+import game.util.ImageFile;
 import org.lwjgl.glfw.*;
 
-import java.util.ArrayDeque;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.lang.ref.PhantomReference;
+import java.lang.ref.ReferenceQueue;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
@@ -15,10 +14,13 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL46.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-public class GLFWWindow {
+public final class GLFWWindow {
     private final long window;
     public volatile int width, height;
     private boolean fullscreen;
+
+    private final KeyCallback keyCallback;
+    private final WindowSizeCallback windowSizeCallback;
 
     public GLFWWindow(String title, long monitor, boolean fullscreen) {
         GLFWVidMode mode = glfwGetVideoMode(monitor);
@@ -46,8 +48,14 @@ public class GLFWWindow {
         scrollCallbackHandler.register();
         cursorPosCallbackHandler.register();
         windowSizeCallbackHandler.register();
+        windowFocusCallbackHandler.register();
 
-        keyCallbackHandler.insert((key, scancode, action, mods) -> {
+        keyCallback = (key, scancode, action, mods) -> {
+            if (key == GLFW_KEY_F9 && action == GLFW_RELEASE) {
+                System.out.println(mouseButtonCallbackHandler);
+            }
+            if (key == GLFW_KEY_F10 && action == GLFW_RELEASE)
+                System.gc();
             if (key == GLFW_KEY_F11 && action == GLFW_RELEASE) {
                 this.fullscreen = !this.fullscreen;
                 if (this.fullscreen) glfwSetWindowMonitor(
@@ -70,19 +78,16 @@ public class GLFWWindow {
                 );
                 glfwSwapInterval(1);
             }
-        });
+        };
+        keyCallbackHandler.insert(keyCallback);
 
-        windowSizeCallbackHandler.insert((width, height) -> {
+        windowSizeCallback = (width, height) -> {
             this.width = width;
             this.height = height;
             glViewport(0, 0, width, height);
             glScissor(0, 0, width, height);
-        });
-
-        addKeyCallback((key, scancode, action, mods) -> {
-            if (key == GLFW_KEY_G)
-                System.out.println("G pressed");
-        });
+        };
+        windowSizeCallbackHandler.insert(windowSizeCallback);
     }
 
     public static GLFWWindow createOnPrimaryMonitor(String title, boolean fullscreen) {
@@ -103,7 +108,7 @@ public class GLFWWindow {
     }
 
     public void setIcon(String fileName) {
-        glfwSetWindowIcon(window, Image.collect(Image.loadImage(fileName).getImageBuffer()));
+        glfwSetWindowIcon(window, Image.collect(ImageFile.loadImage(fileName).getImageBuffer()));
     }
 
     public void update() {
@@ -166,24 +171,34 @@ public class GLFWWindow {
     public record Position<T extends Number>(T x, T y) {}
 
 
-    /*
-     *
-     *          CALLBACK stuff
-     *
-     */
-
     private abstract static class CallbackHandler<CB extends WindowCallback> {
+        private static final ReferenceQueue<WindowCallback> graveyard;
+
+        static {
+            graveyard = new ReferenceQueue<>();
+            Thread cleaner = new Thread(() -> {
+                while (true) {
+                    try {
+                        System.out.println("clearing weak reference to " + graveyard.remove());
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            cleaner.setDaemon(true);
+            cleaner.start();
+        }
+
         private final List<CB> callbacks;
         private final Queue<CB> insertions, removals;
         private final AtomicBoolean inUse;
-        private volatile boolean dirty;
+        private volatile boolean dirty = false;
 
         public CallbackHandler() {
             this.callbacks = new LinkedList<>();
             this.insertions = new ArrayDeque<>();
             this.removals = new ArrayDeque<>();
             this.inUse = new AtomicBoolean(false);
-            this.dirty = false;
         }
 
         public final void insert(CB callback) {
@@ -213,20 +228,29 @@ public class GLFWWindow {
         protected void forEach(Consumer<CB> consumer) {
             if (!inUse.getAndSet(true)) {
                 synchronized (callbacks) {
-                    for (CB callback : callbacks) {
-                        consumer.accept(callback);
+                    for (CB next : callbacks) {
+                        consumer.accept(next);
                     }
                 }
                 inUse.set(false);
             }
             if (dirty) {
-                synchronized (callbacks) {
-                    callbacks.addAll(insertions);
-                    insertions.clear();
-                    callbacks.removeAll(removals);
-                    removals.clear();
+                if (!inUse.getAndSet(true)) {
+                    dirty = false;
+                    synchronized (callbacks) {
+                        callbacks.addAll(insertions);
+                        insertions.clear();
+                        callbacks.removeAll(removals);
+                        removals.clear();
+                    }
+                    inUse.set(false);
                 }
             }
+        }
+
+        @Override
+        public String toString() {
+            return callbacks.toString();
         }
 
         /**
@@ -236,6 +260,28 @@ public class GLFWWindow {
         protected abstract void register();
     }
 
+    /*
+     *
+     *          CALLBACK stuff
+     *
+     */
+
+    public static void main(String[] args) throws InterruptedException {
+        ReferenceQueue<Object> graveyard = new ReferenceQueue<>();
+        class Target { int i; }
+        Target target = new Target();
+        PhantomReference<Target> weakTarget = new PhantomReference<>(target, graveyard);
+        Runnable action = () -> {
+            Target target1 = weakTarget.get();
+            if (target1 == null) return;
+            System.out.println(target1.i++);
+        };
+        action.run();
+        target = null;
+        System.gc();
+        action.run();
+        System.out.println(graveyard.remove(10000).get());
+    }
 
     private final KeyCallbackHandler keyCallbackHandler = new KeyCallbackHandler();
     private class KeyCallbackHandler extends CallbackHandler<KeyCallback> implements GLFWKeyCallbackI {
@@ -354,5 +400,26 @@ public class GLFWWindow {
     }
     public void delWindowSizeCallback(WindowSizeCallback callback) {
         windowSizeCallbackHandler.remove(callback);
+    }
+
+
+
+    private final WindowFocusCallbackHandler windowFocusCallbackHandler = new WindowFocusCallbackHandler();
+    private class WindowFocusCallbackHandler extends CallbackHandler<WindowFocusCallback> implements GLFWWindowFocusCallbackI {
+        @Override
+        protected void register() {
+            glfwSetWindowFocusCallback(window, this);
+        }
+
+        @Override
+        public void invoke(long window, boolean focused) {
+            forEach(callback -> callback.invoke(focused));
+        }
+    }
+    public void addWindowFocusCallback(WindowFocusCallback callback) {
+        windowFocusCallbackHandler.insert(callback);
+    }
+    public void delWindowFocusCallback(WindowFocusCallback callback) {
+        windowFocusCallbackHandler.remove(callback);
     }
 }

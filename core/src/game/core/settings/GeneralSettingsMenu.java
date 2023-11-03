@@ -6,13 +6,13 @@ import game.assets.mcui.container.StackContainer;
 import game.assets.mcui.container.VerticalContainer;
 import game.assets.mcui.control.Button;
 import game.assets.mcui.control.Slider;
-import game.assets.menus.MCUIMenu;
+import game.assets.menus.Menu;
 import game.assets.menus.MenuHandler;
 import game.main.Main;
 import game.util.relay.FloatRelay;
 import game.util.relay.IntRelay;
 
-public class GeneralSettingsMenu extends MCUIMenu {
+public class GeneralSettingsMenu extends Menu {
     public GeneralSettingsMenu(MenuHandler handler) {
         super(Background.GRAY);
         GeneralSettings generalSettings = Main.getSettings();
@@ -34,18 +34,18 @@ public class GeneralSettingsMenu extends MCUIMenu {
         fovSlider.setName("FOV");
         fovSlider.setTransformer(new Slider.IntTransformer(60, 120));
         fovSlider.setValueRelay(fov);
-        fovSlider.setSize(192, 16);
+        fovSlider.setPxSize(192, 16);
         Slider<Float> dpiSlider = new Slider<>();
         dpiSlider.setName("Sensitivity");
         dpiSlider.setTransformer(new Slider.FloatTransformer(10));
         dpiSlider.setValueRelay(dpi);
-        dpiSlider.setSize(192, 16);
+        dpiSlider.setPxSize(192, 16);
         Button returnButton = new Button("Back");
         returnButton.setOnAction(() -> {
             generalSettings.save();
             handler.prev();
         });
-        returnButton.setSize(192, 16);
+        returnButton.setPxSize(192, 16);
 
         innerContainer.getChildren()
           .addAll(fovSlider, dpiSlider, returnButton);

@@ -8,14 +8,13 @@ import game.assets.mcui.container.StackContainer;
 import game.assets.mcui.container.VerticalContainer;
 import game.assets.mcui.control.Button;
 import game.assets.mcui.control.InputField;
-import game.assets.ui_elements.Widget;
 import game.core.GameManager;
 import game.core.server.connect.ConnectionConfig;
 import game.main.Main;
 
 import java.io.IOException;
 
-class Multiplayer extends MCUIMenu {
+class Multiplayer extends Menu {
     public Multiplayer(MenuHandler handler) {
         super(Background.BRICKS);
         StringBuffer addr = new StringBuffer(), port = new StringBuffer();
@@ -45,17 +44,17 @@ class Multiplayer extends MCUIMenu {
         innerContainer.setSpacing(2);
 
         InputField addrInputField = new InputField();
-        addrInputField.setSize(192, 16);
+        addrInputField.setPxSize(192, 16);
         addrInputField.setContents(addr);
         InputField portInputField = new InputField();
-        portInputField.setSize(192, 16);
+        portInputField.setPxSize(192, 16);
         portInputField.setContents(port);
         Button joinButton = new Button("Join World");
         joinButton.setOnAction(onJoinWorld);
-        joinButton.setSize(192, 16);
+        joinButton.setPxSize(192, 16);
         Button returnButton = new Button("Back");
         returnButton.setOnAction(handler::prev);
-        returnButton.setSize(192, 16);
+        returnButton.setPxSize(192, 16);
 
         innerContainer.getChildren()
           .addAll(addrInputField, portInputField, joinButton, returnButton);

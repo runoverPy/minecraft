@@ -19,7 +19,9 @@ import game.mechanics.entities.User;
 import game.mechanics.physics.Physics;
 import game.util.Ray;
 
-import game.window.GLFWWindow;
+import game.window.KeyCallback;
+import game.window.WindowFocusCallback;
+import game.window.WindowSizeCallback;
 import mdk.worldgen.WorldGenerator;
 
 import org.joml.Matrix4f;
@@ -42,46 +44,61 @@ public class GameManager implements Client {
     private final PauseHandler pauseHandler;
     private final GameUI gameUI;
     private final Debug debug;
-    private final Callback escCallback;
     private final Renderer renderer;
     private Vector3i currentChunk;
+    private Thread physicsThread;
+    private volatile boolean disabled = false;
 
-
+    private final WindowFocusCallback focusCallback;
+    private final WindowSizeCallback sizeCallback;
+    private final KeyCallback pauseListener;
 
     private GameManager(Server server) {
         super();
-        Main.getActiveWindow().setInputMode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
         this.user = new User();
         this.server = server;
         this.renderer = new IndirectRenderer(this.server);
         this.player = new Player(this.server);
         this.gameUI = new GameUI(this.player);
-        this.debug = new Debug(this.server, this.player);
+        this.debug = new Debug(this.server, this.player, this.renderer);
 
+        Main.getActiveWindow().setInputMode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         glClearColor(0f, 0.5f, 1f, 1f);
 
         server.registerClient(this);
 
-        pauseHandler = new PauseHandler(() -> {
-            Main.getActiveWindow().setInputMode(GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        pauseHandler = new PauseHandler(player::reset, player::reset);
+
+        pauseListener = (key, scancode, action, mods) -> {
+            if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+                if (!pauseHandler.isEnabled())
+                    pauseHandler.enable();
+                else
+                    pauseHandler.disable();
+            }
+
+        };
+        Main.getActiveWindow().addKeyCallback(pauseListener);
+        focusCallback = focused -> {
+            if (!focused)
+                pauseHandler.enable();
+        };
+        Main.getActiveWindow().addWindowFocusCallback(focusCallback);
+        sizeCallback = (width, height) -> {
+            System.out.printf("Resizing to (%d, %d)\n", width, height);
             player.reset();
-        }, () -> {
-            Main.getActiveWindow().setInputMode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-            player.reset();
-        });
-        escCallback = new Callback(GLFW_KEY_ESCAPE, () -> {
-            if (pauseHandler.isActive()) pauseHandler.deactivate();
-            else pauseHandler.activate();
-        });
+        };
+        Main.getActiveWindow().addWindowSizeCallback(sizeCallback);
     }
 
     public void render() {
         if (currentChunk == null || !currentChunk.equals(player.getCurrentChunk())) {
             currentChunk = player.getCurrentChunk();
             renderer.updateChunks(currentChunk, 5, false);
+            server.updateChunks(currentChunk, 5, false);
         }
-        escCallback.check();
+//        escCallback.check();
         update();
 
         Matrix4f matrixPV = player.getViewMatrix(getProjMatrix());
@@ -105,7 +122,7 @@ public class GameManager implements Client {
     }
 
     public void update() {
-        if (!pauseHandler.isActive()) {
+        if (!pauseHandler.isEnabled()) {
             player.update();
         }
     }
@@ -151,12 +168,22 @@ public class GameManager implements Client {
         renderer.dropChunk(new Vector3i(cX, cY, cZ));
     }
 
+    private void openPauseMenu() {
+
+    }
+
     public void closeGame() {
         try {
+            Main.getActiveWindow().delWindowFocusCallback(focusCallback);
+            Main.getActiveWindow().delWindowSizeCallback(sizeCallback);
+            Main.getActiveWindow().delKeyCallback(pauseListener);
             server.close();
+            player.close();
+            pauseHandler.cleanup();
         } catch (IOException e) {
             Main.setError(e);
         }
+        System.err.println("Game Manager closed");
     }
 
     public static Matrix4f getProjMatrix() {
@@ -166,4 +193,10 @@ public class GameManager implements Client {
     }
 
     public void crash() {}
+
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+        System.out.println("Finalizing " + this);
+    }
 }

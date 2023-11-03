@@ -1,0 +1,119 @@
+Data Tags:
+
+Binary Format to encode JSON data structures with minimal storage overhead
+Inspired by Mojang's nbt format
+
+types i need:
+
+utf8 string
+json array (weakly typed)
+json object
+java array (strongly typed)
+
+bool:{true, false}
+none
+i8 i16 i32 i64
+f32 f64
+
+=> 14 types (15 with Nul/End)
+
+or:
+
+null
+false, true
+
+string (utf8 string)
+tuple (json array)
+array (rust/java array)
+object (json object / rust struct)
+
+i8, i16, i32, i64
+f32, f64
+
+Mnemonic        Byte        Description             Pattern
+<reserved>      0000 0000   Not parsed, End         ~
+XX None         0000 0001   json null value         ~
+XX Bool_False   0000 0010   json false value        ~
+XX Bool_True    0000 0011   json true value         ~
+
+// Bool         0000 0100   json bool value         ~
+// Java_Array   0000 0101   java array    WIP       type:TypeTag len:u16 data:[byte; type.size() * len] // bool arrays are an exception!
+XX Json_Array   0000 0110   json array              len:u16 values:[TypePattern; len]
+XX Json_Object  0000 0111   json object             len:u16 values:[String TypePattern; len]
+
+XX i8           0000 1000   signed byte             data:[byte; 1]
+XX i16          0000 1001   signed short            data:[byte; 2]
+XX i32          0000 1010   signed int              data:[byte; 4]
+XX i64          0000 1011   signed long             data:[byte; 8]
+
+// char         0000 1100   utf8 char (dyn size!)   data:[byte; ?] // bytes are consumed until a char is constructed or an error is thrown
+XX String       0000 1101   string of utf8 chars    size:u16 data:[byte; size] // size is length in bytes, not chars! String is encoded in java's modified UTF-8
+XX f32          0000 1110   IEEE 754 binary32       data:[byte; 4]
+XX f64          0000 1111   IEEE 754 binary64       data:[byte; 8]
+
+## Java_Array
+has two attributes: type and dimensions
+
+Java_Array types:
+Mnemonic    Byte        Description
+            0000 0101
+bool        0001 0101   [true, false, true, true]b | [1, 0, 1, 1]b | [x0B]b
+f32         0010 0101   [3.141, 2.71, 5.0]{F, F32}
+f64         0011 0101   [3.141, 2.71, 5.0]{D, F64}
+
+i8          0100 0101   B, I8
+i16         0101 0101   S, I16
+i32         0110 0101   I, I32
+i64         0111 0101   L, I641011
+
+Json_Array  1000 0101   []
+Json_Object 1001 0101   {}
+            1010 0101
+            1011 0101
+
+            1100 0101
+            1101 0101
+            1110 0101
+            1111 0101
+
+value -> "null" | "false" | "true" | list | array | object | number | string
+list -> "[" value* "]"
+array -> bitarray | intarray byteident | intarray shortident | intarray intident |
+    intarray longident | floatarray floatident | floatarray doubleident
+object -> "{" (ident ":" value),* "}"
+number -> floatliteral | intliteral byteident | intliteral shortident | intliteral intident |
+    intliteral longident | floatliteral floatident | floatliteral doubleident
+string -> "\"" (.)* "\""
+bitarray -> "[" [01]* "]b" | "[" [0-F]* "]bx"
+ident -> [0-9a-zA-Z_]*
+intliteral -> [+-]? ("0x"? "0" | [1-9] [0-9_]* | "0x" [1-F] [0-F_]*)
+floatliteral -> [+-]? ("0" | [1-9] [0-9_]*) ("." [0-9_]+)? ("e" [+-]? [0-9_]+)?
+byteident -> "B" | "i8"
+shortident -> "S" | "i16"
+intident -> "I" | "i32"
+longident -> "L" | "i64"
+floatident -> "F" | "f32"
+doubleident -> "D" | "f64"
+
+example:
+{
+    "entry": "Hello World",
+    "name": "Eric",
+    age: 19
+}
+
+Json_Object 3 5 "entry" String 11 "Hello World" 4 "name" String 4 "Eric" 3 "age" i8 19
+in binary (hex):
+07 00 03 00 05 65 6e 74 72 79 0d 00 0b 48 65 6c 6c 6f 20 57 6f 72 6c 64 00 04 6e 61 6d 65 0d 00 04 45 72 69 63 00 03 61 67 65 08 13 // 38 bytes
+07 00 03 00 05 65 6e 74 72 79 0d 00 0b 48 65 6c 6c 6f 20 57 6f 72 6c 64 00 04 6e 61 6d 65 0d 00 04 45 72 69 63 00 03 61 67 65 08 13
+entry
+Hello Worldname
+Ericage
+
+java array:
+
+tttt 0101 dddd dddd or 0ttt 0101 dddd dddd and 1ddd 0101 00000d
+
+binary selector
+
+1110 ---- -> 1110 xxxx & 1111 0000 -> 1110 ----

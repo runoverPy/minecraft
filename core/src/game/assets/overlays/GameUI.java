@@ -1,12 +1,10 @@
 package game.assets.overlays;
 
-import game.assets.Crosshair;
+import game.assets.mcui.export.Crosshair;
 import game.assets.mcui.ContentRoot;
-import game.core.GameManager;
 import game.main.Main;
 import game.mechanics.entities.Player;
 import org.joml.Matrix4f;
-import org.joml.Vector3f;
 
 import static org.lwjgl.glfw.GLFW.*;
 

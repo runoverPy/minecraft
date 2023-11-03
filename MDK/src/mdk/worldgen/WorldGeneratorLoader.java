@@ -11,4 +11,13 @@ public interface WorldGeneratorLoader {
 
     // todo add additional builder for generators
     // generator().setName(/* name */).setImage(/* image */).submit();
+
+    GeneratorTemplateBuilder generator();
+
+    interface GeneratorTemplateBuilder {
+        GeneratorTemplateBuilder setName(String name);
+        GeneratorTemplateBuilder setImage(Object image);
+        GeneratorTemplateBuilder setClass(Class<? extends WorldGenerator> generatorClass);
+        void submit();
+    }
 }

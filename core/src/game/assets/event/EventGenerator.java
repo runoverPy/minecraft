@@ -1,14 +1,18 @@
 package game.assets.event;
 
 import game.assets.event.dispatch.EventLauncher;
+import game.assets.mcui.Component;
 import game.assets.mcui.ContentRoot;
 import game.window.*;
 import game.main.Main;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.lwjgl.glfw.GLFW.*;
 
 public class EventGenerator {
-    private final ContentRoot contentRoot;
+    private ContentRoot target;
 
     private final KeyCallback keyCallback = this::launchKeyEvent;
     private final CharCallback charCallback = this::launchCharEvent;
@@ -17,13 +21,27 @@ public class EventGenerator {
     private final CursorPosCallback cursorPosCallback = this::launchCursorPosEvent;
 
     private double lastCursorPosX, lastCursorPosY;
-    private EventTarget lastHovered;
+    private Component lastHovered = null;
+    private List<EventTarget> lastHierarchy = new ArrayList<>();
 
-    public EventGenerator(ContentRoot contentRoot) {
-        this.contentRoot = contentRoot;
+    public EventGenerator(ContentRoot target) {
+        this.target = target;
+    }
+
+    public EventGenerator() {
+        this(null);
+    }
+
+    public ContentRoot getTarget() {
+        return target;
+    }
+
+    public void setTarget(ContentRoot target) {
+        this.target = target;
     }
 
     private void launchKeyEvent(int key, int scancode, int action, int mods) {
+        if (target == null) return;
         EventType<KeyEvent> eventType = switch (action) {
             case GLFW_RELEASE -> KeyEvent.KEY_RELEASED;
             case GLFW_PRESS -> KeyEvent.KEY_PRESSED;
@@ -31,17 +49,19 @@ public class EventGenerator {
             default -> throw new IllegalStateException("Unexpected value: " + action);
         };
         KeyEvent event = new KeyEvent(eventType, key, scancode, mods);
-        EventTarget eventTarget = contentRoot.getFocusedElement(); // eventTarget is focused component, gotten from contentRoot
+        EventTarget eventTarget = target.getFocusedElement(); // eventTarget is focused component, gotten from contentRoot
         fireEvent(event, eventTarget);
     }
 
     private void launchCharEvent(int codepoint) {
+        if (target == null) return;
         CharEvent charEvent = new CharEvent((char) codepoint);
-        EventTarget eventTarget = contentRoot.getFocusedElement();
+        EventTarget eventTarget = target.getFocusedElement();
         fireEvent(charEvent, eventTarget);
     }
 
     private void launchMouseEvent(int button, int action, int mods) {
+        if (target == null) return;
         EventType<MouseEvent> eventType = switch (action) {
             case GLFW_RELEASE -> MouseEvent.MOUSE_RELEASED;
             case GLFW_PRESS -> MouseEvent.MOUSE_PRESSED;
@@ -60,21 +80,30 @@ public class EventGenerator {
         };
         MouseEvent mouseEvent = new MouseEvent(eventType, mouseButton, mods);
         GLFWWindow.Position<Double> cursorPosition = Main.getActiveWindow().getCursorPos();
-        EventTarget eventTarget = contentRoot.pick(cursorPosition.x(), cursorPosition.y());
-        if (eventType == MouseEvent.MOUSE_PRESSED) System.out.println(eventTarget);
+        EventTarget eventTarget = target.pick(cursorPosition.x(), cursorPosition.y());
         fireEvent(mouseEvent, eventTarget);
     }
 
     private void launchScrollEvent(double xOffset, double yOffset) {
+        if (target == null) return;
         ScrollEvent scrollEvent = new ScrollEvent(xOffset, yOffset);
         GLFWWindow.Position<Double> cursorPosition = Main.getActiveWindow().getCursorPos();
-        EventTarget eventTarget = contentRoot.pick(cursorPosition.x(), cursorPosition.y());
+        EventTarget eventTarget = target.pick(cursorPosition.x(), cursorPosition.y());
         fireEvent(scrollEvent, eventTarget);
     }
 
     private void launchCursorPosEvent(double cursorPosX, double cursorPosY) {
+        if (target == null) return;
         double deltaX = cursorPosX - lastCursorPosX, deltaY = cursorPosY - lastCursorPosY;
         // todo compare past and current eventTarget trees, firing MouseEvent.ENTERED/EXITED as needed
+        Component hovered = target.pick(cursorPosX, cursorPosY);
+        // compare hierarchies
+        Component pointing = hovered;
+        List<EventTarget> currentHierarchy = new ArrayList<>();
+        while (pointing != null) {
+            currentHierarchy.add(pointing);
+            pointing = pointing.getParent();
+        }
 
     }
 

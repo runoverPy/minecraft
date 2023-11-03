@@ -43,6 +43,11 @@ public class LocalConnection implements Server, Client {
     }
 
     @Override
+    public int getChunkCount() {
+        return world.getChunkCount();
+    }
+
+    @Override
     public Block getBlock(int x, int y, int z) {
         return world.getBlock(x, y, z);
     }
@@ -90,6 +95,11 @@ public class LocalConnection implements Server, Client {
     @Override
     public void disconnectClient(Client client) throws IOException {
         world.disconnectClient(client);
+    }
+
+    @Override
+    public void updateChunks(Vector3i centerChunk, int renderRadius, boolean circular) {
+        world.updateChunks(centerChunk, renderRadius, circular);
     }
 
     @Override

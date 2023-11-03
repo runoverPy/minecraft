@@ -1,11 +1,14 @@
 package game.assets.menus;
 
+import game.main.Main;
+
+import static org.lwjgl.glfw.GLFW.*;
+
 public class PauseHandler extends MenuHandler {
-    private boolean active;
     private final Runnable onFreeze, onUnFreeze;
 
     public PauseHandler(Runnable onFreeze, Runnable onUnFreeze) {
-        super();
+        super(true);
         next(new PauseMenu(this));
         this.onFreeze = onFreeze;
         this.onUnFreeze = onUnFreeze;
@@ -13,20 +16,26 @@ public class PauseHandler extends MenuHandler {
 
     @Override
     public void render() {
-        if (active) super.render();
+        if (isEnabled()) super.render();
     }
 
-    public boolean isActive() {
-        return active;
-    }
-
-    public void activate() {
-        active = true;
+    @Override
+    public void enable() {
+        Main.getActiveWindow().setInputMode(GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        super.enable();
         onFreeze.run();
     }
 
-    public void deactivate() {
-        active = false;
+    @Override
+    public void disable() {
+        Main.getActiveWindow().setInputMode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        super.disable();
         onUnFreeze.run();
+    }
+
+    @Override
+    public void cleanup() {
+        Main.getActiveWindow().setInputMode(GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        super.cleanup();
     }
 }

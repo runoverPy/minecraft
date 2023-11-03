@@ -1,9 +1,7 @@
 package game.assets.overlays;
 
 import game.assets.mcui.Component;
-import game.assets.ui_elements.asset.ColorBox;
 import org.joml.Matrix4f;
-import org.joml.Vector4f;
 
 import java.util.Deque;
 import java.util.Iterator;
@@ -48,19 +46,5 @@ public class FPSCounter extends Component {
 
     public double getAvgFrameRate() {
         return 1000 / getAvgFrameTime();
-    }
-
-    public void draw(int pxScale, Matrix4f matrix4f, int x, int y) { // todo
-        int cols = 24;
-        int colW = 1, colS = 1;
-
-        ColorBox colorBox = new ColorBox(26, 64, x, y, null, new Vector4f(0.5f, 0.5f, 0.5f, 1f));
-        colorBox.draw(pxScale, matrix4f);
-
-        int i = 0;
-        for (double value : frames) {
-            new ColorBox(1, (int) Math.max(1000/value, 60), 1 + i, 1, null, new Vector4f()).draw(pxScale, matrix4f);
-            i++;
-        }
     }
 }

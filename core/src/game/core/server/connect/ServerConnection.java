@@ -141,13 +141,23 @@ public class ServerConnection extends Connection implements Server {
     }
 
     @Override
+    public void updateChunks(Vector3i centerChunk, int renderRadius, boolean circular) {
+
+    }
+
+    @Override
     public Chunk getChunk(int cX, int cY, int cZ) {
         Chunk c = chunks.get(new Vector3i(cX, cY, cZ));
         if (c == null) {
-            c = new Chunk();
+            c = new Chunk(cX, cY, cZ);
             System.out.println(this + String.format("Creating new chunk for %d, %d, %d", cX, cY, cZ));
             chunks.put(new Vector3i(cX, cY, cZ), c);
         }
         return c;
+    }
+
+    @Override
+    public int getChunkCount() {
+        return chunks.size();
     }
 }
