@@ -2,8 +2,8 @@ package game.assets.mcui.export;
 
 import game.assets.GLUtils;
 import game.assets.mcui.PixelComponent;
-import game.assets.mcui.asset.ColorTile;
-import game.assets.mcui.asset.PixelImageTile;
+import game.assets.mcui.atoms.ColorTile;
+import game.assets.mcui.atoms.PixelImageTile;
 import game.core.rendering.RenderUtils;
 import game.core.server.Block;
 import game.main.Main;

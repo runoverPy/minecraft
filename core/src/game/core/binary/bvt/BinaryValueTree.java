@@ -1,13 +1,12 @@
 package game.core.binary.bvt;
 
-import game.core.binary.bvt.parser.BinaryValueTreeBaseVisitor;
-import game.core.binary.bvt.parser.BinaryValueTreeLexer;
-import game.core.binary.bvt.parser.BinaryValueTreeParser;
+import game.core.binary.bvt.types.*;
+import game.core.binary.bvt.parserV1.*;
 import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,94 +39,24 @@ public class BinaryValueTree {
     public static void main(String[] args) {
         CharStream stream = CharStreams.fromString(
           """
-            #[itype(i32), enum Feeling {GOOD, BAD}] {
+            #[itype(i32)]
+            #[enum Feeling {GOOD, BAD}]
+            {
                 value: 1234.5678_f64,
                 'foo': 1234f64,
                 pi: 3.14159265359f64,
                 'magic_number': 0xCAFE_BABE,
-                array: [0xCAFE_BABE, 42069]i32,
+                array: [i32: 0xCAFE_BABE, 42069],
                 tuplebracks: [
                     0, 1, 2, 3
                 ]
-            }""");
+            }
+            """);
         BinaryValueTreeLexer lexer = new BinaryValueTreeLexer(stream);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         BinaryValueTreeParser parser = new BinaryValueTreeParser(tokens);
-        ParseTreeWalker walker = new ParseTreeWalker();
-//        walker.walk(new BinaryValueTreeBaseListener() {
-//            int indent;
-//            Stack<Consumer<BVTValue>> consumers = new Stack<>();
-//
-//            @Override
-//            public void enterKvpair(BinaryValueTreeParser.KvpairContext ctx) {
-//                super.enterKvpair(ctx);
-//                System.out.println("    ".repeat(indent) + "IDENT: " + ctx.ident().getText());
-//            }
-//
-//            @Override
-//            public void enterBinarray(BinaryValueTreeParser.BinarrayContext ctx) {
-//                super.enterBinarray(ctx);
-//            }
-//
-//            @Override
-//            public void enterValue(BinaryValueTreeParser.ValueContext ctx) {
-//                super.enterValue(ctx);
-//                System.out.println("    ".repeat(indent) + "value:" + ctx.getAltNumber());
-//            }
-//
-//            @Override
-//            public void exitValue(BinaryValueTreeParser.ValueContext ctx) {
-//                super.enterValue(ctx);
-//                System.out.println("    ".repeat(indent) + "/value");
-//            }
-//
-//            @Override
-//            public void enterString(BinaryValueTreeParser.StringContext ctx) {
-//                super.enterString(ctx);
-//                System.out.println("    ".repeat(indent) + ctx.STRING());
-//            }
-//
-//            @Override
-//            public void enterNumber(BinaryValueTreeParser.NumberContext ctx) {
-//                super.enterNumber(ctx);
-//                System.out.println("    ".repeat(indent) + ctx.getText());
-//            }
-//
-//            @Override
-//            public void enterObject(BinaryValueTreeParser.ObjectContext ctx) {
-//                super.enterObject(ctx);
-//            }
-//
-//            @Override
-//            public void enterTrue(BinaryValueTreeParser.TrueContext ctx) {
-//                super.enterTrue(ctx);
-//            }
-//
-//            @Override
-//            public void exitString(BinaryValueTreeParser.StringContext ctx) {
-//                System.out.println("    ".repeat(indent) + "String value: " + ctx.STRING());
-//                super.exitString(ctx);
-//            }
-//
-//            @Override
-//            public void enterEveryRule(ParserRuleContext ctx) {
-//                super.enterEveryRule(ctx);
-//                System.out.println("    ".repeat(indent) + "Entering " + parser.getRuleNames()[ctx.getRuleIndex()]);
-//                indent++;
-//            }
-//
-//            @Override
-//            public void exitEveryRule(ParserRuleContext ctx) {
-//                super.exitEveryRule(ctx);
-//                indent--;
-//                System.out.println("    ".repeat(indent) + "Exiting " + parser.getRuleNames()[ctx.getRuleIndex()]);
-//            }
-//        }, parser.file());
-
-        parser.reset();
 
         BinaryValueTreeParser.FileContext file = parser.file();
-        System.out.println(file.head());
         BinaryValueTreeParser.ValueContext context = file.value();
         BinaryValueTreeBaseVisitor<BVTValue> visitor = new BinaryValueTreeBaseVisitor<>() {
             private String tryStripQuotes(String s) {
@@ -137,12 +66,9 @@ public class BinaryValueTree {
                 return matcher.group(1);
             }
 
-            private Number tryParseNumber(String s) {
-                return 0;
-            }
-
-            public BVTValue visitValue(BinaryValueTreeParser.ValueContext ctx) {
-                return super.visitValue(ctx);
+            @Override
+            public BVTValue visitFile(BinaryValueTreeParser.FileContext ctx) {
+                return ctx.value() != null ? ctx.value().accept(this) : new BVTNull();
             }
 
             @Override
@@ -161,8 +87,86 @@ public class BinaryValueTree {
             }
 
             @Override
-            public BVTValue visitArray(BinaryValueTreeParser.ArrayContext ctx) {
-                return super.visitArray(ctx);
+            public BVTValue visitBinArray(BinaryValueTreeParser.BinArrayContext ctx) {
+                if (ctx.BIN_ARRAY() != null) {
+                    return BVTBoolArray.fromBinArray(ctx.BIN_ARRAY().getText());
+                }
+                if (ctx.HEX_ARRAY() != null) {
+                    return BVTBoolArray.fromHexArray(ctx.HEX_ARRAY().getText());
+                }
+                throw new AssertionError();
+            }
+
+            @Override
+            public BVTValue visitByteArray(BinaryValueTreeParser.ByteArrayContext ctx) {
+                int count = ctx.number().size();
+                byte[] values = new byte[count];
+                NumberParser parser = new NumberParser();
+                NumberParser.NumberVisitor visitor = parser.createVisitor();
+                for (int i = 0; i < count; i++) {
+                    values[i] = ctx.number().get(i).accept(visitor).byteValue();
+                }
+                return new BVTByteArray(values);
+            }
+
+            @Override
+            public BVTValue visitShortArray(BinaryValueTreeParser.ShortArrayContext ctx) {
+                int count = ctx.number().size();
+                short[] values = new short[count];
+                NumberParser parser = new NumberParser();
+                NumberParser.NumberVisitor visitor = parser.createVisitor();
+                for (int i = 0; i < count; i++) {
+                    values[i] = ctx.number().get(i).accept(visitor).shortValue();
+                }
+                return new BVTShortArray(values);
+            }
+
+            @Override
+            public BVTValue visitIntArray(BinaryValueTreeParser.IntArrayContext ctx) {
+                int count = ctx.number().size();
+                int[] values = new int[count];
+                NumberParser parser = new NumberParser();
+                NumberParser.NumberVisitor visitor = parser.createVisitor();
+                for (int i = 0; i < count; i++) {
+                    values[i] = ctx.number().get(i).accept(visitor).intValue();
+                }
+                return new BVTIntArray(values);
+            }
+
+            @Override
+            public BVTValue visitLongArray(BinaryValueTreeParser.LongArrayContext ctx) {
+                int count = ctx.number().size();
+                long[] values = new long[count];
+                NumberParser parser = new NumberParser();
+                NumberParser.NumberVisitor visitor = parser.createVisitor();
+                for (int i = 0; i < count; i++) {
+                    values[i] = ctx.number().get(i).accept(visitor).longValue();
+                }
+                return new BVTLongArray(values);
+            }
+
+            @Override
+            public BVTValue visitFloatArray(BinaryValueTreeParser.FloatArrayContext ctx) {
+                int count = ctx.number().size();
+                float[] values = new float[count];
+                NumberParser parser = new NumberParser();
+                NumberParser.NumberVisitor visitor = parser.createVisitor();
+                for (int i = 0; i < count; i++) {
+                    values[i] = ctx.number().get(i).accept(visitor).floatValue();
+                }
+                return new BVTFloatArray(values);
+            }
+
+            @Override
+            public BVTValue visitDoubleArray(BinaryValueTreeParser.DoubleArrayContext ctx) {
+                int count = ctx.number().size();
+                double[] values = new double[count];
+                NumberParser parser = new NumberParser();
+                NumberParser.NumberVisitor visitor = parser.createVisitor();
+                for (int i = 0; i < count; i++) {
+                    values[i] = ctx.number().get(i).accept(visitor).doubleValue();
+                }
+                return new BVTDoubleArray(values);
             }
 
             @Override
@@ -178,14 +182,19 @@ public class BinaryValueTree {
             public BVTValue visitObject(BinaryValueTreeParser.ObjectContext ctx) {
                 BVTObject object = new BVTObject();
                 for (BinaryValueTreeParser.KvpairContext kvCtx : ctx.kvpair()) {
-                    object.getValues().put(tryStripQuotes(kvCtx.ident().getText()), kvCtx.value().accept(this));
+                    object.getValues().put(
+                      tryStripQuotes(kvCtx.ident().getText()),
+                      kvCtx.value().accept(this)
+                    );
                 }
                 return object;
             }
 
             @Override
             public BVTValue visitNumber(BinaryValueTreeParser.NumberContext ctx) {
-                return super.visitNumber(ctx);
+                NumberParser parser = new NumberParser();
+                Number number = ctx.accept(parser.createVisitor());
+                return BVTValue.wrapNumber(number);
             }
 
             @Override
@@ -193,6 +202,7 @@ public class BinaryValueTree {
                 return new BVTString(tryStripQuotes(ctx.STRING().getText()));
             }
         };
-        context.accept(visitor);
+        BVTValue value = context.accept(visitor);
+        System.out.println(value.prettyPrint(0));
     }
 }

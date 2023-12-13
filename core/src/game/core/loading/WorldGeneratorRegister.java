@@ -9,6 +9,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class WorldGeneratorRegister implements WorldGeneratorLoader {
+    @Deprecated
     private final Map<String, Class<? extends WorldGenerator>> generatorClasses;
 
     public WorldGeneratorRegister() {
@@ -19,6 +20,14 @@ public class WorldGeneratorRegister implements WorldGeneratorLoader {
         throw new UnsupportedOperationException();
     }
 
+    public GeneratorBuilder getGeneratorBuilder(String generator) {
+        return new GeneratorBuilder(generatorClasses.get(generator));
+    }
+
+    public boolean isGeneratorRegistered(String generator) {
+        return generatorClasses.containsKey(generator);
+    }
+
     @Deprecated
     public WorldGenerator getGenerator(String name) {
         if (!generatorClasses.containsKey(name)) throw new RegistrationException("No generator registered under given name");
@@ -26,6 +35,7 @@ public class WorldGeneratorRegister implements WorldGeneratorLoader {
     }
 
     @Override
+    @Deprecated
     public WorldGeneratorLoader register(String generatorName, Class<? extends WorldGenerator> generatorClass) {
         if (generatorClasses.containsKey(generatorName)) throw new RegistrationException("Generator registered with same name");
         generatorClasses.put(generatorName, generatorClass);
@@ -37,6 +47,7 @@ public class WorldGeneratorRegister implements WorldGeneratorLoader {
         return new GeneratorTemplateBuilder() {
             private String name;
             private Class<? extends WorldGenerator> generatorClass;
+            private Supplier<? extends WorldGenerator> factory;
 
             @Override
             public GeneratorTemplateBuilder setName(String name) {
@@ -55,6 +66,11 @@ public class WorldGeneratorRegister implements WorldGeneratorLoader {
                 return this;
             }
 
+            public GeneratorTemplateBuilder setFactory(Supplier<? extends WorldGenerator> factory) {
+                this.factory = factory;
+                return this;
+            }
+
             @Override
             public void submit() {
                 if (name == null) throw new IllegalStateException("a name must be supplied to the template builder before submitting");
@@ -62,10 +78,6 @@ public class WorldGeneratorRegister implements WorldGeneratorLoader {
                 register(name, generatorClass);
             }
         };
-    }
-
-    public boolean isGeneratorRegistered(String generatorName) {
-        return generatorClasses.containsKey(generatorName);
     }
 
     public String[] getLoadedGenerators() {

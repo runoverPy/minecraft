@@ -6,7 +6,7 @@ Inspired by Mojang's nbt format
 types i need:
 
 utf8 string
-json array (weakly typed)
+json array (weakly typed) "tuple", "list"
 json object
 java array (strongly typed)
 
@@ -14,6 +14,7 @@ bool:{true, false}
 none
 i8 i16 i32 i64
 f32 f64
+add bigDecimal? todo
 
 => 14 types (15 with Nul/End)
 
@@ -23,58 +24,69 @@ null
 false, true
 
 string (utf8 string)
-tuple (json array)
+tuple (json array/python list or tuple/rust tuple)
 array (rust/java array)
 object (json object / rust struct)
 
 i8, i16, i32, i64
 f32, f64
 
+arch := not sure how long arrays / strings should be allowed to be, i32 seems overkill but i16 is quite small
+
 Mnemonic        Byte        Description             Pattern
-<reserved>      0000 0000   Not parsed, End         ~
+   End          0000 0000   End of list or obj      ~
 XX None         0000 0001   json null value         ~
-XX Bool_False   0000 0010   json false value        ~
-XX Bool_True    0000 0011   json true value         ~
+XX False        0000 0010   json false value        ~
+XX True         0000 0011   json true value         ~
 
-// Bool         0000 0100   json bool value         ~
-// Java_Array   0000 0101   java array    WIP       type:TypeTag len:u16 data:[byte; type.size() * len] // bool arrays are an exception!
-XX Json_Array   0000 0110   json array              len:u16 values:[TypePattern; len]
-XX Json_Object  0000 0111   json object             len:u16 values:[String TypePattern; len]
+XX String       0000 0100   string of utf8 chars    size: u32 data: [byte; size] // size is length in bytes, not chars! String is encoded in java's modified UTF-8
+OO Array        tttt 0101   java array    WIP       size: u32 data: [byte; type.size() * size] // bool arrays are an exception!
+XX List/Tuple   0000 0110   json array              values: [TypePattern] END
+XX Object       0000 0111   json object             values: [String TypePattern] END
 
-XX i8           0000 1000   signed byte             data:[byte; 1]
-XX i16          0000 1001   signed short            data:[byte; 2]
-XX i32          0000 1010   signed int              data:[byte; 4]
-XX i64          0000 1011   signed long             data:[byte; 8]
+XX i8           0000 1000   signed byte             data: [byte; 1]
+XX i16          0000 1001   signed short            data: [byte; 2]
+XX i32          0000 1010   signed int              data: [byte; 4]
+XX i64          0000 1011   signed long             data: [byte; 8]
 
-// char         0000 1100   utf8 char (dyn size!)   data:[byte; ?] // bytes are consumed until a char is constructed or an error is thrown
-XX String       0000 1101   string of utf8 chars    size:u16 data:[byte; size] // size is length in bytes, not chars! String is encoded in java's modified UTF-8
-XX f32          0000 1110   IEEE 754 binary32       data:[byte; 4]
-XX f64          0000 1111   IEEE 754 binary64       data:[byte; 8]
+XX f32          0000 1100   IEEE 754 binary32       data: [byte; 4]
+XX f64          0000 1101   IEEE 754 binary64       data: [byte; 8]
+OO char         0000 1110   utf8 char (dyn size!)   data: [byte; 1-4] // UTF-8; bytes are consumed until a char is constructed or an error is thrown, or the max number of bytes is exceeded
+XX BigDecimal   0000 1111   dynamic sized float     size: u16 data: [byte; size]
 
 ## Java_Array
-has two attributes: type and dimensions
-
 Java_Array types:
-Mnemonic    Byte        Description
-            0000 0101
-bool        0001 0101   [true, false, true, true]b | [1, 0, 1, 1]b | [x0B]b
-f32         0010 0101   [3.141, 2.71, 5.0]{F, F32}
-f64         0011 0101   [3.141, 2.71, 5.0]{D, F64}
 
-i8          0100 0101   B, I8
-i16         0101 0101   S, I16
-i32         0110 0101   I, I32
-i64         0111 0101   L, I641011
+Type        Byte        Description
+defined     0000 0101   Typed Array: Add Type Tag before the first ArrayPattern
+bool, bits  0001 0101   [ba: true, false, true, true] | [ba: 1, 0, 1, 1] | [xa: FF 0B]
+f32         0010 0101   [f32: 3.141, 2.71, 5.0]
+f64         0011 0101   [f64: 3.141, 2.71, 5.0]
 
-Json_Array  1000 0101   []
-Json_Object 1001 0101   {}
-            1010 0101
-            1011 0101
+i8          0100 0101   b, B, i8
+i16         0101 0101   s, S, i16
+i32         0110 0101   i, I, i32
+i64         0111 0101   l, L, i64
 
-            1100 0101
-            1101 0101
-            1110 0101
-            1111 0101
+Type Tag:
+
+
+String              0000 0000
+Array               0000 0001
+List                0000 0010
+Object              0000 0011
+
+Bool -> boolArray   0000 0100
+char -> String      0000 0101
+
+i8 -> byteArray     0000 1000
+i16 -> shortArray   0000 1001
+i32 -> intArray     0000 1010
+i64 -> longArray    0000 1011
+
+f32 -> floatArray   0000 1100
+f64 -> doubleArray  0000 1101
+
 
 value -> "null" | "false" | "true" | list | array | object | number | string
 list -> "[" value* "]"
@@ -88,12 +100,12 @@ bitarray -> "[" [01]* "]b" | "[" [0-F]* "]bx"
 ident -> [0-9a-zA-Z_]*
 intliteral -> [+-]? ("0x"? "0" | [1-9] [0-9_]* | "0x" [1-F] [0-F_]*)
 floatliteral -> [+-]? ("0" | [1-9] [0-9_]*) ("." [0-9_]+)? ("e" [+-]? [0-9_]+)?
-byteident -> "B" | "i8"
-shortident -> "S" | "i16"
-intident -> "I" | "i32"
-longident -> "L" | "i64"
-floatident -> "F" | "f32"
-doubleident -> "D" | "f64"
+byteident -> "b" | "i8"
+shortident -> "s" | "i16"
+intident -> "i" | "i32"
+longident -> "l" | "i64"
+floatident -> "f" | "f32"
+doubleident -> "d" | "f64"
 
 example:
 {
@@ -105,15 +117,6 @@ example:
 Json_Object 3 5 "entry" String 11 "Hello World" 4 "name" String 4 "Eric" 3 "age" i8 19
 in binary (hex):
 07 00 03 00 05 65 6e 74 72 79 0d 00 0b 48 65 6c 6c 6f 20 57 6f 72 6c 64 00 04 6e 61 6d 65 0d 00 04 45 72 69 63 00 03 61 67 65 08 13 // 38 bytes
-07 00 03 00 05 65 6e 74 72 79 0d 00 0b 48 65 6c 6c 6f 20 57 6f 72 6c 64 00 04 6e 61 6d 65 0d 00 04 45 72 69 63 00 03 61 67 65 08 13
 entry
 Hello Worldname
 Ericage
-
-java array:
-
-tttt 0101 dddd dddd or 0ttt 0101 dddd dddd and 1ddd 0101 00000d
-
-binary selector
-
-1110 ---- -> 1110 xxxx & 1111 0000 -> 1110 ----

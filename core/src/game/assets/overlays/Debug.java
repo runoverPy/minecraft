@@ -3,7 +3,7 @@ package game.assets.overlays;
 import game.assets.Toggle;
 import game.assets.mcui.Align;
 import game.assets.mcui.ContentRoot;
-import game.assets.mcui.asset.TextTile;
+import game.assets.mcui.atoms.TextTile;
 import game.assets.mcui.container.AnchorPane;
 import game.assets.mcui.container.StackContainer;
 import game.core.rendering.ChunkRenderer;
@@ -94,10 +94,10 @@ public class Debug extends ContentRoot {
 
         rightText.edit()
           .reset()
-          .println("FPS: " + (long) counter.getAvgFrameRate())
-          .printf("Loaded Chunks W: %d, R: %d\n", server.getChunkCount(), renderer.getChunkCount());
+          .println("FPS: " + (long) counter.getAvgFrameRate());
         if (renderer instanceof ChunkRenderer chunkRenderer) {
             rightText.edit()
+              .printf("Loaded Chunks W: %d, R: %d\n", server.getChunkCount(), chunkRenderer.getChunkCount())
               .printf("executor queue: %d, tasks: %d, threads: %d\n",
                 chunkRenderer.getExecutorQueueSize(), chunkRenderer.getExecutorTasks(), chunkRenderer.getExecutorThreads());
         }

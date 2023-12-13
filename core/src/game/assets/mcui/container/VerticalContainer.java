@@ -6,9 +6,11 @@ import game.assets.mcui.Component;
 public class VerticalContainer extends Container {
     private Align align;
     private int spacing;
+    private boolean fillWidth;
 
     public VerticalContainer() {
         this.align = Align.TOP_LEFT;
+        this.fillWidth = false;
     }
 
     public VerticalContainer(Align align) {
@@ -35,6 +37,9 @@ public class VerticalContainer extends Container {
     public void layout() {
         int layoutY = 0;
         for (Component child : getChildren()) {
+            if (fillWidth) {
+                child.setWidth(getWidth());
+            }
             child.layout();
             child.setLayoutY(layoutY);
             child.setLayoutX(align.getXOffset(getWidth(), child.getWidth()));
@@ -48,6 +53,14 @@ public class VerticalContainer extends Container {
 
     public void setAlign(Align align) {
         this.align = align;
+    }
+
+    public boolean isFillWidth() {
+        return fillWidth;
+    }
+
+    public void setFillWidth(boolean fillWidth) {
+        this.fillWidth = fillWidth;
     }
 
     public int getSpacing() {

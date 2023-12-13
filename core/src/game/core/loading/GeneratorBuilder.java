@@ -5,6 +5,7 @@ import game.core.loading.config.ConfigTemplateImpl;
 import mdk.settings.template.ConfigDetails;
 import mdk.settings.template.ConfigFactory;
 import mdk.settings.template.ConfigTemplate;
+import mdk.settings.template.Template;
 import mdk.worldgen.WorldGenerator;
 import org.json.JSONObject;
 
@@ -27,15 +28,15 @@ public class GeneratorBuilder {
         template = getGeneratorTemplate();
     }
 
-    private ConfigTemplateImpl getGeneratorTemplate() {
+    public ConfigTemplateImpl getGeneratorTemplate() {
         ConfigTemplateImpl template = new ConfigTemplateImpl();
 
         try {
-            Method makeTemplate = this.generatorClass.getMethod("makeTemplate", ConfigTemplateImpl.class, ConfigFactory.class);
+            Method makeTemplate = this.generatorClass.getMethod("makeTemplate", ConfigTemplate.class, ConfigFactory.class);
             makeTemplate.invoke(null, template, factory);
-            if (!template.validate(generatorClass)) {
-                System.err.println("Template for " + generatorClass + " failed to validate");
-            }
+//            if (!template.validate(generatorClass)) {
+//                System.err.println("Template for " + generatorClass + " failed to validate");
+//            }
         } catch (InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);
         } catch (NoSuchMethodException ignored) {}

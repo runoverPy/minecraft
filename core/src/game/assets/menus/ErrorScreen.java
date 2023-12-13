@@ -2,8 +2,7 @@ package game.assets.menus;
 
 import game.assets.Background;
 import game.assets.mcui.Align;
-import game.assets.mcui.Component;
-import game.assets.mcui.asset.TextTile;
+import game.assets.mcui.atoms.TextTile;
 import game.assets.mcui.container.StackContainer;
 import game.assets.mcui.container.VerticalContainer;
 import game.assets.mcui.control.Button;

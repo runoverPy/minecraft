@@ -187,6 +187,17 @@ public class ShellCommandHandler extends CommandHandler<ShellCommandEnvironment>
                       return 0;
                   }
               },
+              new ArgparseCommand("chmod") {
+                  @Override
+                  protected void initParser(ArgumentParser parser) {
+
+                  }
+
+                  @Override
+                  public byte accept(Namespace namespace) {
+                      return 0;
+                  }
+              },
               new BasicCommand("login") {
                   @Override
                   public byte accept(String[] args) {
@@ -232,7 +243,7 @@ public class ShellCommandHandler extends CommandHandler<ShellCommandEnvironment>
                   }
               },
               new BasicCommand("lua") {
-                  Globals globals = JsePlatform.standardGlobals();
+                  final Globals globals = JsePlatform.standardGlobals();
 
                   @Override
                   public byte accept(String[] args) {

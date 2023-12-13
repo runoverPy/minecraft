@@ -1,7 +1,7 @@
 package mdk.settings.template;
 
 public interface ConfigFactory {
-    ConfigDetails<Integer> seedQuery();
+    ConfigDetails<Long> seedQuery();
 
     default ConfigDetails<Integer> intSlider(int stop) {
         return intSlider(0, stop, 1);

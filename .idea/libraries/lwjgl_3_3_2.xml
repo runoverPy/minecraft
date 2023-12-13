@@ -1,6 +1,8 @@
 <component name="libraryTable">
-  <library name="lwjgl-3_3_2">
+  <library name="lwjgl-3.3.2">
     <CLASSES>
+      <root url="file://$PROJECT_DIR$/lib/lwjgl-3.3.2" />
+      <root url="file://$PROJECT_DIR$/lib/lwjgl-3.3.2" />
       <root url="file://$PROJECT_DIR$/lib/lwjgl-3.3.2" />
       <root url="file://$PROJECT_DIR$/lib/lwjgl-3.3.2" />
       <root url="file://$PROJECT_DIR$/lib/lwjgl-3.3.2" />
@@ -53,6 +55,8 @@
       <root url="file://$PROJECT_DIR$/lib/lwjgl-3.3.2" />
       <root url="file://$PROJECT_DIR$/lib/lwjgl-3.3.2" />
       <root url="file://$PROJECT_DIR$/lib/lwjgl-3.3.2" />
+      <root url="file://$PROJECT_DIR$/lib/lwjgl-3.3.2" />
+      <root url="file://$PROJECT_DIR$/lib/lwjgl-3.3.2" />
     </SOURCES>
     <jarDirectory url="file://$PROJECT_DIR$/lib/lwjgl-3.3.2" recursive="false" />
     <jarDirectory url="file://$PROJECT_DIR$/lib/lwjgl-3.3.2" recursive="false" />
@@ -62,6 +66,10 @@
     <jarDirectory url="file://$PROJECT_DIR$/lib/lwjgl-3.3.2" recursive="false" />
     <jarDirectory url="file://$PROJECT_DIR$/lib/lwjgl-3.3.2" recursive="false" />
     <jarDirectory url="file://$PROJECT_DIR$/lib/lwjgl-3.3.2" recursive="false" />
+    <jarDirectory url="file://$PROJECT_DIR$/lib/lwjgl-3.3.2" recursive="false" />
+    <jarDirectory url="file://$PROJECT_DIR$/lib/lwjgl-3.3.2" recursive="false" />
+    <jarDirectory url="file://$PROJECT_DIR$/lib/lwjgl-3.3.2" recursive="false" type="SOURCES" />
+    <jarDirectory url="file://$PROJECT_DIR$/lib/lwjgl-3.3.2" recursive="false" type="SOURCES" />
     <jarDirectory url="file://$PROJECT_DIR$/lib/lwjgl-3.3.2" recursive="false" type="SOURCES" />
     <jarDirectory url="file://$PROJECT_DIR$/lib/lwjgl-3.3.2" recursive="false" type="SOURCES" />
     <jarDirectory url="file://$PROJECT_DIR$/lib/lwjgl-3.3.2" recursive="false" type="SOURCES" />

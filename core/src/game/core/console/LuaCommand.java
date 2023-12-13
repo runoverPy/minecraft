@@ -25,8 +25,8 @@ public class LuaCommand implements Command {
         for (int i = 0; i < args.length; i++) {
             argsTable.set(i+1, LuaValue.valueOf(args[i]));
         }
-        vyperTable.set("arg", argsTable);
-        runtime.set("vyper", vyperTable);
+        runtime.set("args", argsTable);
+
         try {
             runtime.load(code).call();
         } catch (LuaError luaError) {

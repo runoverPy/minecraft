@@ -12,12 +12,4 @@ public class SettingsHandler {
         // load core settings
         // load mod settings
     }
-
-    public <T> T getSetting(String setting) throws NoSuchFieldException, IllegalAccessException, ClassCastException {
-        return (T) getClass().getField(setting).get(this);
-    }
-
-    public int getIntSetting(String setting) {
-        return 0;
-    }
 }

@@ -2,9 +2,9 @@ package game.assets.mcui.control;
 
 import game.assets.mcui.Align;
 import game.assets.mcui.PixelPeer;
-import game.assets.mcui.asset.ColorTile;
-import game.assets.mcui.asset.PixelImageTile;
-import game.assets.mcui.asset.TextTile;
+import game.assets.mcui.atoms.ColorTile;
+import game.assets.mcui.atoms.PixelImageTile;
+import game.assets.mcui.atoms.TextTile;
 import org.joml.Vector4f;
 
 public class ButtonPixelPeer extends PixelPeer {

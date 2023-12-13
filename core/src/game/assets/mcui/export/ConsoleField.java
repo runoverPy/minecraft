@@ -2,8 +2,8 @@ package game.assets.mcui.export;
 
 import game.assets.mcui.Align;
 import game.assets.mcui.Component;
-import game.assets.mcui.asset.ColorTile;
-import game.assets.mcui.asset.TextTile;
+import game.assets.mcui.atoms.ColorTile;
+import game.assets.mcui.atoms.TextTile;
 import game.assets.mcui.container.ScrollPane;
 import org.joml.Vector4f;
 

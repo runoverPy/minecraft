@@ -1,7 +1,7 @@
 package game.assets.menus;
 
 import game.assets.mcui.Align;
-import game.assets.mcui.asset.PixelImageTile;
+import game.assets.mcui.atoms.PixelImageTile;
 import game.assets.mcui.container.StackContainer;
 import game.assets.mcui.container.VerticalContainer;
 import game.assets.mcui.control.Button;

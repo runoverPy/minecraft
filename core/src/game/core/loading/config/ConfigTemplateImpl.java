@@ -9,7 +9,7 @@ import java.util.*;
 
 /**
  * Interface for settings templates, the structure defining types and ranges of the fields for a settings context.
- * A instance of this interface is given to a settings context in order to statically determine field ranges and menu elements
+ * An instance of this interface is given to a settings context in order to statically determine field ranges and menu elements
  */
 public final class ConfigTemplateImpl implements ConfigTemplate {
     private final Map<String, ConfigDetails<?>> fields = new HashMap<>();
@@ -21,7 +21,7 @@ public final class ConfigTemplateImpl implements ConfigTemplate {
                 .toList();
         for (Field field : fieldList) {
             ConfigField fieldSetting = field.getAnnotation(ConfigField.class);
-            String fieldName = fieldSetting.fieldName().equals("") ? field.getName() : fieldSetting.fieldName();
+            String fieldName = fieldSetting.fieldName().isEmpty() ? field.getName() : fieldSetting.fieldName();
             ConfigDetails<?> fieldData = getFieldData(fieldName);
             if (field.getType() != fieldData.getValueType()) {
                 System.err.println("Settings validation failed for field " + field);
@@ -33,7 +33,8 @@ public final class ConfigTemplateImpl implements ConfigTemplate {
 
     @Override
     public ConfigTemplate add(String fieldName, ConfigDetails<?> fieldData) {
-        if (fieldName == null || fieldData == null) throw new NullPointerException();
+        if (fieldName == null /* || fieldData == null */) throw new NullPointerException();
+        if (fieldData != null) fieldData.setName(fieldName);
         fields.put(fieldName, fieldData);
         return this;
     }
@@ -45,6 +46,10 @@ public final class ConfigTemplateImpl implements ConfigTemplate {
 
     public ConfigDetails<?> getFieldData(String fieldName) {
         return fields.get(fieldName);
+    }
+
+    public Map<String, ConfigDetails<?>> getFields() {
+        return Collections.unmodifiableMap(fields);
     }
 
     public boolean isComplete() {

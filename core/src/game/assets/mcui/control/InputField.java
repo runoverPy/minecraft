@@ -2,8 +2,8 @@ package game.assets.mcui.control;
 
 import game.assets.mcui.Align;
 import game.assets.mcui.PixelComponent;
-import game.assets.mcui.asset.ColorTile;
-import game.assets.mcui.asset.TextTile;
+import game.assets.mcui.atoms.ColorTile;
+import game.assets.mcui.atoms.TextTile;
 import game.assets.event.KeyEvent;
 import game.main.Main;
 import game.window.CharCallback;
@@ -28,7 +28,7 @@ public class InputField extends PixelComponent {
     private final CharCallback charCallback = codepoint ->
             contents.append((char) codepoint);
     private final KeyCallback backspaceCallback = (key, scancode, action, mods) -> {
-        if (key == GLFW_KEY_BACKSPACE && (action == GLFW_PRESS || action == GLFW_REPEAT) && contents.length() > 0)
+        if (key == GLFW_KEY_BACKSPACE && (action == GLFW_PRESS || action == GLFW_REPEAT) && !contents.isEmpty())
             contents.deleteCharAt(contents.length() - 1);
     };
 
@@ -64,6 +64,10 @@ public class InputField extends PixelComponent {
 
     public void setContents(StringBuffer contents) {
         this.contents = contents;
+    }
+
+    public void setContents(String contents) {
+        this.contents = new StringBuffer(contents);
     }
 
     @Override
